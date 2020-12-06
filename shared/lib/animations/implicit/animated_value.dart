@@ -5,7 +5,7 @@ import 'package:core/core.dart';
 import 'implicit.dart';
 
 class AnimatedValue extends StatelessWidget {
-  final double value;
+  final num value;
   final Duration duration;
   final Curve curve;
   final Widget Function(BuildContext context, double value) builder;
@@ -21,7 +21,7 @@ class AnimatedValue extends StatelessWidget {
   Widget build(BuildContext context) {
     return ImplicitAnimationBuilder<double>(
       lerp: lerpDouble,
-      value: value,
+      value: value.toDouble(),
       curve: curve,
       duration: duration,
       builder: (context, value, _) => builder(context, value),

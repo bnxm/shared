@@ -228,7 +228,7 @@ class ThemePreferences extends RxSharedPreferencesDelegate {
   }
 
   AppTheme get lightTheme {
-    final key = getString(_lightThemeKey, defaultLightTheme.key);
+    final key = getString(_lightThemeKey, defaultLightTheme?.key);
     return _themeMap?.get(key) ?? defaultLightTheme;
   }
 
@@ -236,7 +236,7 @@ class ThemePreferences extends RxSharedPreferencesDelegate {
       watchString(_lightThemeKey, defaultLightTheme?.key).map((_) => lightTheme);
 
   AppTheme get darkTheme {
-    final key = getString(_darkThemeKey, defaultDarkTheme.key);
+    final key = getString(_darkThemeKey, defaultDarkTheme?.key);
     return _themeMap?.get(key) ?? defaultDarkTheme;
   }
 

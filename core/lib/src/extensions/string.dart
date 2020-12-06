@@ -50,7 +50,7 @@ extension StringExtensions on String {
   String get removeWhitespace => replaceAll(' ', '');
 
   String capitalize() {
-    if (this != null && length > 1) {
+    if (length > 1) {
       return substring(0, 1).toUpperCase() + substring(1, length);
     }
 
