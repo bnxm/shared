@@ -83,21 +83,14 @@ class _LiftOnScrollAppBarState extends State<LiftOnScrollAppBar> {
 
         return false;
       },
-      child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: widget.showDivider
-            ? SystemUiOverlayStyle(
-                systemNavigationBarDividerColor: theme.dividerColor,
-              )
-            : null,
-        child: Stack(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(top: !widget.expand ? height : 0.0),
-              child: widget.body,
-            ),
-            buildAppBar(height),
-          ],
-        ),
+      child: Stack(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(top: !widget.expand ? height : 0.0),
+            child: widget.body,
+          ),
+          buildAppBar(height),
+        ],
       ),
     );
   }
@@ -137,7 +130,6 @@ class _LiftOnScrollAppBarState extends State<LiftOnScrollAppBar> {
         return Box(
           height: height,
           color: color,
-          
           elevation: elevation,
           shadowColor: widget.shadowColor ?? Colors.black.withOpacity(0.20),
           child: AppBar(

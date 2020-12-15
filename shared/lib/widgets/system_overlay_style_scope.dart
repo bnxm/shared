@@ -8,17 +8,17 @@ class SystemOverlayStyleScope extends StatelessWidget {
   /// The color of the system bottom navigation bar.
   ///
   /// Only honored in Android versions O and greater.
-  final Color systemNavigationBarColor;
+  final Color navigationBarColor;
 
   /// The color of the divider between the system's bottom navigation bar and the app's content.
   ///
   /// Only honored in Android versions P and greater.
-  final Color systemNavigationBarDividerColor;
+  final Color navigationBarDividerColor;
 
   /// The brightness of the system navigation bar icons.
   ///
   /// Only honored in Android versions O and greater.
-  final Brightness systemNavigationBarIconBrightness;
+  final Brightness navigationBarIconBrightness;
 
   /// The color of top status bar.
   ///
@@ -41,9 +41,9 @@ class SystemOverlayStyleScope extends StatelessWidget {
     Key key,
     @required this.child,
     this.style,
-    this.systemNavigationBarColor,
-    this.systemNavigationBarDividerColor,
-    this.systemNavigationBarIconBrightness,
+    this.navigationBarColor,
+    this.navigationBarDividerColor,
+    this.navigationBarIconBrightness,
     this.statusBarColor,
     this.statusBarBrightness,
     this.statusBarIconBrightness,
@@ -55,9 +55,9 @@ class SystemOverlayStyleScope extends StatelessWidget {
       child: child,
       value: style ??
           (AppTheme.of(context)?.uiOverlayStyle ?? const SystemUiOverlayStyle()).copyWith(
-            systemNavigationBarColor: systemNavigationBarColor,
-            systemNavigationBarDividerColor: systemNavigationBarDividerColor,
-            systemNavigationBarIconBrightness: systemNavigationBarIconBrightness,
+            systemNavigationBarColor: navigationBarColor,
+            systemNavigationBarDividerColor: navigationBarDividerColor,
+            systemNavigationBarIconBrightness: navigationBarIconBrightness,
             statusBarColor: statusBarColor,
             statusBarBrightness: statusBarBrightness,
             statusBarIconBrightness: statusBarIconBrightness ?? statusBarBrightness,
