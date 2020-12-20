@@ -105,7 +105,7 @@ packages:
       name: get_it
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "5.0.1"
+    version: "5.0.3"
   glob:
     dependency: transitive
     description:
@@ -266,7 +266,7 @@ packages:
       name: sembast
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.4.8"
+    version: "2.4.8+1"
   shelf:
     dependency: transitive
     description:

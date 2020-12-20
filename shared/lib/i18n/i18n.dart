@@ -32,6 +32,7 @@ class I18n {
   static Language get language => _language;
   static List<Language> _languages = [];
   static List<Language> get languages => List.from(_languages);
+  static List<Locale> get locales => _languages.map((l) => l.locale).toList();
 
   static bool _isFollowingSystem = true;
   static bool get isFollowingSystem => _isFollowingSystem;
@@ -327,9 +328,23 @@ class I18n {
 
   /// Returns the closest system language that the app supports.
   static Language get supportedSystemLanguage {
-    for (final locale in window.locales ?? <Locale>[]) {
+    var locales = window.locales ?? <Locale>[];
+
+    // locales might be empty when init() is invoked
+    // in background or there is no window instance
+    // established yet.
+    if (locales.isEmpty) {
+      // This method should give us the current locale
+      // regardless of whether the app is in background or not.
+      window.computePlatformResolvedLocale(I18n.locales)?.also((it) {
+        locales = [it];
+      });
+    }
+
+    for (final locale in locales) {
       final code = locale.toLanguageTag().replaceAll('-', '_');
       final language = _resolveLanguageForCode(code);
+
       if (language != null) {
         return language;
       }
