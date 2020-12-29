@@ -26,8 +26,10 @@ extension NumExtensions<T extends num> on T {
   }
 
   double get radians => this * (math.pi / 180.0);
-
   double get degrees => this * (180.0 / math.pi);
+
+  double root(num exp) => (math.pow(this, 1 / exp) * 1E+9).round() / 1E+9;
+  double get cbrt => root(3);
 }
 
 extension IntExtensions on int {
@@ -58,7 +60,7 @@ extension IntExtensions on int {
 
 extension DoubleExtensions on double {
   double get half => this / 2.0;
-  
+
   double roundToPrecision(double precision) {
     final mod = math.pow(10.0, precision);
     return (this * mod).round().toDouble() / mod;

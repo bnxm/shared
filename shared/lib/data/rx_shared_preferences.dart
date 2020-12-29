@@ -47,6 +47,8 @@ class RxSharedPreferences implements RxPreferencesInterface {
   static Future<RxSharedPreferences> get instance async =>
       _instance ??= RxSharedPreferences._(await SharedPreferences.getInstance());
 
+  static bool cacheObjects = true;
+
   final StreamController<Pair<String, dynamic>> _controller =
       StreamController.broadcast();
 
@@ -306,26 +308,44 @@ class _CustomAdapter<T> implements _PreferenceAdapter<T> {
   final PreferenceAdapter<T> adapter;
   _CustomAdapter(this.adapter);
 
-  @override
-  T getValue(SharedPreferences preferences, String key) =>
-      preferences.getString(key)?.let(adapter);
+  static Map<String, dynamic> cache = {};
 
   @override
-  Future<bool> setValue(SharedPreferences preferences, String key, T value) =>
-      preferences.setString(key, _toJson(value));
+  T getValue(SharedPreferences preferences, String key) {
+    T parse() => preferences.getString(key)?.let(adapter);
+    return RxSharedPreferences.cacheObjects ? cache[key] ??= parse() : parse();
+  }
+
+  @override
+  Future<bool> setValue(SharedPreferences preferences, String key, T value) {
+    if (RxSharedPreferences.cacheObjects) {
+      cache[key] = value;
+    }
+
+    return preferences.setString(key, _toJson(value));
+  }
 }
 
 class _CustomListAdapter<T> implements _PreferenceAdapter<List<T>> {
   final PreferenceAdapter<T> adapter;
   _CustomListAdapter(this.adapter);
 
-  @override
-  List<T> getValue(SharedPreferences preferences, String key) =>
-      preferences.getStringList(key)?.map(adapter)?.toList();
+  static Map<String, dynamic> cache = {};
 
   @override
-  Future<bool> setValue(SharedPreferences preferences, String key, List<T> values) =>
-      preferences.setStringList(key, values.map(_toJson).toList());
+  List<T> getValue(SharedPreferences preferences, String key) {
+    List<T> parse() => preferences.getStringList(key)?.map(adapter)?.toList();
+    return RxSharedPreferences.cacheObjects ? cache[key] ??= parse() : parse();
+  }
+
+  @override
+  Future<bool> setValue(SharedPreferences preferences, String key, List<T> values) {
+    if (RxSharedPreferences.cacheObjects) {
+      cache[key] = values;
+    }
+
+    return preferences.setStringList(key, values.map(_toJson).toList());
+  }
 }
 
 class _EnumAdapter<T> implements _PreferenceAdapter<T> {

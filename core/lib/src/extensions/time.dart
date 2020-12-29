@@ -28,23 +28,32 @@ extension MyDateTimeExtensions on DateTime {
 
   String get hourId => '$year $month $day $hour';
   String get dateId => '$year $month $day';
-  String get weekId => '$year $week';
+  String get weekId {
+    // A week can begin in the current year and extend in to
+    // the next year. The week will be week 53 of the current year
+    // and week 0 of the next year. Normalize them here to always
+    // return week 0 of the next year.
+    return week == 53 ? '${year + 1} 0' : '$year $week';
+  }
+
   String get quarterId => '$year $quarter';
   String get monthId => '$year $month';
   String get yearId => '$year';
 
-  bool get isToday => DateTime.now().dateId == dateId;
-  bool get isTomorrow => DateTime.now().add(const Duration(days: 1)).dateId == dateId;
+  bool isDuringTheSameDayAs(DateTime other) => dateId == other.dateId;
+  bool isDuringTheSameWeekAs(DateTime other) => weekId == other.weekId;
+  bool isDuringTheSameMonthAs(DateTime other) => monthId == other.monthId;
+  bool isDuringTheSameYearAs(DateTime other) => yearId == other.yearId;
+
+  bool get isToday => DateTime.now().isDuringTheSameDayAs(this);
+  bool get isTomorrow =>
+      DateTime.now().add(const Duration(days: 1)).isDuringTheSameDayAs(this);
   bool get isYesterday =>
-      DateTime.now().subtract(const Duration(days: 1)).dateId == dateId;
-  bool get isThisWeek => DateTime.now().weekId == weekId;
+      DateTime.now().subtract(const Duration(days: 1)).isDuringTheSameDayAs(this);
+  bool get isThisWeek => DateTime.now().isDuringTheSameWeekAs(this);
 
   int get dayOfYear => difference(DateTime(year)).inDays;
-  int get week {
-    final dayOfYear = int.parse(format('D'));
-    final week = ((dayOfYear - weekday + 10) / 7).floor();
-    return week;
-  }
+  int get week => ((dayOfYear - weekday + 10) / 7).floor();
 
   int get quarter {
     final quarter = int.parse(format('Q').replaceAll('Q', ''));
@@ -82,7 +91,7 @@ extension MyDateTimeExtensions on DateTime {
   }
 
   DateTime get endOfWeek {
-    return startOfWeek.add(const Duration(days: 6, hours: 23, minutes: 59, seconds: 59));
+    return startOfWeek.add(7.days).subtract(1.millis);
   }
 
   DateTime get startOfMonth => DateTime(year, month);
@@ -96,7 +105,7 @@ extension MyDateTimeExtensions on DateTime {
   }
 
   DateTime get startOfYear => DateTime(year);
-  DateTime get endOfYear => DateTime(year, 12, 31, 23, 59, 59);
+  DateTime get endOfYear => DateTime(year, 12, 31, 23, 59, 59, 999);
 
   int getDifferenceInMonths(DateTime date2) {
     final years = getDifferenceInYears(date2);
@@ -106,19 +115,19 @@ extension MyDateTimeExtensions on DateTime {
 
   int getDifferenceInYears(DateTime date2) => (date2.year - year).abs();
 
-  // * FORMATTER EXTENSIONS
-  String format(String pattern, {String code}) {
-    code ??= Intl.defaultLocale;
-    final dateFormat = code != null ? DateFormat(pattern, code) : DateFormat(pattern);
-    return dateFormat.format(this);
-  }
-
   DateTime scaleTo(DateTime b, double t) {
     if (t == null || b == null) return null;
 
     return DateTime.fromMillisecondsSinceEpoch(
       lerpInt(millisecondsSinceEpoch.toDouble(), b.millisecondsSinceEpoch.toDouble(), t),
     );
+  }
+
+  // * FORMATTER EXTENSIONS
+  String format(String pattern, {String code}) {
+    code ??= Intl.defaultLocale;
+    final dateFormat = code != null ? DateFormat(pattern, code) : DateFormat(pattern);
+    return dateFormat.format(this);
   }
 
   /// DAY
