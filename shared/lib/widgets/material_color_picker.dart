@@ -190,17 +190,18 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
       );
     }
 
-    final List<Widget> circles = colors.map(buildCircle).toList();
+    List<Widget> circles = colors.map(buildCircle).toList();
 
     if (shadeColor == null && includeBW) {
-      circles
-        ..insert(0, buildCircle(Colors.white))
-        ..add(buildCircle(Colors.black));
+      circles = [
+        buildCircle(Colors.white),
+        ...circles,
+        buildCircle(Colors.black),
+      ];
     }
 
     if (shadeColor != null) {
-      circles.insert(
-        0,
+      circles = [
         Box(
           borderRadius: circleSize / 2.5,
           padding: const EdgeInsets.all(0),
@@ -214,7 +215,8 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
             size: circleSize / 2.2,
           ),
         ),
-      );
+        ...circles,
+      ];
     }
 
     return circles;

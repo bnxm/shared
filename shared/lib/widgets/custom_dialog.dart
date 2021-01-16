@@ -83,7 +83,7 @@ class CustomDialog extends StatelessWidget {
         if (!isPortrait) {
           content = Row(
             children: [
-              header,
+              if (header != null) header,
               Expanded(child: content),
             ],
           );
