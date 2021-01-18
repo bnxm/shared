@@ -77,9 +77,9 @@ class LatLng {
   /// LatLng(51.519475, -19.37555556);
   /// Shows: 51° 31' 10.11" N, 19° 22' 32.00" W
   String toSexagesimal() {
-    final latDirection = latitude >= 0 ? "N" : "S";
-    final lonDirection = longitude >= 0 ? "O" : "W";
-    return "${decimal2sexagesimal(latitude)} $latDirection, ${decimal2sexagesimal(longitude)} $lonDirection";
+    final latDirection = latitude >= 0 ? 'N' : 'S';
+    final lonDirection = longitude >= 0 ? 'E' : 'W';
+    return '${decimal2sexagesimal(latitude)} $latDirection, ${decimal2sexagesimal(longitude)} $lonDirection';
   }
 
   LatLng round({final int decimals = 6}) => LatLng(
@@ -124,9 +124,8 @@ class LatLng {
 
 String decimal2sexagesimal(final double dec) {
   List<int> _split(final double value) {
-    // NumberFormat is necessary to create digit after comma if the value
-    // has no decimal point (only necessary for browser)
-    final tmp = NumberFormat('0.0#####').format(value).split('.');
+    final tmp = value.toString().split('.');
+
     return <int>[
       int.parse(tmp[0]).abs(),
       int.parse(tmp[1]),
