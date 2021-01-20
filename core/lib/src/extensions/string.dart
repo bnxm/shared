@@ -71,6 +71,9 @@ extension StringExtensions on String {
     final regex = match is RegExp ? match : RegExp(match);
     return regex.allMatches(this)?.length ?? 0;
   }
+
+  /// Converts all backslashes to forward slashes.
+  String get normalizedPath => replaceAll('\\', '/');
 }
 
 

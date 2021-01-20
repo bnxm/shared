@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:shared/shared.dart';
 
 void main() async {
+  I18n.dir = '${Directory.current.path}\\test\\fixtures\\i18n';
+
   await I18n.test([
     Language.english,
     Language.german,

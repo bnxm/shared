@@ -1,9 +1,11 @@
+import 'dart:math' as math;
+
 import '../utils/utils.dart';
 import 'num.dart';
 
 typedef Predicate<T> = bool Function(T item);
 
-extension IterableExtension<T> on Iterable<T> {
+extension MyIterableExtension<T> on Iterable<T> {
   T get firstOrNull {
     try {
       return first;
@@ -222,6 +224,22 @@ extension MyListExtension<T> on List<T> {
     if (length == 0) return 0.0;
     return sumBy(value) / length;
   }
+}
+
+extension My2DimensionalListExtensions<T> on List<List<T>> {}
+
+List<Pair<A, B>> zip<A, B>(List<A> first, List<B> second) {
+  final List<Pair<A, B>> result = [];
+
+  for (var i = 0; i < math.min(first.length, second.length); i++) {
+    result.add(Pair(first[i], second[i]));
+  }
+
+  return result;
+}
+
+List<C> zipWith<A, B, C>(List<A> first, List<B> second, C Function(A a, B b) zipper) {
+  return zip(first, second).map((pair) => zipper(pair.first, pair.second)).toList();
 }
 
 extension NumIterableX on Iterable<num> {

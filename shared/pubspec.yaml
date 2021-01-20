@@ -14,19 +14,18 @@ dependencies:
 
   core: 
     path: ../core
+  
+  yaml: ^2.2.1
 
-  # State management
   provider: ^4.3.2+3
   bloc: ^6.1.1
   flutter_bloc: ^6.1.1
   cube:
     path: ../../packages/cube
 
-  # UI
   auto_size_text: ^2.1.0
   flutter_svg: ^0.19.1
 
-  # DBs
   shared_preferences: ^0.5.12+4
   hive_flutter: ^0.3.1
 
@@ -37,7 +36,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-  assets:
-    - i18n/
-

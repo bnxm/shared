@@ -16,13 +16,13 @@ class Translation {
     this.translation = '',
   })  : assert(key != null),
         assert(original != null),
-        placeholders = Placeholder.matchAll(original);
+        placeholders = Placeholder.all(original);
 
   bool get hasPlaceholders => placeholders.isNotEmpty;
   bool get hasMissingPlaceholders =>
       hasPlaceholders && translatedPlaceholders < placeholders.length;
 
-  int get translatedPlaceholders => Placeholder.matchAll(translation).length;
+  int get translatedPlaceholders => Placeholder.all(translation).length;
   Placeholder get nextPlaceholder => placeholders.getOrNull(translatedPlaceholders);
 
   Translation copyWith({

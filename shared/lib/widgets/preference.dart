@@ -65,8 +65,13 @@ class Preference extends StatelessWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
 
+     final reserveIconSpace = this.reserveIconSpace ??
+        PreferenceGroup.of(context)?.reserveIconSpace ??
+        PreferencePage.of(context)?.reserveIconSpace ??
+        false;
+
     Widget leading = this.leading;
-    if (leading is Icon) {
+    if (leading is Icon || reserveIconSpace) {
       leading = Container(
         width: 40,
         alignment: Alignment.center,
@@ -83,10 +88,7 @@ class Preference extends StatelessWidget {
       );
     }
 
-    final reserveIconSpace = this.reserveIconSpace ??
-        PreferenceGroup.of(context)?.reserveIconSpace ??
-        PreferencePage.of(context)?.reserveIconSpace ??
-        false;
+   
 
     final title = this.title is String
         ? Text(

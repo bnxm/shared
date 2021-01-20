@@ -273,8 +273,8 @@ extension MyDurationExtensions on Duration {
       this,
       abbreviated: abbreviated,
       conjunction: conjunction,
-      spacer: spacer,
-      delimiter: delimiter,
+      spacer: abbreviated ? '' : spacer,
+      delimiter: abbreviated ? ' ' : null,
       tersity: tersity,
       locale: DurationLocale.fromLanguageCode(Intl.defaultLocale),
     );

@@ -11,22 +11,22 @@ import 'package:meta/meta.dart';
 import 'package:shared/shared.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'i18n_parser.dart';
+import 'i18n_loader.dart';
+import 'i18n_store.dart';
 import 'language.dart';
-import 'strings.dart';
 
 typedef LanguageChangedCallback = void Function(Language language);
 
 class I18n {
   const I18n._();
 
-  static bool _isTest = false;
-  static const String languageKey = 'LANGUAGE';
-  static Future<SharedPreferences> get _preferences =>
-      !_isTest ? SharedPreferences.getInstance() : null;
+  static bool _inTestMode = false;
+  static bool get inTestMode => _inTestMode;
 
+  static I18nStore store = I18nSharedPreferencesStore();
+
+  @visibleForTesting
   static String dir = 'i18n';
-  static bool inspectLocales = true;
 
   static Language _language;
   static Language get language => _language;
@@ -55,8 +55,6 @@ class I18n {
     I18n._languages = languages;
 
     await _loadLanguage();
-    await _inspectLocales();
-    await Strings.init(languages);
 
     _subscribeToChangesInLocale();
   }
@@ -65,9 +63,8 @@ class I18n {
     assert(languages is List<Language> || languages is Language);
     final langs = languages is List ? languages : <Language>[languages];
 
-    _isTest = true;
+    _inTestMode = true;
     _language = langs.first;
-    Strings.isTest = true;
 
     await init(langs);
   }
@@ -88,21 +85,25 @@ class I18n {
 
     String translationKey;
 
-    final keys = defaultTranslations.keys.toList();
-    final values = defaultTranslations.values.toList();
-    for (var i = 0; i < keys.length; i++) {
-      if (input == values[i] || input == keys[i]) {
-        translationKey = keys[i];
+    // First check if there is a key (key or translation string)
+    // that matches the input string.
+    for (final entry in defaultTranslations.entries) {
+      if (input == entry.value || input == entry.key) {
+        translationKey = entry.key;
         break;
       }
     }
 
+    // Otherwise, check without placeholders...
     if (translationKey == null) {
-      final rawInput = input.replaceAll(placeholderRegex, '');
+      String raw(String src) => src.replaceAll(placeholderRegex, '').trim();
 
-      for (var i = 0; i < keys.length; i++) {
-        final key = keys[i], translation = values[i];
-        final rawTranslation = translation.replaceAll(placeholderRegex, '');
+      final inputNoPlaceholders = raw(input);
+
+      for (final entry in defaultTranslations.entries) {
+        final key = entry.key, translation = entry.value;
+
+        final translationNoPlaceholders = raw(translation);
 
         // When the value is only a placeholder, as with
         // {1: Hour, else: Hours}
@@ -110,9 +111,10 @@ class I18n {
         // the value in the else group.
         //
         // This way, an input of {10 Hours} would match the above translation.
-        if (rawInput.trim().isEmpty && rawTranslation.trim().isEmpty) {
-          final placeholder = Placeholder.match(translation);
-          if (placeholder != null && placeholder.orElse != null) {
+        if (inputNoPlaceholders.isEmpty && translationNoPlaceholders.isEmpty) {
+          final placeholder = Placeholder.from(translation);
+
+          if (placeholder?.orElse != null) {
             final orElseValue = placeholder.orElse.replaceAll('\$i', '').removeWhitespace;
             final inputPlaceholders = placeholderRegex.allMatches(input);
 
@@ -125,7 +127,7 @@ class I18n {
               break;
             }
           }
-        } else if (rawTranslation == rawInput) {
+        } else if (translationNoPlaceholders == inputNoPlaceholders) {
           translationKey = key;
           break;
         }
@@ -147,8 +149,8 @@ class I18n {
       return input;
     }
 
-    final srcPlaceholders = Placeholder.matchAll(input);
-    final targetPlaceholders = Placeholder.matchAll(translation);
+    final srcPlaceholders = Placeholder.all(input);
+    final targetPlaceholders = Placeholder.all(translation);
 
     if (srcPlaceholders.isEmpty || targetPlaceholders.isEmpty) {
       return translation;
@@ -159,18 +161,15 @@ class I18n {
       );
 
       String result = translation;
-      for (final i in targetPlaceholders.length.until(0)) {
+
+      // for (var i = targetPlaceholders.length - 1; i >= 0; i--) {
+      for (var i = 0; i < targetPlaceholders.length; i++) {
         final src = _removeBrackets(srcPlaceholders[i].src);
         final placeholder = targetPlaceholders[i];
-        final replacement = placeholder.let((it) {
-          if (it.isPlural) {
-            return _plural(it, src);
-          }
-        });
 
         result = result.replaceLast(
           placeholder.src,
-          replacement ?? src,
+          placeholder.format(src) ?? src,
         );
       }
 
@@ -181,64 +180,43 @@ class I18n {
   static String key(String key, [dynamic placeholders = const []]) {
     String translation = currentTranslations[key];
 
+    if (translation == null) {
+      assert(
+        translation != null,
+        'No translation for key $key in language file ${language.code}',
+      );
+
+      return key;
+    }
+
     if (placeholders is! List) {
       placeholders = [placeholders];
     }
 
-    assert(
-      translation != null,
-      'No translation for key $key in language file ${language.code}',
+    final pairs = zip(
+      Placeholder.all(translation),
+      placeholders as List,
     );
 
-    final targetPlaceholders = Placeholder.matchAll(translation);
-
-    for (var i = 0; i < targetPlaceholders.length; i++) {
-      final targetPlaceholder = targetPlaceholders[i];
-      final srcPlaceholder = (placeholders as List).getOrNull(i);
-      if (srcPlaceholder == null) break;
-
-      String replacement = srcPlaceholder.toString();
-      if (targetPlaceholder.isPlural) {
-        replacement = _plural(targetPlaceholder, replacement);
-      }
-
-      translation = translation.replaceFirst(placeholderRegex, replacement);
+    for (final pair in pairs) {
+      translation = translation.replaceFirst(
+        placeholderRegex,
+        pair.first.format(pair.second),
+      );
     }
 
     return translation;
   }
 
-  static String _plural(Placeholder placeholder, String input) {
-    final onlyDigits = input.replaceAll(RegExp(r'[^0-9, ^\., ^\,]'), '');
-
-    final number = num.tryParse(onlyDigits);
-    assert(number != null, 'Plural placeholder was not given a valid number!');
-    if (number == null) {
-      return placeholder.src;
-    }
-
-    final keys = placeholder.keys.toList();
-    final values = placeholder.values.toList();
-    for (var i = 0; i < placeholder.length; i++) {
-      final key = num.tryParse(keys[i].trim());
-      final value = values[i].trim();
-
-      if (keys[i] == 'else' || key == number) {
-        final formatted = NumberFormat.decimalPattern(
-          language.locale.scriptCode,
-        ).format(number);
-
-        return value.replaceAll('\$i', formatted);
-      }
-    }
-
-    return null;
-  }
-
+  /// Sets the given [language] and persists it to local storage.
+  ///
+  /// The app will use this language until a new language is set
+  /// being set.
   static Future<Language> setLanguage(dynamic language) async {
     assert(language is String || language is Language);
 
-    final String code = language is Language ? language.code : language;
+    final String code =
+        language != null && language is Language ? language.code : language;
     final Language lang = _resolveLanguageForCode(code);
 
     await _saveLanguage(lang);
@@ -249,7 +227,12 @@ class I18n {
     return lang;
   }
 
-  static Future<Language> setSystemLanguage() => setLanguage('system');
+  /// Use the current system language as the apps language.
+  ///
+  /// If the system language is not in the supported [languages],
+  /// the closest matching supported language or the default
+  /// language will be selected.
+  static Future<Language> setSystemLanguage() => setLanguage(null);
 
   static void addListener(LanguageChangedCallback callback) => _listeners.add(callback);
   static void removeListener(LanguageChangedCallback callback) =>
@@ -262,10 +245,10 @@ class I18n {
   }
 
   static Future<void> _saveLanguage(Language lang) async {
-    if (_isTest) {
+    if (_inTestMode) {
       _language = lang;
     } else {
-      (await _preferences)?.setString(languageKey, lang?.code);
+      await store.setLanguageCode(lang?.code);
     }
   }
 
@@ -276,6 +259,24 @@ class I18n {
     _updateIntl();
   }
 
+  static Future<Language> _getPersistedLanguage() async {
+    if (inTestMode) {
+      return _language;
+    }
+
+    final code = await store.getLanguageCode();
+    _isFollowingSystem = code == null;
+
+    return isFollowingSystem
+        ? _getBestLanguageBasedOnSystemLanguage()
+        : _resolveLanguageForCode(code) ?? defaultLanguage;
+  }
+
+  static Future<I18nMap> loadTranslations(Language language) async {
+    final path = '$dir/${language.code}';
+    return I18nMap.load(path, inTestMode: inTestMode);
+  }
+
   static void _updateIntl() {
     try {
       initializeDateFormatting(language.code);
@@ -283,51 +284,8 @@ class I18n {
     } catch (_) {}
   }
 
-  static Future<Language> _getPersistedLanguage() async {
-    if (_isTest) {
-      return _language;
-    } else {
-      final stored = (await _preferences)?.getString(languageKey);
-      _isFollowingSystem = stored == null;
-
-      if (isFollowingSystem) {
-        return supportedSystemLanguage;
-      } else {
-        return _resolveLanguageForCode(stored) ?? defaultLanguage;
-      }
-    }
-  }
-
-  static Future<Map<String, String>> loadTranslations(Language language) async {
-    final fileName = '$dir/${language.code}.yaml';
-    final file = await _loadFile(fileName, _isTest);
-    return I18nParser(fileName).parse(file);
-  }
-
-  static Future<void> _inspectLocales() async {
-    if (!kIsDebug || !inspectLocales) {
-      return;
-    }
-
-    for (final lang in _languages) {
-      final keys = (await loadTranslations(lang)).keys;
-      final List<String> missingKeys = [];
-
-      for (final key in defaultTranslations.keys) {
-        if (!keys.contains(key)) {
-          missingKeys.add(key);
-        }
-      }
-
-      assert(
-        missingKeys.isEmpty,
-        '${lang.code} is missing the following keys:\n${missingKeys.join(',\n')}',
-      );
-    }
-  }
-
   /// Returns the closest system language that the app supports.
-  static Language get supportedSystemLanguage {
+  static Language _getBestLanguageBasedOnSystemLanguage() {
     var locales = window.locales ?? <Locale>[];
 
     // locales might be empty when init() is invoked
@@ -336,9 +294,8 @@ class I18n {
     if (locales.isEmpty) {
       // This method should give us the current locale
       // regardless of whether the app is in background or not.
-      window.computePlatformResolvedLocale(I18n.locales)?.also((it) {
-        locales = [it];
-      });
+      // observe: https://github.com/flutter/flutter/issues/73342
+      window.computePlatformResolvedLocale(I18n.locales)?.also((it) => locales = [it]);
     }
 
     for (final locale in locales) {
@@ -386,21 +343,6 @@ class I18n {
 
     return null;
   }
-
-  static Future<String> _loadFile(String path, bool isTest) {
-    if (isTest) {
-      String dir = Directory.current.path;
-      if (Platform.isWindows) {
-        dir += '\\${path.replaceAll('/', '\\')}';
-      } else {
-        dir += '/$path';
-      }
-
-      return File(dir).readAsString();
-    } else {
-      return rootBundle.loadString(path);
-    }
-  }
 }
 
 extension I18nStringExtensions on String {
@@ -414,22 +356,23 @@ class Placeholder extends DelegatingMap<String, String> {
     Map<String, String> cases = const {},
   }) : super(cases);
 
-  static final RegExp pluralRegex = RegExp(r'(([0-9]:)+|(&i)+)');
+  static final regex = RegExp(r'{(.*?)}');
 
-  bool get isPlural => pluralRegex.hasMatch(_removeBrackets(src));
-
-  static List<Placeholder> matchAll(String src) {
+  static List<Placeholder> all(String src) {
     return I18n.placeholderRegex
         .allMatches(src)
-        .map((e) => Placeholder.match(e.group(0)))
+        .map((e) => Placeholder.from(e.group(0)))
         .toList()
           ..removeWhere((element) => element == null);
   }
 
-  factory Placeholder.match(String src, {RegExp regex}) {
-    regex ??= I18n.placeholderRegex;
+  String format(dynamic value) {
+    return src.replaceFirst(regex, value.toString());
+  }
 
+  factory Placeholder.from(String src) {
     final matchesAll = regex.stringMatch(src) == src;
+
     if (matchesAll) {
       final formatted = _removeBrackets(src);
       final groups = formatted.split(',');
@@ -444,7 +387,11 @@ class Placeholder extends DelegatingMap<String, String> {
       }
 
       if (cases.isNotEmpty) {
-        return Placeholder(src, cases: cases);
+        if (PluralPlaceholder.regex.hasMatch(src)) {
+          return PluralPlaceholder(src, cases: cases);
+        } else {
+          return Placeholder(src, cases: cases);
+        }
       }
     }
 
@@ -466,6 +413,44 @@ class Placeholder extends DelegatingMap<String, String> {
 
   @override
   String toString() => 'Placeholder(src: $src, cases: ${super.toString()})';
+}
+
+class PluralPlaceholder extends Placeholder {
+  PluralPlaceholder(
+    String src, {
+    Map<String, String> cases = const {},
+  }) : super(src, cases: cases);
+
+  static final regex = RegExp(r'(([0-9]:)+|(&i)+)');
+
+  @override
+  String format(dynamic value) {
+    final onlyDigits = value.toString().replaceAll(RegExp(r'[^0-9, ^\., ^\,]'), '');
+
+    final number = num.tryParse(onlyDigits);
+    assert(number != null, 'Plural placeholder was not given a valid number!');
+
+    if (number == null) {
+      return src;
+    }
+
+    for (final entry in entries) {
+      final key = num.tryParse(entry.key.trim());
+      final value = entry.value.trim();
+
+      if (entry.key == 'else' || key == number) {
+        final formatted = NumberFormat.decimalPattern(
+          I18n.language.locale.scriptCode,
+        ).format(number);
+
+        return value.replaceAll('\$i', formatted);
+      }
+    }
+
+    assert(false, '$value couldn\'t be matched to a key in the placeholder!');
+
+    return value.toString();
+  }
 }
 
 String _removeBrackets(String src) => src.removePrefix('{').removeSuffix('}');

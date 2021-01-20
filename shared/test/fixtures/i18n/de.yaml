@@ -1,10 +1,9 @@
 settings: Einstellungen
-hours: {1: $i Stunde, else: $i Stunden}
+hours: "{1: $i Stunde, else: $i Stunden}"
 remaining_time: 'Dir verbleiben {1: $i Stunde, else: $i Stunden}.'
 
-# [Home]
 home:
   app_bar_title: Meine App
-  change_language: Du hast die Sprache {&i, else: Mal} geändert!
+  change_language: "Du hast die Sprache {&i, else: Mal} geändert!"
     
 hello_world: Hallo Welt!

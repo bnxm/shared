@@ -4,31 +4,38 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:shared/shared.dart';
 
-void main() {
-  final dir = Directory.current.path;
-  final filePath = '$dir\\i18n\\en_parser.yaml';
-  final content = File(filePath).readAsStringSync();
+Future<I18nMap> load(String name) => I18nMap.load(
+      '${Directory.current.path}\\test\\fixtures\\i18n\\$name',
+      inTestMode: true,
+    );
 
-  test('Should choose the correct parser based on the file name', () async {
-    // act
-    final result = I18nParser(filePath);
-    // assert
-    expect(result, isA<YamlParser>());
+void main() async {
+  final yaml = await load('parser.yaml');
+  final json = await load('parser.json');
+
+  group('Parse chooser', () {
+    test('Should choose the YamlParser for .yaml files', () async {
+      // assert
+      expect(yaml, isA<I18nYamlMap>());
+    });
   });
 
-  test('Should parse the translation file in a key-value map', () async {
-    // act
-    final result = const YamlParser().parse(content);
-    // assert
-    expect(
-      result,
-      equals({
-        'settings': 'Settings',
-        'hours': '{1: \$i Hour, else: \$i Hours}',
-        'home_body_title': 'title',
-        'home_hello': 'hello',
-      }),
+  group('Parsing', () {
+    const i18nMap = {
+      'hello': '"Hello"',
+      'hours': '{1: \$i Hour, else: \$i Hours}',
+      'home_body_title': 'title',
+      'home_hello': 'Hallo',
+    };
+
+    test(
+      'Should correctly flatten a YAML file',
+      () => expect(yaml, equals(i18nMap)),
+    );
+
+    test(
+      'Should correctly flatten a JSON file',
+      () => expect(json, equals(i18nMap)),
     );
   });
-  print(dir);
 }

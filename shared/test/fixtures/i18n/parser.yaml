@@ -1,0 +1,8 @@
+# [Settings]
+hello: "\"Hello\""
+hours: "{1: $i Hour, else: $i Hours}"
+
+home:
+  body:
+    title: title
+  hello: Hallo

@@ -1,8 +1,0 @@
-# [Settings]
-settings: Settings
-hours: {1: $i Hour, else: $i Hours}
-
-home:
-  body:
-    title: title
-  hello: hello
