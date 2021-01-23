@@ -126,6 +126,7 @@ class _CheckableBasePreference extends StatelessWidget {
   final bool isChecked;
   final String prefsKey;
   final bool defaultValue;
+  final VoidCallback onTap;
   final void Function(bool value) onChanged;
   final String dependentKey;
   final bool Function(dynamic value) disableWhenDependent;
@@ -146,6 +147,7 @@ class _CheckableBasePreference extends StatelessWidget {
     this.isChecked = false,
     this.summaryActive,
     this.summaryInActive,
+    this.onTap,
     this.onChanged,
     this.dependentKey = '',
     this.disableWhenDependent,
@@ -180,7 +182,13 @@ class _CheckableBasePreference extends StatelessWidget {
         final summary = (isChecked ? summaryActive : summaryInActive) ?? this.summary;
 
         return Preference(
-          onTap: () => setChecked(!isChecked),
+          onTap: () {
+            if (onTap != null) {
+              onTap();
+            } else {
+              setChecked(!isChecked);
+            }
+          },
           title: title,
           summary: summary,
           leading: leading,
@@ -212,6 +220,7 @@ class SwitchPreference extends _CheckableBasePreference {
     dynamic summary,
     dynamic summaryActive,
     dynamic summaryInActive,
+    VoidCallback onTap,
     void Function(bool value) onChanged,
     bool Function(dynamic value) disableWhenDependent,
     Widget leading,
@@ -230,6 +239,7 @@ class SwitchPreference extends _CheckableBasePreference {
           summary: summary,
           summaryActive: summaryActive,
           summaryInActive: summaryInActive,
+          onTap: onTap,
           onChanged: onChanged,
           leading: leading,
           padding: padding,
@@ -253,6 +263,7 @@ class CheckBoxPreference extends _CheckableBasePreference {
     dynamic summary,
     dynamic summaryActive,
     dynamic summaryInActive,
+    VoidCallback onTap,
     void Function(bool value) onChanged,
     bool Function(dynamic value) disableWhenDependent,
     Widget leading,
@@ -270,6 +281,7 @@ class CheckBoxPreference extends _CheckableBasePreference {
           summary: summary,
           summaryActive: summaryActive,
           summaryInActive: summaryInActive,
+          onTap: onTap,
           onChanged: onChanged,
           leading: leading,
           padding: padding,
@@ -394,5 +406,174 @@ class _PreferenceKeyListenerBuilder extends StatelessWidget {
         ),
       );
     }
+  }
+}
+
+class ColorPreference extends StatelessWidget {
+  final String title;
+  final Color color;
+  final void Function(Color color) onChanged;
+  final Widget leading;
+  final Widget trailing;
+  final bool isEnabled;
+  final bool isAlphaEnabled;
+  const ColorPreference({
+    Key key,
+    @required this.title,
+    @required this.color,
+    @required this.onChanged,
+    this.leading,
+    this.trailing,
+    this.isEnabled = true,
+    this.isAlphaEnabled = false,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+
+    final summary = Row(
+      children: <Widget>[
+        AnimatedText(
+          '#${color.value.toRadixString(16).toUpperCase()}',
+          duration: const Millis(250),
+          style: textTheme.bodyText2.copyWith(color: color),
+        ),
+      ],
+    );
+
+    return Preference(
+      title: title,
+      summary: summary,
+      leading: leading,
+      trailing: trailing,
+      isEnabled: isEnabled,
+      onTap: () async {
+        final r = await showMaterialColorPicker(
+          context,
+          title: title,
+          circleSize: 40,
+          withHex: true,
+          withAlpha: isAlphaEnabled,
+          selectedColor: color,
+        );
+
+        if (r != null) {
+          onChanged(r);
+        }
+      },
+    );
+  }
+}
+
+class SliderPreference extends StatefulWidget {
+  final dynamic title;
+  final num value;
+  final void Function(num value) onChanged;
+  final num min;
+  final num max;
+  final String Function(num value) formatter;
+  final Widget leading;
+  final Widget trailing;
+  final bool isEnabled;
+  final String startAnnotation;
+  final String endAnnotation;
+  final bool showValue;
+  const SliderPreference({
+    Key key,
+    @required this.title,
+    @required this.value,
+    @required this.onChanged,
+    this.min = 0.0,
+    this.max = 1.0,
+    this.formatter,
+    this.leading,
+    this.trailing,
+    this.isEnabled = true,
+    this.startAnnotation,
+    this.endAnnotation,
+    this.showValue = false,
+  }) : super(key: key);
+
+  @override
+  _SliderPreferenceState createState() => _SliderPreferenceState();
+}
+
+class _SliderPreferenceState extends State<SliderPreference> {
+  num value = 0.0;
+
+  bool get isInt => widget.min is int && widget.max is int && widget.value is int;
+
+  @override
+  void initState() {
+    super.initState();
+    value = widget.value;
+  }
+
+  @override
+  void didUpdateWidget(SliderPreference oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    value = widget.value;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final divisions = isInt ? (widget.max - widget.min).toInt() : null;
+
+    final slider = Slider(
+      value: widget.value.toDouble(),
+      min: widget.min.toDouble(),
+      max: widget.max.toDouble(),
+      divisions: divisions,
+      onChanged: (value) {
+        final v = isInt ? value.toInt() : value;
+        setState(() => this.value = v);
+        widget.onChanged(v);
+      },
+    );
+
+    final summary = Vertical(
+      children: <Widget>[
+        Row(
+          children: <Widget>[
+            if (widget.startAnnotation != null)
+              Text(
+                widget.startAnnotation,
+                style: textTheme.caption,
+              ),
+            Expanded(
+              child: slider,
+            ),
+            if (widget.endAnnotation != null)
+              Text(
+                widget.endAnnotation,
+                style: textTheme.caption,
+              ),
+          ],
+        ),
+        Visibility(
+          visible: widget.showValue,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: <Widget>[
+              Text(
+                widget.formatter?.call(value) ?? '${(value.clamp(0.0, 1.0) * 100.0).round()} %',
+                style: textTheme.bodyText2,
+              ),
+            ],
+          ),
+        )
+      ],
+    );
+
+    return Preference(
+      title: widget.title,
+      summary: summary,
+      leading: widget.leading,
+      trailing: widget.trailing,
+      isEnabled: widget.isEnabled,
+    );
   }
 }
