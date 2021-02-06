@@ -269,14 +269,16 @@ extension MyDurationExtensions on Duration {
     bool first = false,
     DurationTersity tersity = DurationTersity.minute,
   }) {
+    final locale = DurationLocale.fromLanguageCode(Intl.defaultLocale) ?? englishLocale;
+
     return prettyDuration(
       this,
       abbreviated: abbreviated,
       conjunction: conjunction,
-      spacer: abbreviated ? '' : spacer,
-      delimiter: abbreviated ? ' ' : null,
+      spacer: spacer ?? (abbreviated && (locale == englishLocale) ? '' : spacer),
+      delimiter: delimiter ?? (abbreviated ? ' ' : null),
       tersity: tersity,
-      locale: DurationLocale.fromLanguageCode(Intl.defaultLocale),
+      locale: locale,
     );
   }
 }

@@ -295,7 +295,8 @@ class I18n {
       // This method should give us the current locale
       // regardless of whether the app is in background or not.
       // observe: https://github.com/flutter/flutter/issues/73342
-      window.computePlatformResolvedLocale(I18n.locales)?.also((it) => locales = [it]);
+      
+      // window.computePlatformResolvedLocale(I18n.locales)?.also((it) => locales = [it]);
     }
 
     for (final locale in locales) {

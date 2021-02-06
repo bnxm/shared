@@ -27,3 +27,4 @@ export 'package:hive/hive.dart' hide Box;
 export 'package:hive_flutter/hive_flutter.dart';
 export 'package:logger/logger.dart';
 export 'package:provider/provider.dart';
+export 'package:flutter_displaymode/flutter_displaymode.dart';

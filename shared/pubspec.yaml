@@ -1,6 +1,6 @@
 name: shared
 description: A new Flutter project.
-
+publish_to: none
 version: 1.0.0+1
 
 environment:
@@ -28,6 +28,8 @@ dependencies:
 
   shared_preferences: ^0.5.12+4
   hive_flutter: ^0.3.1
+
+  flutter_displaymode: ^0.1.1
 
 dev_dependencies:
   flutter_test:
