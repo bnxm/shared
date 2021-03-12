@@ -11,7 +11,7 @@ class LayoutPreferences {
   final double desktopThreshold;
   final double maxPageWidth;
   const LayoutPreferences({
-    double maxPageWidth,
+    double? maxPageWidth,
     this.tabletThreshold = 600.0,
     this.desktopThreshold = 1200.0,
   })  : maxPageWidth = maxPageWidth ?? tabletThreshold,
@@ -52,13 +52,13 @@ class LayoutConfiguration extends StatelessWidget {
   final Widget child;
   final LayoutPreferences preferences;
   const LayoutConfiguration({
-    Key key,
-    @required this.child,
+    Key? key,
+    required this.child,
     this.preferences = const LayoutPreferences(),
   })  : assert(preferences != null),
         super(key: key);
 
-  static LayoutPreferences of(BuildContext context) =>
+  static LayoutPreferences? of(BuildContext context) =>
       context.findAncestorWidgetOfExactType<LayoutConfiguration>()?.preferences;
 
   @override
@@ -68,17 +68,17 @@ class LayoutConfiguration extends StatelessWidget {
 typedef _Builder = Widget Function(BuildContext _);
 
 class ConfigurationBuilder extends StatelessWidget {
-  final LayoutPreferences preferences;
-  final _Builder mobile;
-  final _Builder mobileLandscape;
-  final _Builder tablet;
-  final _Builder tabletLandscape;
-  final _Builder desktop;
-  final _Builder desktopLandscape;
+  final LayoutPreferences? preferences;
+  final _Builder? mobile;
+  final _Builder? mobileLandscape;
+  final _Builder? tablet;
+  final _Builder? tabletLandscape;
+  final _Builder? desktop;
+  final _Builder? desktopLandscape;
   final Widget Function(BuildContext context, bool isPortrait, DeviceType type,
-      Size screenSize, Size size) builder;
+      Size screenSize, Size size)? builder;
   const ConfigurationBuilder({
-    Key key,
+    Key? key,
     this.preferences,
     this.mobile,
     this.mobileLandscape,
@@ -92,7 +92,7 @@ class ConfigurationBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final preferences = this.preferences ?? LayoutConfiguration.of(context);
+    final preferences = this.preferences ?? LayoutConfiguration.of(context)!;
     assert(preferences != null, 'No LayoutPreferences found in the widget tree!');
 
     final mq = MediaQuery.of(context);
@@ -104,33 +104,33 @@ class ConfigurationBuilder extends StatelessWidget {
 
         final type = preferences.getDeviceType(mq.size);
         if (builder != null) {
-          return builder(context, !isLandscape, type, mq.size, constraints.biggest);
+          return builder!(context, !isLandscape, type, mq.size, constraints.biggest);
         }
 
         if (type == DeviceType.desktop) {
           if (isLandscape && desktopLandscape != null) {
-            return desktopLandscape(context);
+            return desktopLandscape!(context);
           }
 
           if (desktop != null) {
-            return desktop(context);
+            return desktop!(context);
           }
         }
 
         if (type == DeviceType.tablet || type == DeviceType.desktop) {
           if (isLandscape && tabletLandscape != null) {
-            return tabletLandscape(context);
+            return tabletLandscape!(context);
           }
 
           if (tablet != null) {
-            return tablet(context);
+            return tablet!(context);
           }
         }
 
         if (isLandscape && mobileLandscape != null) {
-          return mobileLandscape(context);
+          return mobileLandscape!(context);
         } else {
-          return mobile(context);
+          return mobile!(context);
         }
       },
     );
@@ -139,10 +139,10 @@ class ConfigurationBuilder extends StatelessWidget {
 
 class ConstrainedWidth extends StatelessWidget {
   final Widget child;
-  final double maxWidth;
+  final double? maxWidth;
   const ConstrainedWidth({
-    Key key,
-    @required this.child,
+    Key? key,
+    required this.child,
     this.maxWidth,
   }) : super(key: key);
 
@@ -156,7 +156,7 @@ class ConstrainedWidth extends StatelessWidget {
       } else {
         return LayoutConfiguration.of(context)?.maxPageWidth ?? 600.0;
       }
-    }();
+    }()!;
 
     return ConstrainedBox(
       child: child,
@@ -169,13 +169,13 @@ class ConstrainedWidth extends StatelessWidget {
 
 class ConstrainedScrollable extends StatelessWidget {
   final double verticalInset;
-  final double maxWidth;
+  final double? maxWidth;
   final Widget Function(EdgeInsets padding) builder;
   const ConstrainedScrollable({
-    Key key,
+    Key? key,
     this.verticalInset = 0.0,
     this.maxWidth,
-    @required this.builder,
+    required this.builder,
   }) : super(key: key);
 
   @override

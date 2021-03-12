@@ -13,9 +13,9 @@ class Legend<T> {
   final double indicatorSpacing;
   final LegendPosition position;
   final bool alignToDrawArea;
-  final Widget Function(BuildContext context, Series<T> series) indicatorBuilder;
+  final Widget Function(BuildContext context, Series<T> series)? indicatorBuilder;
   Legend({
-    @required this.style,
+    required this.style,
     this.spacing = 8.0,
     this.verticalSpacing = 8.0,
     this.chartSpacing = 8.0,
@@ -54,13 +54,13 @@ class Legend<T> {
 
 class ChartLegend<T> extends StatefulWidget {
   final List<Series<T>> data;
-  final Legend<T> legend;
+  final Legend<T>? legend;
   final Widget chart;
   const ChartLegend({
-    Key key,
+    Key? key,
     this.data = const [],
     this.legend,
-    @required this.chart,
+    required this.chart,
   })  : assert(chart != null),
         assert(data != null),
         super(key: key);
@@ -70,7 +70,7 @@ class ChartLegend<T> extends StatefulWidget {
 }
 
 class _ChartLegendState<T> extends State<ChartLegend> {
-  Handler handler;
+  Handler? handler;
 
   @override
   Widget build(BuildContext context) {

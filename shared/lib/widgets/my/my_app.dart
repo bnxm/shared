@@ -6,10 +6,10 @@ import 'package:shared/shared.dart';
 
 class MyApp extends StatelessWidget {
   /// {@macro flutter.widgets.widgetsApp.navigatorKey}
-  final GlobalKey<NavigatorState> navigatorKey;
+  final GlobalKey<NavigatorState>? navigatorKey;
 
   /// {@macro flutter.widgets.widgetsApp.home}
-  final Widget home;
+  final Widget? home;
 
   /// The application's top-level routing table.
   ///
@@ -22,13 +22,13 @@ class MyApp extends StatelessWidget {
   final Map<String, WidgetBuilder> routes;
 
   /// {@macro flutter.widgets.widgetsApp.initialRoute}
-  final String initialRoute;
+  final String? initialRoute;
 
   /// {@macro flutter.widgets.widgetsApp.onGenerateRoute}
-  final Route<dynamic> Function(RouteSettings) onGenerateRoute;
+  final Route<dynamic> Function(RouteSettings)? onGenerateRoute;
 
   /// {@macro flutter.widgets.widgetsApp.onUnknownRoute}
-  final RouteFactory onUnknownRoute;
+  final RouteFactory? onUnknownRoute;
 
   /// {@macro flutter.widgets.widgetsApp.navigatorObservers}
   final List<NavigatorObserver> navigatorObservers;
@@ -38,7 +38,7 @@ class MyApp extends StatelessWidget {
   /// Material specific features such as [showDialog] and [showMenu], and widgets
   /// such as [Tooltip], [PopupMenuButton], also require a [Navigator] to properly
   /// function.
-  final TransitionBuilder builder;
+  final TransitionBuilder? builder;
 
   /// {@macro flutter.widgets.widgetsApp.title}
   ///
@@ -48,10 +48,10 @@ class MyApp extends StatelessWidget {
   /// {@macro flutter.widgets.widgetsApp.onGenerateTitle}
   ///
   /// This value is passed unmodified to [WidgetsApp.onGenerateTitle].
-  final GenerateAppTitle onGenerateTitle;
+  final GenerateAppTitle? onGenerateTitle;
 
   /// {@macro flutter.widgets.widgetsApp.color}
-  final Color color;
+  final Color? color;
 
   /// {@macro flutter.widgets.widgetsApp.supportedLocales}
   ///
@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
   ///    which provides material localizations for many languages.
   ///  * The Flutter Internationalization Tutorial,
   ///    <https://flutter.dev/tutorials/internationalization/>.
-  final Iterable<Language> languages;
+  final Iterable<Language>? languages;
 
   /// Turns on a performance overlay.
   ///
@@ -113,7 +113,7 @@ class MyApp extends StatelessWidget {
   /// ```
   /// {@end-tool}
   /// {@macro flutter.widgets.widgetsApp.shortcuts.seeAlso}
-  final Map<LogicalKeySet, Intent> shortcuts;
+  final Map<LogicalKeySet, Intent>? shortcuts;
 
   /// {@macro flutter.widgets.widgetsApp.actions}
   /// {@tool sample}
@@ -146,7 +146,7 @@ class MyApp extends StatelessWidget {
   /// ```
   /// {@end-tool}
   /// {@macro flutter.widgets.widgetsApp.actions.seeAlso}
-  final Map<Type, Action<Intent>> actions;
+  final Map<Type, Action<Intent>>? actions;
 
   /// Turns on a [GridPaper] overlay that paints a baseline grid
   /// Material apps.
@@ -158,15 +158,15 @@ class MyApp extends StatelessWidget {
   ///  * <https://material.io/design/layout/spacing-methods.html>
   final bool debugShowMaterialGrid;
 
-  final List<AppTheme> themes;
+  final List<AppTheme>? themes;
 
   final bool setUiOverlayStyle;
 
-  final Widget splashScreen;
+  final Widget? splashScreen;
 
   final LayoutPreferences layout;
   const MyApp({
-    Key key,
+    Key? key,
     this.navigatorKey,
     this.home,
     this.routes = const <String, WidgetBuilder>{},
@@ -175,7 +175,7 @@ class MyApp extends StatelessWidget {
     this.onUnknownRoute,
     this.navigatorObservers = const <NavigatorObserver>[],
     this.builder,
-    @required this.title,
+    required this.title,
     this.onGenerateTitle,
     this.color,
     this.languages,
@@ -193,7 +193,7 @@ class MyApp extends StatelessWidget {
     this.layout = const LayoutPreferences(),
   }) : super(key: key);
 
-  bool get useLocalizedBuilder => languages != null && languages.isNotEmpty;
+  bool get useLocalizedBuilder => languages != null && languages!.isNotEmpty;
 
   Iterable<LocalizationsDelegate<dynamic>> get _localizationsDelegates sync* {
     if (useLocalizedBuilder) {
@@ -209,9 +209,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     if (useLocalizedBuilder) {
       return I18nBuilder(
-        languages: languages,
+        languages: languages as List<Language>,
         builder: (context, language, loaded) {
-          return buildApp(language?.locale, loaded);
+          return buildApp(language.locale, loaded);
         },
       );
     } else {
@@ -219,9 +219,9 @@ class MyApp extends StatelessWidget {
     }
   }
 
-  Widget buildApp(Locale locale, bool isLoaded) {
+  Widget buildApp(Locale? locale, bool isLoaded) {
     return ThemeBuilder(
-      themes: themes,
+      themes: themes!,
       builder: (context, lightTheme, darkTheme, mode) {
         return LayoutConfiguration(
           preferences: layout,
@@ -229,7 +229,7 @@ class MyApp extends StatelessWidget {
             title: title,
             locale: locale,
             color: color,
-            theme: lightTheme.themeData,
+            theme: lightTheme?.themeData,
             darkTheme: darkTheme?.themeData,
             themeMode: mode,
             debugShowCheckedModeBanner: debugShowCheckedModeBanner,
@@ -244,7 +244,7 @@ class MyApp extends StatelessWidget {
             showSemanticsDebugger: showSemanticsDebugger,
             localizationsDelegates: _localizationsDelegates,
             supportedLocales:
-                languages?.map((lang) => lang?.locale) ?? const [Locale('en')],
+                languages?.map((lang) => lang.locale) ?? const [Locale('en')],
             navigatorKey: navigatorKey,
             navigatorObservers: navigatorObservers,
             checkerboardOffscreenLayers: checkerboardOffscreenLayers,

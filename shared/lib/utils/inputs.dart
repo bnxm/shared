@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class TextController extends TextEditingController {
-  FocusNode node;
+  FocusNode? node;
   TextController() {
     node = FocusNode()
       ..addListener(
-        () => onFocus?.call(node.hasFocus),
+        () => onFocus?.call(node!.hasFocus),
       );
   }
 
@@ -23,13 +23,13 @@ class TextController extends TextEditingController {
     );
   }
 
-  void Function(bool hasFocus) onFocus;
+  void Function(bool hasFocus)? onFocus;
 
-  void requestFocus() => node.requestFocus();
+  void requestFocus() => node!.requestFocus();
 
   void clearFocus(BuildContext context) => FocusScope.of(context).requestFocus(FocusNode());
 
-  bool get hasFocus => node.hasFocus;
+  bool get hasFocus => node!.hasFocus;
 
   @override
   void dispose() {

@@ -5,9 +5,9 @@ class I18nBuilder extends StatefulWidget {
   final List<Language> languages;
   final Widget Function(BuildContext context, Language language, bool loaded) builder;
   const I18nBuilder({
-    Key key,
-    @required this.languages,
-    @required this.builder,
+    Key? key,
+    required this.languages,
+    required this.builder,
   })  : assert(builder != null),
         // ignore: prefer_is_empty
         assert(languages.length > 0),
@@ -34,7 +34,7 @@ class _I18nBuilderState extends State<I18nBuilder> {
     setState(() {});
   }
 
-  void _onLanguageChanged(Language _) => setState(() {});
+  void _onLanguageChanged(Language? _) => setState(() {});
 
   @override
   Widget build(BuildContext context) {

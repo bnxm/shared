@@ -16,14 +16,14 @@ abstract class Chart<T, S extends Series<T>> extends ImplicitAnimation {
   final double height;
   final EdgeInsets padding;
   const Chart({
-    Key key,
-    @required Duration duration,
-    @required Curve curve,
-    @required this.data,
-    @required this.width,
-    @required this.height,
-    @required this.padding,
-    @required this.legend,
+    Key? key,
+    required Duration duration,
+    required Curve curve,
+    required this.data,
+    required this.width,
+    required this.height,
+    required this.padding,
+    required this.legend,
   }) : super(
           key,
           duration,
@@ -31,15 +31,15 @@ abstract class Chart<T, S extends Series<T>> extends ImplicitAnimation {
         );
 }
 
-abstract class ChartState<T, C extends Chart<T, Series<T>>, CD extends ChartData<T>>
+abstract class ChartState<T, C extends Chart<T, Series<T>>, CD extends ChartData<T>?>
     extends ImplicitAnimationState<CD, C> {
   dynamic painter;
   dynamic oldPainter;
 
-  List<Widget> interActionWidgets;
-  Interaction lastInteraction;
-  StreamController<Interaction> _interaction;
-  Stream<Interaction> get interactionStream => _interaction.stream;
+  List<Widget>? interActionWidgets;
+  Interaction? lastInteraction;
+  StreamController<Interaction>? _interaction;
+  Stream<Interaction> get interactionStream => _interaction!.stream;
 
   @override
   void initState() {
@@ -56,15 +56,15 @@ abstract class ChartState<T, C extends Chart<T, Series<T>>, CD extends ChartData
     }
   }
 
-  CD getChartData([CD data]);
+  CD getChartData([CD? data]);
 
-  ChartPainter getPainter(CD data);
+  ChartPainter getPainter(CD? data);
 
   @override
   CD get newValue => getChartData();
 
   @override
-  CD lerp(CD oldValue, CD newValue, double t) => oldValue.scaleTo(newValue, t);
+  CD lerp(CD? oldValue, CD newValue, double t) => oldValue!.scaleTo(newValue, t) as CD;
 
   void onInteraction(Interaction interaction) {
     if (interaction != lastInteraction) {
@@ -74,7 +74,7 @@ abstract class ChartState<T, C extends Chart<T, Series<T>>, CD extends ChartData
   }
 
   @override
-  Widget builder(BuildContext context, CD data) {
+  Widget builder(BuildContext context, CD? data) {
     return StreamBuilder(
       stream: interactionStream,
       initialData: null,
@@ -89,18 +89,18 @@ abstract class ChartState<T, C extends Chart<T, Series<T>>, CD extends ChartData
         return LayoutBuilder(
           builder: (context, constraints) {
             final size = Size(
-              widget?.width ?? constraints.maxWidth,
-              widget?.height ?? constraints.maxHeight,
+              widget.width,
+              widget.height ,
             );
 
             return AnimatedContainer(
               width: size.width,
               height: size.height,
-              padding: widget?.padding,
+              padding: widget.padding,
               curve: widget.curve,
               duration: widget.duration,
               child: GestureDetector(
-                onTap: () => onInteraction(TapInteraction(lastInteraction)),
+                onTap: () => onInteraction(TapInteraction(lastInteraction!)),
                 //onLongPress: () => onInteraction(LongPressInteraction(_lastInteraction)),
                 onPanDown: (DragDownDetails details) =>
                     onInteraction(PointerDownInteraction(details)),
@@ -122,7 +122,7 @@ abstract class ChartState<T, C extends Chart<T, Series<T>>, CD extends ChartData
                     ),
 
                     // The interaction widgets displayed on top of the chart.
-                    if (interActionWidgets != null) ...interActionWidgets,
+                    if (interActionWidgets != null) ...interActionWidgets!,
                   ],
                 ),
               ),

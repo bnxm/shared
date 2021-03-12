@@ -5,15 +5,15 @@ import 'package:shared/animations/animations.dart';
 class ImplicitAnimationBuilder<T> extends ImplicitAnimation {
   final T Function(T a, T b, double t) lerp;
   final T value;
-  final Widget Function(BuildContext context, T value, Widget child) builder;
-  final Widget child;
+  final Widget Function(BuildContext context, T value, Widget? child) builder;
+  final Widget? child;
   const ImplicitAnimationBuilder({
-    Key key,
-    @required Duration duration,
+    Key? key,
+    required Duration duration,
     Curve curve = Curves.linear,
-    @required this.lerp,
-    @required this.value,
-    @required this.builder,
+    required this.lerp,
+    required this.value,
+    required this.builder,
     this.child,
   }) : super(key, duration, curve);
 

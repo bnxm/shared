@@ -7,22 +7,22 @@ import 'package:shared/animations/animations.dart';
 class AnimatedText extends StatelessWidget {
   final String text;
   final TextStyle style;
-  final InlineSpan textSpan;
-  final StrutStyle strutStyle;
-  final TextAlign textAlign;
-  final TextDirection textDirection;
-  final Locale locale;
-  final bool softWrap;
-  final TextOverflow overflow;
-  final double textScaleFactor;
-  final int maxLines;
-  final String semanticsLabel;
+  final InlineSpan? textSpan;
+  final StrutStyle? strutStyle;
+  final TextAlign? textAlign;
+  final TextDirection? textDirection;
+  final Locale? locale;
+  final bool? softWrap;
+  final TextOverflow? overflow;
+  final double? textScaleFactor;
+  final int? maxLines;
+  final String? semanticsLabel;
   final Duration duration;
   final Curve curve;
   const AnimatedText(
     this.text, {
-    Key key,
-    @required this.style,
+    Key? key,
+    required this.style,
     this.textSpan,
     this.strutStyle,
     this.textAlign,
@@ -33,15 +33,13 @@ class AnimatedText extends StatelessWidget {
     this.textScaleFactor,
     this.maxLines,
     this.semanticsLabel,
-    @required this.duration,
+    required this.duration,
     this.curve = Curves.linear,
-  })  : assert(style != null),
-        assert(text != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ImplicitAnimationBuilder<TextStyle>(
+    return ImplicitAnimationBuilder<TextStyle?>(
       lerp: TextStyle.lerp,
       value: style,
       curve: curve,
@@ -70,23 +68,23 @@ class AnimatedText extends StatelessWidget {
 class AnimatedSwitcherText extends StatefulWidget {
   final String text;
   final TextStyle style;
-  final InlineSpan textSpan;
-  final StrutStyle strutStyle;
-  final TextAlign textAlign;
-  final TextDirection textDirection;
-  final Locale locale;
-  final bool softWrap;
-  final TextOverflow overflow;
-  final double textScaleFactor;
-  final int maxLines;
-  final String semanticsLabel;
+  final InlineSpan? textSpan;
+  final StrutStyle? strutStyle;
+  final TextAlign? textAlign;
+  final TextDirection? textDirection;
+  final Locale? locale;
+  final bool? softWrap;
+  final TextOverflow? overflow;
+  final double? textScaleFactor;
+  final int? maxLines;
+  final String? semanticsLabel;
   final Duration duration;
   final Curve curve;
   final AnimatedTextTransition transitionType;
   const AnimatedSwitcherText(
     this.text, {
-    Key key,
-    @required this.style,
+    Key? key,
+    required this.style,
     this.textSpan,
     this.strutStyle,
     this.textAlign,
@@ -97,34 +95,34 @@ class AnimatedSwitcherText extends StatefulWidget {
     this.textScaleFactor,
     this.maxLines,
     this.semanticsLabel,
-    @required this.duration,
+    required this.duration,
     this.curve = Curves.linear,
     this.transitionType = const FadeTextTransition(),
-  })  : assert(style != null),
-        assert(transitionType != null),
-        assert(text != null),
-        assert(duration != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   _AnimatedSwitcherText createState() => _AnimatedSwitcherText();
 }
 
-class _AnimatedSwitcherText extends State<AnimatedSwitcherText> with SingleTickerProviderStateMixin {
-  AnimationController controller;
-  Animation<double> animation;
+class _AnimatedSwitcherText extends State<AnimatedSwitcherText>
+    with SingleTickerProviderStateMixin {
+  late final controller = AnimationController(
+    vsync: this,
+    duration: widget.duration,
+  );
 
-  String text;
-  String oldText;
+  late Animation<double> animation = const HillTween().animate(
+    controller,
+  );
+
+  late String text;
+  late String oldText;
 
   @override
   void initState() {
     super.initState();
     text = widget.text;
     oldText = widget.text;
-
-    controller = AnimationController(vsync: this, duration: widget.duration);
-    animation = const HillTween().animate(controller);
   }
 
   @override
@@ -165,7 +163,7 @@ class _AnimatedSwitcherText extends State<AnimatedSwitcherText> with SingleTicke
           textScaleFactor: widget.textScaleFactor,
         );
 
-        Alignment alignment;
+        Alignment? alignment;
         switch (widget.textAlign ?? TextAlign.start) {
           case TextAlign.left:
           case TextAlign.start:
@@ -217,7 +215,7 @@ class _AnimatedSwitcherText extends State<AnimatedSwitcherText> with SingleTicke
 
   @override
   void dispose() {
-    controller?.dispose();
+    controller.dispose();
     super.dispose();
   }
 }

@@ -10,11 +10,11 @@ class AnimatedValue extends StatelessWidget {
   final Curve curve;
   final Widget Function(BuildContext context, double value) builder;
   const AnimatedValue({
-    Key key,
-    @required this.value,
-    @required this.duration,
+    Key? key,
+    required this.value,
+    required this.duration,
     this.curve = Curves.linear,
-    @required this.builder,
+    required this.builder,
   }) : super(key: key);
 
   @override

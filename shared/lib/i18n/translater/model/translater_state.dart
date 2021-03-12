@@ -13,8 +13,8 @@ class LanguageTranslation extends Equatable {
   );
 
   LanguageTranslation copyWith({
-    String language,
-    List<Translation> translations,
+    String? language,
+    List<Translation>? translations,
   }) {
     return LanguageTranslation(
       language ?? this.language,
@@ -25,28 +25,27 @@ class LanguageTranslation extends Equatable {
   Map<String, dynamic> toMap() {
     return {
       'language': language,
-      'translations': translations?.map((x) => x?.toMap())?.toList(),
+      'translations': translations.map((x) => x.toMap()).toList(),
     };
   }
 
   factory LanguageTranslation.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return LanguageTranslation(
       map['language'] ?? '',
       List<Translation>.from(
-          map['translations']?.map((x) => Translation.fromMap(x)) ?? const []),
+        map['translations']?.map((x) => Translation.fromMap(x)) ?? const [],
+      ),
     );
   }
 
   String toJson() => json.encode(toMap());
 
-  factory LanguageTranslation.fromJson(String source) {
+  static LanguageTranslation? fromJson(String? source) {
     if (source == null) return null;
 
     return LanguageTranslation.fromMap(json.decode(source));
   }
 
   @override
-  List<Object> get props => [language, translations];
+  List<Object?> get props => [language, translations];
 }

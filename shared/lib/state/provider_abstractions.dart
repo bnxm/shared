@@ -11,9 +11,9 @@ abstract class Model extends ChangeNotifier {
 
 class ModelProvider<T extends ChangeNotifier> extends ChangeNotifierProvider<T> {
   ModelProvider({
-    Key key,
-    @required T Function(BuildContext context) create,
-    Widget child,
+    Key? key,
+    required T Function(BuildContext context) create,
+    Widget? child,
   }) : super(
           key: key,
           create: create,
@@ -22,20 +22,20 @@ class ModelProvider<T extends ChangeNotifier> extends ChangeNotifierProvider<T> 
 }
 
 class Observer<T> extends StatelessWidget {
-  final ValueListenable<T> value;
-  final Widget Function(BuildContext context, T model) builder;
+  final ValueListenable<T>? value;
+  final Widget Function(BuildContext context, T? model) builder;
   const Observer({
-    Key key,
+    Key? key,
     this.value,
-    @required this.builder,
+    required this.builder,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     if (value != null) {
       return ValueListenableBuilder(
-        valueListenable: value,
-        builder: (context, value, _) => builder(context, value),
+        valueListenable: value!,
+        builder: (context, dynamic value, _) => builder(context, value),
       );
     } else {
       try {

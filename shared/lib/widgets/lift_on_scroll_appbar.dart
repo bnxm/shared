@@ -4,33 +4,33 @@ import 'package:shared/shared.dart';
 
 class LiftOnScrollAppBar extends StatefulWidget {
   final Widget body;
-  final Color shadowColor;
+  final Color? shadowColor;
   final double maxElevation;
   final double minElevation;
-  final Widget leading;
+  final Widget? leading;
   final bool automaticallyImplyLeading;
-  final Widget title;
-  final List<Widget> actions;
-  final Widget flexibleSpace;
-  final PreferredSizeWidget bottom;
-  final ShapeBorder shape;
-  final Color backgroundColor;
-  final IconThemeData iconTheme;
-  final IconThemeData actionsIconTheme;
-  final TextTheme textTheme;
+  final Widget? title;
+  final List<Widget>? actions;
+  final Widget? flexibleSpace;
+  final PreferredSizeWidget? bottom;
+  final ShapeBorder? shape;
+  final Color? backgroundColor;
+  final IconThemeData? iconTheme;
+  final IconThemeData? actionsIconTheme;
+  final TextTheme? textTheme;
   final bool primary;
-  final bool centerTitle;
+  final bool? centerTitle;
   final double titleSpacing;
   final double toolbarOpacity;
   final double bottomOpacity;
-  final Brightness brightness;
+  final Brightness? brightness;
   final bool showDivider;
-  final Color colorOnScroll;
+  final Color? colorOnScroll;
   final double onScrollThreshold;
   final bool expand;
   const LiftOnScrollAppBar({
-    Key key,
-    @required this.body,
+    Key? key,
+    required this.body,
     this.shadowColor,
     this.maxElevation = 6.0,
     this.minElevation = 0.0,
@@ -101,7 +101,7 @@ class _LiftOnScrollAppBarState extends State<LiftOnScrollAppBar> {
       duration: const Millis(300),
       builder: (context, value) {
         final backgroundColor =
-            widget.backgroundColor ?? theme.appBarTheme?.color ?? theme.accentColor;
+            widget.backgroundColor ?? theme.appBarTheme.color ?? theme.accentColor;
         final colorOnScroll = widget.colorOnScroll ??
             backgroundColor.let((it) => it.isBright ? it.darken(0.1) : it.lighten(0.1));
 
@@ -123,7 +123,7 @@ class _LiftOnScrollAppBarState extends State<LiftOnScrollAppBar> {
           if (widget.brightness != null) {
             return widget.brightness;
           } else {
-            return color.isBright ? Brightness.light : Brightness.dark;
+            return color!.isBright ? Brightness.light : Brightness.dark;
           }
         }();
 

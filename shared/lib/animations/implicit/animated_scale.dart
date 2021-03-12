@@ -9,11 +9,11 @@ class AnimatedScale extends StatelessWidget {
   final Duration duration;
   final Curve curve;
   const AnimatedScale({
-    Key key,
-    @required this.scale,
-    @required this.child,
+    Key? key,
+    required this.scale,
+    required this.child,
     this.alignment = Alignment.center,
-    @required this.duration,
+    required this.duration,
     this.curve = Curves.linear,
   }) : super(key: key);
 
@@ -24,13 +24,11 @@ class AnimatedScale extends StatelessWidget {
       curve: curve,
       value: scale,
       duration: duration,
-      builder: (context, value, _) {
-        return Transform.scale(
-          scale: value,
-          alignment: alignment,
-          child: child,
-        );
-      },
+      builder: (context, value, _) => Transform.scale(
+        scale: value,
+        alignment: alignment,
+        child: child,
+      ),
     );
   }
 }

@@ -4,7 +4,7 @@ class HillTween extends Animatable<double> {
   final bool beginAtZero;
   const HillTween({
     this.beginAtZero = true,
-  }) : assert(beginAtZero != null);
+  });
 
   @override
   double transform(double t) {

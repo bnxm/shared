@@ -8,49 +8,51 @@ import 'horizontal_list_line_painter.dart';
 
 export 'horizontal_list_line_chart_data.dart';
 
-typedef HorizontalListItemBuilder = Widget Function(BuildContext context, Widget chart, EdgeInsets insets, int index);
+typedef HorizontalListItemBuilder = Widget Function(
+    BuildContext context, Widget chart, EdgeInsets insets, int index);
 
-typedef HorizontalListLabelBuilder<T> = String Function(ListLineSeries<T> series, T value, int index);
+typedef HorizontalListLabelBuilder<T> = String Function(
+    ListLineSeries<T>? series, T value, int index);
 
 class HorizontalListLineChart<T> extends ImplicitAnimation {
   final num Function(T value, int index) y;
   final List<ListLineSeries<T>> data;
-  final HorizontalListItemBuilder itemBuilder;
+  final HorizontalListItemBuilder? itemBuilder;
   final double itemExtent;
-  final HorizontalListLabelBuilder<T> labelBuilder;
+  final HorizontalListLabelBuilder<T>? labelBuilder;
   final dynamic color;
   final dynamic shadow;
   final dynamic divider;
   final dynamic fill;
   final StrokeJoin strokeJoin;
   final EdgeInsets innerPadding;
-  final TextStyle labelStyle;
+  final TextStyle? labelStyle;
   final double thickness;
   final double dividerThickness;
   final double elevation;
   final double smoothFactor;
   final double labelSpacing;
-  final double height;
+  final double? height;
   final bool verticalGradient;
   final bool verticalFill;
-  final num min;
-  final num max;
+  final num? min;
+  final num? max;
   final num minDelta;
 
   // ScrollView parameters
-  final ScrollController controller;
-  final ScrollPhysics physics;
+  final ScrollController? controller;
+  final ScrollPhysics? physics;
   final EdgeInsets padding;
   final bool reverse;
   final bool shrinkWrap;
   const HorizontalListLineChart({
-    Key key,
+    Key? key,
     Duration duration = const Millis(800),
     Curve curve = Curves.linear,
-    @required this.y,
-    @required this.data,
+    required this.y,
+    required this.data,
     this.itemBuilder,
-    @required this.itemExtent,
+    required this.itemExtent,
     this.labelBuilder,
     this.color = const [Colors.black, Colors.black],
     this.shadow,
@@ -75,9 +77,7 @@ class HorizontalListLineChart<T> extends ImplicitAnimation {
     this.padding = EdgeInsets.zero,
     this.reverse = false,
     this.shrinkWrap = false,
-  })  : assert(y != null),
-        assert(data != null),
-        assert(itemExtent != null && itemExtent > 0),
+  })  : assert(itemExtent > 0),
         assert(minDelta >= 0.0),
         super(
           key,
@@ -89,16 +89,18 @@ class HorizontalListLineChart<T> extends ImplicitAnimation {
   HorizontalListLineChartState<T> createState() => HorizontalListLineChartState<T>();
 }
 
-class HorizontalListLineChartState<T> extends ImplicitAnimationState<ListLineChartData<T>, HorizontalListLineChart<T>> {
+class HorizontalListLineChartState<T>
+    extends ImplicitAnimationState<ListLineChartData<T>, HorizontalListLineChart<T>> {
   double get itemExtent => widget.itemExtent;
 
-  List<ListLineSeries<T>> prevSeries;
+  List<ListLineSeries<T>>? prevSeries;
 
   @override
-  ListLineChartData<T> lerp(ListLineChartData<T> a, ListLineChartData<T> b, double t) => a.scaleTo(b, v);
+  ListLineChartData<T> lerp(ListLineChartData<T>? a, ListLineChartData<T> b, double t) =>
+      a!.scaleTo(b, v) as ListLineChartData<T>;
 
   @override
-  Widget builder(BuildContext context, ListLineChartData<T> data) {
+  Widget builder(BuildContext context, ListLineChartData<T>? data) {
     return AnimatedContainer(
       height: widget.height,
       duration: widget.duration,
@@ -110,14 +112,14 @@ class HorizontalListLineChartState<T> extends ImplicitAnimationState<ListLineCha
         controller: widget.controller,
         scrollDirection: Axis.horizontal,
         itemBuilder: (context, index) {
-          final series = getSeriesForIndex(data.series, index);
-          if (series.isEmpty) return null;
+          final series = getSeriesForIndex(data!.series, index);
+          if (series.isEmpty) return const SizedBox();
 
           final isFirst = index == 0;
           final isLast = !series.includes((item) => index != (item.data.length - 1));
 
-          final leftInset = isFirst ? data.innerPadding.left : 0.0;
-          final rightInset = isLast ? data.innerPadding.right : 0.0;
+          final leftInset = isFirst ? data.innerPadding!.left : 0.0;
+          final rightInset = isLast ? data.innerPadding!.right : 0.0;
           final width = itemExtent + leftInset + rightInset;
 
           final chart = CustomPaint(
@@ -153,8 +155,9 @@ class HorizontalListLineChartState<T> extends ImplicitAnimationState<ListLineCha
 
   @override
   void didUpdateWidget(HorizontalListLineChart<T> oldWidget) {
-    prevSeries = value.series.copy();
     super.didUpdateWidget(oldWidget);
+
+    prevSeries = List.from(value.series);
   }
 
   @override
@@ -183,7 +186,7 @@ class HorizontalListLineChartState<T> extends ImplicitAnimationState<ListLineCha
     for (final series in newSeries) {
       series.values.clear();
       for (var i = 0; i < series.data.length; i++) {
-        final value = series.data[i];
+        final T value = series.data[i];
 
         series.values.add(
           ChartValue(0.0, widget.y(value, i)),

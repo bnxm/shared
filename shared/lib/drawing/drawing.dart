@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:shared/shared.dart';
@@ -10,11 +11,12 @@ export 'path.dart';
 export 'point_interpolator.dart';
 export 'pressure_path.dart';
 
-List<Color> dynamicToColors(dynamic color, [bool gradient = false]) {
+List<Color>? dynamicToColors(dynamic color, [bool gradient = false]) {
   if (color is List && color.isEmpty) return <Color>[];
 
   assert(
-    color == null || (color is Color || color is List<Color> || color is SeriesColorBuilder),
+    color == null ||
+        (color is Color || color is List<Color> || color is SeriesColorBuilder),
     'Only Color, List<Color>, or SeriesColorBuilder are supported color values. ${color.runtimeType} is not.',
   );
 
@@ -36,16 +38,18 @@ List<Color> dynamicToColors(dynamic color, [bool gradient = false]) {
   return null;
 }
 
-List<Color> lerpColors(List<Color> a, List<Color> b, double v) {
-  if (a == null) return b;
-  if (b == null) return null;
+List<Color> lerpColors(List<Color>? a, List<Color>? b, double v) {
+  if (a == null && b != null) return b;
+  if (a == null || b == null) return [];
 
   final List<Color> result = [];
-  for (var i = 0; i < max(a?.length ?? 0, b?.length ?? 0); i++) {
+
+  for (var i = 0; i < max(a.length, b.length); i++) {
     final start = a.getOrNull(i);
-    final end = b.getOrNull(i) ;
-    result.add(Color.lerp(start, end, v));
+    final end = b.getOrNull(i);
+    result.add(Color.lerp(start, end, v)!);
   }
+
   return result;
 }
 

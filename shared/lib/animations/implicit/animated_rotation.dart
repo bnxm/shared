@@ -6,20 +6,18 @@ class AnimatedRotation extends StatelessWidget {
   final double angle;
   final Widget child;
   final AlignmentGeometry alignment;
-  final Offset origin;
+  final Offset? origin;
   final Duration duration;
-  final Curve curve;
+  final Curve? curve;
   const AnimatedRotation({
-    Key key,
-    @required this.angle,
-    @required this.child,
+    Key? key,
+    required this.angle,
+    required this.child,
     this.alignment = Alignment.center,
     this.origin,
-    @required this.duration,
+    required this.duration,
     this.curve,
-  })  : assert(angle != null),
-        assert(alignment != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

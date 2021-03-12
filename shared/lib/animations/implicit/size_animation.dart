@@ -4,15 +4,15 @@ import 'package:shared/animations/animations.dart';
 
 class SizeAnimation extends StatelessWidget {
   final bool show;
-  final Widget child;
+  final Widget? child;
   final Axis axis;
   final double axisAlignment;
   final Duration duration;
   final Curve curve;
   const SizeAnimation({
-    Key key,
-    @required this.show,
-    @required this.duration,
+    Key? key,
+    required this.show,
+    required this.duration,
     this.curve = Curves.ease,
     this.axis = Axis.vertical,
     this.axisAlignment = 0.0,
@@ -42,12 +42,12 @@ class SizeAnimation extends StatelessWidget {
 
 class AnimatedSizeChanges extends StatefulWidget {
   final Duration duration;
-  final Duration reverseDuration;
-  final Alignment alignment;
+  final Duration? reverseDuration;
+  final Alignment? alignment;
   final Curve curve;
-  final Widget child;
+  final Widget? child;
   const AnimatedSizeChanges({
-    Key key,
+    Key? key,
     this.duration = const Duration(milliseconds: 200),
     this.reverseDuration,
     this.alignment = Alignment.center,
@@ -66,7 +66,7 @@ class _AnimatedSizeChangesState extends State<AnimatedSizeChanges> with SingleTi
       vsync: this,
       duration: widget.duration,
       reverseDuration: widget.reverseDuration,
-      alignment: widget.alignment,
+      alignment: widget.alignment!,
       curve: widget.curve,
       child: widget.child,
     );

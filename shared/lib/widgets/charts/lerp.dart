@@ -10,10 +10,10 @@ List<S> lerpSeries<S extends Series>(
   List<S> a,
   List<S> b,
   double v, {
-  @required S Function(S) copyWith,
-  S Function(S) incoming,
-  @required S Function(S o, S n) staying,
-  S Function(S) outgoing,
+  required S Function(S) copyWith,
+  S Function(S)? incoming,
+  required S Function(S? o, S n) staying,
+  S Function(S)? outgoing,
 }) {
   assert(copyWith != null && staying != null);
   a = List<S>.from(a)..removeWhere((s) => s.isOutgoing);
@@ -22,7 +22,7 @@ List<S> lerpSeries<S extends Series>(
 
   for (var i = 0; i < b.length; i++) {
     final current = copyWith(b[i]);
-    S old = a.find((old) => old == current);
+    S? old = a.find((old) => old == current);
     if (old != null) old = copyWith(old);
 
     if (!current.hasId) {

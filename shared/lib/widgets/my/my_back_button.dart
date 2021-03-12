@@ -5,11 +5,11 @@ import 'package:shared/widgets/widgets.dart';
 
 class MyBackButton extends StatelessWidget {
   final dynamic icon;
-  final VoidCallback onBackPressed;
-  final Color color;
+  final VoidCallback? onBackPressed;
+  final Color? color;
   final double size;
   const MyBackButton({
-    Key key,
+    Key? key,
     this.icon,
     this.onBackPressed,
     this.color,

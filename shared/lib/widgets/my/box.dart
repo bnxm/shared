@@ -16,44 +16,44 @@ enum ShadowDirection {
 }
 
 class SimpleGradient {
-  final List<Color> colors;
+  final List<Color>? colors;
   final Axis axis;
   final List<double> stops;
   SimpleGradient({
-    @required List<Color> colors,
+    required List<Color> colors,
     this.axis = Axis.vertical,
-    List<double> stops,
+    List<double>? stops,
   })  : colors = dynamicToColors(colors, true),
-        stops = stops ?? calculateColorStops(dynamicToColors(colors, true));
+        stops = stops ?? calculateColorStops(dynamicToColors(colors, true)!);
 }
 
 class Box extends StatelessWidget {
   final bool clip;
   final dynamic borderRadius;
   final double elevation;
-  final num height;
-  final num width;
-  final num radius;
-  final Border border;
-  final EdgeInsetsGeometry margin;
+  final num? height;
+  final num? width;
+  final num? radius;
+  final Border? border;
+  final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry padding;
-  final Widget child;
+  final Widget? child;
   final dynamic color;
   final Color shadowColor;
-  final List<BoxShadow> boxShadows;
-  final VoidCallback onTap;
-  final VoidCallback onLongPress;
-  final VoidCallback onDoubleTap;
+  final List<BoxShadow>? boxShadows;
+  final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
+  final VoidCallback? onDoubleTap;
   final BoxShape boxShape;
-  final AlignmentGeometry alignment;
+  final AlignmentGeometry? alignment;
   final ShadowDirection shadowDirection;
-  final Color splashColor;
-  final Duration duration;
+  final Color? splashColor;
+  final Duration? duration;
   final Curve curve;
-  final BoxConstraints constraints;
+  final BoxConstraints? constraints;
   final bool showInkWell;
   const Box({
-    Key key,
+    Key? key,
     this.clip = true,
     this.borderRadius = 0.0,
     this.elevation = 0.0,
@@ -92,17 +92,21 @@ class Box extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    final r = radius != null ? radius * 2 : null;
+    final r = radius != null ? radius! * 2 : null;
     final h = (r ?? height)?.toDouble();
     final w =
         (r ?? (height != null && width == null ? double.infinity : width))?.toDouble();
 
-    final BorderRadiusGeometry br = borderRadius is BorderRadiusGeometry
+    final BorderRadiusGeometry? br = borderRadius is BorderRadiusGeometry
         ? borderRadius
         : BorderRadius.circular(
             !circle
                 ? borderRadius?.toDouble() ?? 0.0
-                : w != null ? w / 2.0 : h != null ? h / 2.0 : 0.0,
+                : w != null
+                    ? w / 2.0
+                    : h != null
+                        ? h / 2.0
+                        : 0.0,
           );
 
     Widget content = Padding(
@@ -114,7 +118,7 @@ class Box extends StatelessWidget {
       content = circle
           ? ClipOval(child: content)
           : ClipRRect(
-              borderRadius: br.resolve(Directionality.of(context)),
+              borderRadius: br!.resolve(Directionality.of(context)),
               child: content,
             );
     }
@@ -123,7 +127,7 @@ class Box extends StatelessWidget {
       content = Material(
         color: Colors.transparent,
         type: MaterialType.transparency,
-        shape: circle ? const CircleBorder() : RoundedRectangleBorder(borderRadius: br),
+        shape: circle ? const CircleBorder() : RoundedRectangleBorder(borderRadius: br!),
         child: InkWell(
           splashColor:
               showInkWell ? splashColor ?? theme.splashColor : Colors.transparent,
@@ -131,7 +135,7 @@ class Box extends StatelessWidget {
           hoverColor: showInkWell ? theme.hoverColor : Colors.transparent,
           focusColor: showInkWell ? theme.focusColor : Colors.transparent,
           customBorder:
-              circle ? const CircleBorder() : RoundedRectangleBorder(borderRadius: br),
+              circle ? const CircleBorder() : RoundedRectangleBorder(borderRadius: br!),
           onTap: onTap,
           onLongPress: onLongPress,
           onDoubleTap: onDoubleTap,
@@ -140,24 +144,24 @@ class Box extends StatelessWidget {
       );
     }
 
-    final List<BoxShadow> boxShadow =
-        boxShadows ?? (elevation > 0 && (shadowColor?.opacity ?? 0) > 0)
+    final List<BoxShadow>? boxShadow = boxShadows ??
+        ((elevation > 0 && shadowColor.opacity > 0)
             ? [
                 BoxShadow(
-                  color: shadowColor ?? Colors.black12,
+                  color: shadowColor,
                   offset: _getShadowOffset(min(elevation / 5.0, 1.0)),
                   blurRadius: elevation,
                   spreadRadius: 0,
                 ),
               ]
-            : null;
+            : null);
 
-    LinearGradient gradient;
+    LinearGradient? gradient;
     if (color is SimpleGradient) {
       final gr = color as SimpleGradient;
       final vertical = gr.axis == Axis.vertical;
       gradient = LinearGradient(
-        colors: gr.colors,
+        colors: gr.colors!,
         begin: vertical ? Alignment.topCenter : Alignment.centerLeft,
         end: vertical ? Alignment.bottomCenter : Alignment.centerRight,
         stops: gr.stops,
@@ -169,19 +173,19 @@ class Box extends StatelessWidget {
     final boxDecoration = BoxDecoration(
       color: color is Color ? color : null,
       gradient: gradient,
-      borderRadius: !circle && (border == null || border.isUniform) ? br : null,
+      borderRadius: !circle && (border == null || border!.isUniform) ? br : null,
       shape: circle ? BoxShape.circle : BoxShape.rectangle,
       boxShadow: boxShadow,
       border: border,
     );
 
-    return duration != null && duration > Duration.zero
+    return duration != null && duration! > Duration.zero
         ? AnimatedContainer(
             height: h,
             width: w,
             margin: margin,
             alignment: alignment,
-            duration: duration,
+            duration: duration!,
             curve: curve,
             decoration: boxDecoration,
             constraints: constraints,
@@ -235,22 +239,22 @@ class Box extends StatelessWidget {
 }
 
 class ListBox extends StatelessWidget {
-  final Widget title;
-  final Widget subtitle;
+  final Widget? title;
+  final Widget? subtitle;
   final dynamic leading;
   final dynamic trailing;
   final double elevation;
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
   final bool reserveIconSpace;
-  final VoidCallback onTap;
-  final Color color;
-  final bool isEnabled;
-  final double maxWidth;
-  final Duration duration;
-  final BorderRadiusGeometry borderRadius;
+  final VoidCallback? onTap;
+  final Color? color;
+  final bool? isEnabled;
+  final double? maxWidth;
+  final Duration? duration;
+  final BorderRadiusGeometry? borderRadius;
   const ListBox({
-    Key key,
-    @required this.title,
+    Key? key,
+    required this.title,
     this.subtitle,
     this.leading,
     this.trailing,
@@ -270,7 +274,7 @@ class ListBox extends StatelessWidget {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
 
-    Widget leading = this.leading;
+    Widget? leading = this.leading;
     if (leading is Icon) {
       leading = Container(
         width: 36,
@@ -279,7 +283,7 @@ class ListBox extends StatelessWidget {
       );
     }
 
-    Widget trailing = this.trailing;
+    Widget? trailing = this.trailing;
     if (trailing is Icon) {
       trailing = Container(
         width: 40,
@@ -300,17 +304,22 @@ class ListBox extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           if (leading != null) leading,
-          SizedBox(width: leading != null ? 16 : reserveIconSpace ? 56 : 0),
+          SizedBox(
+              width: leading != null
+                  ? 16
+                  : reserveIconSpace
+                      ? 56
+                      : 0),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 if (title != null)
-                  DefaultTextStyle(style: textTheme.subtitle1, child: title),
+                  DefaultTextStyle(style: textTheme.subtitle1!, child: title!),
                 if (subtitle != null) const SizedBox(height: 4),
                 if (subtitle != null)
-                  DefaultTextStyle(style: textTheme.subtitle2, child: subtitle),
+                  DefaultTextStyle(style: textTheme.subtitle2!, child: subtitle!),
               ],
             ),
           ),
@@ -322,10 +331,10 @@ class ListBox extends StatelessWidget {
 
     if (isEnabled != null) {
       return AnimatedOpacity(
-        opacity: isEnabled ? 1.0 : 0.5,
+        opacity: isEnabled! ? 1.0 : 0.5,
         duration: const Millis(400),
         child: IgnorePointer(
-          ignoring: !isEnabled,
+          ignoring: !isEnabled!,
           child: box,
         ),
       );

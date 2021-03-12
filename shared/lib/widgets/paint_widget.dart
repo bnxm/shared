@@ -6,8 +6,8 @@ typedef PaintCallback = void Function(Canvas canvas, Size size, BuildContext con
 abstract class Painter extends StatelessWidget {
   final Size size;
   const Painter({
-    Key key,
-    @required this.size,
+    Key? key,
+    required this.size,
   })  : assert(size != null),
         super(key: key);
 
@@ -19,7 +19,7 @@ abstract class Painter extends StatelessWidget {
 
   bool get isComplex => false;
   bool get willChange => false;
-  Widget get child => null;
+  Widget? get child => null;
 
   void paint(Canvas canvas, Size size, BuildContext context);
 

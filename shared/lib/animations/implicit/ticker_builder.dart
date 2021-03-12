@@ -9,9 +9,9 @@ class TickerBuilder extends StatefulWidget {
   final bool enabled;
   final WidgetBuilder builder;
   const TickerBuilder({
-    Key key,
+    Key? key,
     this.enabled = true,
-    @required this.builder,
+    required this.builder,
   }) : super(key: key);
 
   @override
@@ -19,7 +19,7 @@ class TickerBuilder extends StatefulWidget {
 }
 
 class _TickerBuilderState extends State<TickerBuilder> {
-  Ticker ticker;
+  Ticker? ticker;
 
   @override
   void initState() {
@@ -48,10 +48,10 @@ class TimerBuilder extends StatefulWidget {
   final Duration period;
   final WidgetBuilder builder;
   const TimerBuilder({
-    Key key,
+    Key? key,
     this.syncWithTime = true,
     this.period = const Seconds(1),
-    @required this.builder,
+    required this.builder,
   })  : assert(syncWithTime != null),
         assert(period != null),
         assert(builder != null),
@@ -62,8 +62,8 @@ class TimerBuilder extends StatefulWidget {
 }
 
 class _TimerBuilderState extends State<TimerBuilder> {
-  Handler scheduler;
-  Timer timer;
+  Handler? scheduler;
+  Timer? timer;
 
   @override
   void initState() {

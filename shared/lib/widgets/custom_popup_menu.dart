@@ -4,14 +4,14 @@ import 'package:shared/shared.dart';
 class CustomPopUpMenuButton extends StatefulWidget {
   final Color dimColor;
   final EdgeInsets padding;
-  final Widget menu;
+  final Widget? menu;
   final dynamic icon;
-  final Color color;
+  final Color? color;
   final double iconSize;
-  final VoidCallback onDismiss;
+  final VoidCallback? onDismiss;
   final Duration duration;
   const CustomPopUpMenuButton({
-    Key key,
+    Key? key,
     this.dimColor = Colors.transparent,
     this.onDismiss,
     this.padding = const EdgeInsets.all(8),
@@ -38,7 +38,7 @@ class _CustomPopUpMenuButtonState extends State<CustomPopUpMenuButton> {
       size: widget.iconSize,
       padding: widget.padding,
       onTap: () async {
-        final RenderBox box = _key.currentContext?.findRenderObject();
+        final RenderBox? box = _key.currentContext?.findRenderObject() as RenderBox?;
         final anchor = box?.localToGlobal(Offset.zero) ?? Offset.zero;
 
         await Navigator.push(
@@ -63,11 +63,11 @@ class _CustomPopUpMenuButtonState extends State<CustomPopUpMenuButton> {
   }
 }
 
-Future<T> showCustomPopUpMenu<T>(
+Future<T?> showCustomPopUpMenu<T>(
   BuildContext context, {
-  @required Widget child,
+  required Widget child,
   Duration duration = const Millis(200),
-  @required Offset offset,
+  required Offset offset,
   Color dimColor = Colors.transparent,
 }) {
   return Navigator.push(
@@ -89,14 +89,14 @@ Future<T> showCustomPopUpMenu<T>(
 
 class _CustomPopUpMenu extends StatefulWidget {
   final Color dimColor;
-  final Widget child;
+  final Widget? child;
   final Pair<Offset, Size> anchor;
   final Animation routeAnimation;
   const _CustomPopUpMenu({
-    Key key,
-    @required this.child,
-    @required this.anchor,
-    @required this.routeAnimation,
+    Key? key,
+    required this.child,
+    required this.anchor,
+    required this.routeAnimation,
     this.dimColor = Colors.transparent,
   }) : super(key: key);
 
@@ -108,13 +108,13 @@ class _CustomPopUpMenuState extends State<_CustomPopUpMenu>
     with SingleTickerProviderStateMixin {
   final _key = GlobalKey();
 
-  Animation<double> get _animation => widget.routeAnimation;
+  Animation<double> get _animation => widget.routeAnimation as Animation<double>;
 
   bool showLeft = true;
   bool showDown = true;
 
-  Offset _position;
-  Rect _rect;
+  Offset? _position;
+  late Rect _rect;
 
   @override
   void initState() {
@@ -138,7 +138,7 @@ class _CustomPopUpMenuState extends State<_CustomPopUpMenu>
       final anchorWidth = widget.anchor.second.width;
       final anchorHeight = widget.anchor.second.height;
 
-      final size = _key.currentContext.size;
+      final size = _key.currentContext!.size;
       if (size != null && anchor != null) {
         final width = size.width;
         final height = size.height;

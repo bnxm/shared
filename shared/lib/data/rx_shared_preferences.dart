@@ -6,26 +6,25 @@ import 'package:shared_preferences/shared_preferences.dart';
 typedef PreferenceAdapter<T> = T Function(String json);
 
 abstract class RxPreferencesInterface {
-  Stream<Pair<String, dynamic>> get stream;
+  Stream<Pair<String?, dynamic>> get stream;
 
-  bool getBool(String key, [bool defaultValue]);
-  int getInt(String key, [int defaultValue]);
-  double getDouble(String key, [double defaultValue]);
-  String getString(String key, [String defaultValue]);
-  List<String> getStringList(String key, [List<String> defaultValue]);
-  T getObject<T>(String key, PreferenceAdapter<T> adapter, [T defaultValue]);
-  List<T> getObjects<T>(String key, PreferenceAdapter<T> adapter, [List<T> defaultValue]);
-  T getEnum<T>(String key, List<T> values, [T defaultValue]);
+  bool? getBool(String key);
+  int? getInt(String key);
+  double? getDouble(String key);
+  String? getString(String key);
+  List<String>? getStringList(String key);
+  T? getObject<T>(String key, PreferenceAdapter<T> adapter);
+  List<T>? getObjects<T>(String key, PreferenceAdapter<T> adapter);
+  T? getEnum<T>(String key, List<T> values);
 
-  Stream<bool> watchBool(String key, [bool defaultValue]);
-  Stream<int> watchInt(String key, [int defaultValue]);
-  Stream<double> watchDouble(String key, [double defaultValue]);
-  Stream<String> watchString(String key, [String defaultValue]);
-  Stream<List<String>> watchStringList(String key, [List<String> defaultValue]);
-  Stream<T> watchObject<T>(String key, PreferenceAdapter<T> adapter, [T defaultValue]);
-  Stream<List<T>> watchObjects<T>(String key, PreferenceAdapter<T> adapter,
-      [List<T> defaultValue]);
-  Stream<T> watchEnum<T>(String key, List<T> values, [T defaultValue]);
+  Stream<bool?> watchBool(String key);
+  Stream<int?> watchInt(String key);
+  Stream<double?> watchDouble(String key);
+  Stream<String?> watchString(String key);
+  Stream<List<String>?> watchStringList(String key);
+  Stream<T?> watchObject<T>(String key, PreferenceAdapter<T> adapter);
+  Stream<List<T>?> watchObjects<T>(String key, PreferenceAdapter<T> adapter);
+  Stream<T?> watchEnum<T>(String key, List<T> values);
 
   Future<bool> setBool(String key, bool value);
   Future<bool> setInt(String key, int value);
@@ -43,62 +42,56 @@ class RxSharedPreferences implements RxPreferencesInterface {
   final SharedPreferences sharedPreferences;
   RxSharedPreferences._(this.sharedPreferences);
 
-  static RxSharedPreferences _instance;
+  static RxSharedPreferences? _instance;
   static Future<RxSharedPreferences> get instance async =>
       _instance ??= RxSharedPreferences._(await SharedPreferences.getInstance());
 
   static bool cacheObjects = true;
 
-  final StreamController<Pair<String, dynamic>> _controller =
+  final StreamController<Pair<String?, dynamic>> _controller =
       StreamController.broadcast();
 
-  void _yield<T>(String key, T value) => _controller.add(Pair(key, value));
+  void _yield<T>(String? key, T value) => _controller.add(Pair(key, value));
 
   @override
-  Stream<Pair<String, dynamic>> get stream => _controller.stream;
+  Stream<Pair<String?, dynamic>> get stream => _controller.stream;
 
   @override
-  bool getBool(String key, [bool defaultValue]) =>
-      getValue<bool>(key, defaultValue, const _BoolAdapter());
+  bool? getBool(String key) => getValue<bool?>(key, const _BoolAdapter());
 
   @override
-  int getInt(String key, [int defaultValue]) =>
-      getValue<int>(key, defaultValue, const _IntAdapter());
+  int? getInt(String key, [int? defaultValue]) =>
+      getValue<int?>(key, const _IntAdapter());
 
   @override
-  double getDouble(String key, [double defaultValue]) =>
-      getValue<double>(key, defaultValue, const _DoubleAdapter());
+  double? getDouble(String key, [double? defaultValue]) =>
+      getValue<double?>(key, const _DoubleAdapter());
 
   @override
-  String getString(String key, [String defaultValue]) =>
-      getValue<String>(key, defaultValue, const _StringAdapter());
+  String? getString(String key, [String? defaultValue]) =>
+      getValue<String?>(key, const _StringAdapter());
 
   @override
-  List<String> getStringList(String key, [List<String> defaultValue]) =>
-      getValue<List<String>>(key, defaultValue, const _StringListAdapter());
+  List<String>? getStringList(String key, [List<String>? defaultValue]) =>
+      getValue<List<String>?>(key, const _StringListAdapter());
 
   @override
-  T getObject<T>(String key, PreferenceAdapter<T> adapter, [T defaultValue]) =>
-      getValue<T>(key, defaultValue, _CustomAdapter(adapter));
+  T? getObject<T>(String key, PreferenceAdapter<T> adapter) =>
+      getValue<T?>(key, _CustomAdapter(adapter));
 
   @override
-  T getEnum<T>(String key, List<T> values, [T defaultValue]) =>
-      getValue(key, defaultValue, _EnumAdapter(values));
+  T? getEnum<T>(String key, List<T> values) => getValue(key, _EnumAdapter(values));
 
   @override
-  List<T> getObjects<T>(
-    String key,
-    PreferenceAdapter<T> adapter, [
-    List<T> defaultValue,
-  ]) =>
-      getValue<List<T>>(key, defaultValue, _CustomListAdapter(adapter));
+  List<T>? getObjects<T>(String key, PreferenceAdapter<T> adapter) =>
+      getValue<List<T>?>(key, _CustomListAdapter(adapter));
 
-  T getValue<T>(String key, T defaultValue, _PreferenceAdapter<T> adapter) =>
-      adapter.getValue(sharedPreferences, key) ?? defaultValue;
+  T? getValue<T>(String key, _PreferenceAdapter<T> adapter) =>
+      adapter.getValue(sharedPreferences, key);
 
   @override
-  Future<bool> setBool(String key, bool value) =>
-      setValue<bool>(key, value, const _BoolAdapter());
+  Future<bool> setBool(String? key, bool? value) =>
+      setValue<bool?>(key, value, const _BoolAdapter());
 
   @override
   Future<bool> setInt(String key, int value) =>
@@ -129,7 +122,7 @@ class RxSharedPreferences implements RxPreferencesInterface {
       setValue(key, value, const _EnumAdapter(null));
 
   Future<bool> setValue<T>(
-    String key,
+    String? key,
     T value,
     _PreferenceAdapter adapter,
   ) async {
@@ -139,48 +132,38 @@ class RxSharedPreferences implements RxPreferencesInterface {
   }
 
   @override
-  Stream<bool> watchBool(String key, [bool defaultValue]) =>
-      watchKey<bool>(key, defaultValue, const _BoolAdapter());
+  Stream<bool?> watchBool(String key) => watchKey<bool?>(key, const _BoolAdapter());
 
   @override
-  Stream<int> watchInt(String key, [int defaultValue]) =>
-      watchKey<int>(key, defaultValue, const _IntAdapter());
+  Stream<int?> watchInt(String key) => watchKey<int?>(key, const _IntAdapter());
 
   @override
-  Stream<double> watchDouble(String key, [double defaultValue]) =>
-      watchKey<double>(key, defaultValue, const _DoubleAdapter());
+  Stream<double?> watchDouble(String key) =>
+      watchKey<double?>(key, const _DoubleAdapter());
 
   @override
-  Stream<String> watchString(String key, [String defaultValue]) =>
-      watchKey<String>(key, defaultValue, const _StringAdapter());
+  Stream<String?> watchString(String key) =>
+      watchKey<String?>(key, const _StringAdapter());
 
   @override
-  Stream<List<String>> watchStringList(String key, [List<String> defaultValue]) =>
-      watchKey<List<String>>(key, defaultValue, const _StringListAdapter());
+  Stream<List<String>?> watchStringList(String key) =>
+      watchKey<List<String>?>(key, const _StringListAdapter());
 
   @override
-  Stream<T> watchObject<T>(
-    String key,
-    PreferenceAdapter<T> adapter, [
-    T defaultValue,
-  ]) =>
-      watchKey<T>(key, defaultValue, _CustomAdapter(adapter));
+  Stream<T?> watchObject<T>(String key, PreferenceAdapter<T> adapter) =>
+      watchKey<T>(key, _CustomAdapter(adapter));
 
   @override
-  Stream<List<T>> watchObjects<T>(
-    String key,
-    PreferenceAdapter<T> adapter, [
-    List<T> defaultValue,
-  ]) =>
-      watchKey<List<T>>(key, defaultValue, _CustomListAdapter(adapter));
+  Stream<List<T>?> watchObjects<T>(String key, PreferenceAdapter<T> adapter) =>
+      watchKey<List<T>>(key, _CustomListAdapter(adapter));
 
   @override
-  Stream<T> watchEnum<T>(String key, List<T> values, [T defaultValue]) =>
-      watchKey(key, defaultValue, _EnumAdapter(values));
+  Stream<T?> watchEnum<T>(String key, List<T> values) =>
+      watchKey(key, _EnumAdapter(values));
 
-  Stream<T> watchKey<T>(String key, T defaultValue, _PreferenceAdapter<T> adapter) {
+  Stream<T?> watchKey<T>(String key, _PreferenceAdapter<T> adapter) {
     return stream.transform(
-      _RxPreferenceTransformer<T>(key, () => getValue(key, defaultValue, adapter)),
+      _RxPreferenceTransformer<T?>(key, () => getValue(key, adapter)),
     );
   }
 
@@ -190,15 +173,15 @@ class RxSharedPreferences implements RxPreferencesInterface {
 
 class _RxPreferenceTransformer<T>
     extends StreamTransformerBase<Pair<String, dynamic>, T> {
-  final String key;
+  final String? key;
   final T Function() getValue;
   _RxPreferenceTransformer(this.key, this.getValue);
 
   @override
   Stream<T> bind(Stream<Pair<String, dynamic>> stream) {
     return StreamTransformer<Pair<String, dynamic>, T>((input, cancelOnError) {
-      StreamController<T> controller;
-      StreamSubscription<T> subscription;
+      late StreamController<T> controller;
+      late StreamSubscription<T> subscription;
 
       controller = StreamController<T>(
         sync: true,
@@ -242,126 +225,127 @@ class _RxPreferenceTransformer<T>
 // * --- Adapters --- *
 
 abstract class _PreferenceAdapter<T> {
-  Future<bool> setValue(SharedPreferences preferences, String key, T value);
-  T getValue(SharedPreferences preferences, String key);
+  Future<bool> setValue(SharedPreferences preferences, String? key, T value);
+  T? getValue(SharedPreferences preferences, String? key);
 }
 
 class _BoolAdapter implements _PreferenceAdapter<bool> {
   const _BoolAdapter();
 
   @override
-  bool getValue(SharedPreferences preferences, String key) => preferences.getBool(key);
+  bool? getValue(SharedPreferences preferences, String? key) => preferences.getBool(key!);
 
   @override
-  Future<bool> setValue(SharedPreferences preferences, String key, bool value) =>
-      preferences.setBool(key, value);
+  Future<bool> setValue(SharedPreferences preferences, String? key, bool? value) =>
+      preferences.setBool(key!, value!);
 }
 
 class _IntAdapter implements _PreferenceAdapter<int> {
   const _IntAdapter();
 
   @override
-  int getValue(SharedPreferences preferences, String key) => preferences.getInt(key);
+  int? getValue(SharedPreferences preferences, String? key) => preferences.getInt(key!);
 
   @override
-  Future<bool> setValue(SharedPreferences preferences, String key, int value) =>
-      preferences.setInt(key, value);
+  Future<bool> setValue(SharedPreferences preferences, String? key, int? value) =>
+      preferences.setInt(key!, value!);
 }
 
 class _DoubleAdapter implements _PreferenceAdapter<double> {
   const _DoubleAdapter();
 
   @override
-  double getValue(SharedPreferences preferences, String key) =>
-      preferences.getDouble(key);
+  double? getValue(SharedPreferences preferences, String? key) =>
+      preferences.getDouble(key!);
 
   @override
-  Future<bool> setValue(SharedPreferences preferences, String key, double value) =>
-      preferences.setDouble(key, value);
+  Future<bool> setValue(SharedPreferences preferences, String? key, double? value) =>
+      preferences.setDouble(key!, value!);
 }
 
 class _StringAdapter implements _PreferenceAdapter<String> {
   const _StringAdapter();
 
   @override
-  String getValue(SharedPreferences preferences, String key) =>
-      preferences.getString(key);
+  String? getValue(SharedPreferences preferences, String? key) =>
+      preferences.getString(key!);
 
   @override
-  Future<bool> setValue(SharedPreferences preferences, String key, String value) =>
-      preferences.setString(key, value);
+  Future<bool> setValue(SharedPreferences preferences, String? key, String? value) =>
+      preferences.setString(key!, value!);
 }
 
 class _StringListAdapter implements _PreferenceAdapter<List<String>> {
   const _StringListAdapter();
 
   @override
-  List<String> getValue(SharedPreferences preferences, String key) =>
-      preferences.getStringList(key);
+  List<String>? getValue(SharedPreferences preferences, String? key) =>
+      preferences.getStringList(key!);
 
   @override
-  Future<bool> setValue(SharedPreferences preferences, String key, List<String> values) =>
-      preferences.setStringList(key, values);
+  Future<bool> setValue(
+          SharedPreferences preferences, String? key, List<String>? values) =>
+      preferences.setStringList(key!, values!);
 }
 
 class _CustomAdapter<T> implements _PreferenceAdapter<T> {
-  final PreferenceAdapter<T> adapter;
+  final PreferenceAdapter<T>? adapter;
   _CustomAdapter(this.adapter);
 
-  static Map<String, dynamic> cache = {};
+  static Map<String?, dynamic> cache = {};
 
   @override
-  T getValue(SharedPreferences preferences, String key) {
-    T parse() => preferences.getString(key)?.let(adapter);
+  T? getValue(SharedPreferences preferences, String? key) {
+    T? parse() => preferences.getString(key!)?.let(adapter!);
     return RxSharedPreferences.cacheObjects ? cache[key] ??= parse() : parse();
   }
 
   @override
-  Future<bool> setValue(SharedPreferences preferences, String key, T value) {
+  Future<bool> setValue(SharedPreferences preferences, String? key, T? value) {
     if (RxSharedPreferences.cacheObjects) {
       cache[key] = value;
     }
 
-    return preferences.setString(key, _toJson(value));
+    return preferences.setString(key!, _toJson(value)!);
   }
 }
 
 class _CustomListAdapter<T> implements _PreferenceAdapter<List<T>> {
-  final PreferenceAdapter<T> adapter;
+  final PreferenceAdapter<T>? adapter;
   _CustomListAdapter(this.adapter);
 
-  static Map<String, dynamic> cache = {};
+  static Map<String?, dynamic> cache = {};
 
   @override
-  List<T> getValue(SharedPreferences preferences, String key) {
-    List<T> parse() => preferences.getStringList(key)?.map(adapter)?.toList();
+  List<T>? getValue(SharedPreferences preferences, String? key) {
+    List<T>? parse() => preferences.getStringList(key!)?.map(adapter!).toList();
     return RxSharedPreferences.cacheObjects ? cache[key] ??= parse() : parse();
   }
 
   @override
-  Future<bool> setValue(SharedPreferences preferences, String key, List<T> values) {
+  Future<bool> setValue(SharedPreferences preferences, String? key, List<T>? values) {
     if (RxSharedPreferences.cacheObjects) {
       cache[key] = values;
     }
 
-    return preferences.setStringList(key, values.map(_toJson).toList());
+    return preferences.setStringList(key!, values!.map(_toJson).toList() as List<String>);
   }
 }
 
 class _EnumAdapter<T> implements _PreferenceAdapter<T> {
-  final List<T> values;
+  final List<T>? values;
   const _EnumAdapter(this.values);
 
   @override
-  T getValue(SharedPreferences preferences, String key) =>
-      values.getOrNull(preferences.getInt(key));
+  T? getValue(SharedPreferences preferences, String? key) =>
+      values!.getOrNull(preferences.getInt(key!));
 
   @override
-  Future<bool> setValue(SharedPreferences preferences, String key, T value) =>
-      preferences.setInt(key, (value as dynamic).index);
+  Future<bool> setValue(SharedPreferences preferences, String? key, T? value) =>
+      preferences.setInt(key!, (value as dynamic).index);
 }
 
-String _toJson(dynamic value) {
+String? _toJson(dynamic value) {
   if (value == null) return null;
 
   try {
@@ -397,35 +381,30 @@ class RxSharedPreferencesDelegate implements RxPreferencesInterface {
   Stream<Pair<String, dynamic>> get stream => throw UnimplementedError();
 
   @override
-  bool getBool(String key, [bool defaultValue]) => preferences.getBool(key, defaultValue);
+  bool? getBool(String key) => preferences.getBool(key);
 
   @override
-  int getInt(String key, [int defaultValue]) => preferences.getInt(key, defaultValue);
+  int? getInt(String key) => preferences.getInt(key);
 
   @override
-  double getDouble(String key, [double defaultValue]) =>
-      preferences.getDouble(key, defaultValue);
+  double? getDouble(String key) => preferences.getDouble(key);
 
   @override
-  String getString(String key, [String defaultValue]) =>
-      preferences.getString(key, defaultValue);
+  String? getString(String key) => preferences.getString(key);
 
   @override
-  List<String> getStringList(String key, [List<String> defaultValue]) =>
-      preferences.getStringList(key, defaultValue);
+  List<String>? getStringList(String key) => preferences.getStringList(key);
 
   @override
-  T getObject<T>(String key, PreferenceAdapter<T> adapter, [T defaultValue]) =>
-      preferences.getObject<T>(key, adapter, defaultValue);
+  T? getObject<T>(String key, PreferenceAdapter<T> adapter) =>
+      preferences.getObject<T>(key, adapter);
 
   @override
-  List<T> getObjects<T>(String key, PreferenceAdapter<T> adapter,
-          [List<T> defaultValue]) =>
-      preferences.getObjects<T>(key, adapter, defaultValue);
+  List<T>? getObjects<T>(String key, PreferenceAdapter<T> adapter) =>
+      preferences.getObjects<T>(key, adapter);
 
   @override
-  T getEnum<T>(String key, List<T> values, [T defaultValue]) =>
-      preferences.getEnum(key, values, defaultValue);
+  T? getEnum<T>(String key, List<T> values) => preferences.getEnum(key, values);
 
   @override
   Future<bool> setBool(String key, bool value) => preferences.setBool(key, value);
@@ -454,38 +433,32 @@ class RxSharedPreferencesDelegate implements RxPreferencesInterface {
   Future<bool> setEnum<T>(String key, T value) => preferences.setEnum(key, value);
 
   @override
-  Stream<bool> watchBool(String key, [bool defaultValue]) =>
-      preferences.watchBool(key, defaultValue);
+  Stream<bool?> watchBool(String key) => preferences.watchBool(key);
 
   @override
-  Stream<int> watchInt(String key, [int defaultValue]) =>
-      preferences.watchInt(key, defaultValue);
+  Stream<int?> watchInt(String key) => preferences.watchInt(key);
 
   @override
-  Stream<double> watchDouble(String key, [double defaultValue]) =>
-      preferences.watchDouble(key, defaultValue);
+  Stream<double?> watchDouble(String key) => preferences.watchDouble(key);
 
   @override
-  Stream<String> watchString(String key, [String defaultValue]) =>
-      preferences.watchString(key, defaultValue);
+  Stream<String?> watchString(String key) => preferences.watchString(key);
 
   @override
-  Stream<List<String>> watchStringList(String key, [List<String> defaultValue]) =>
-      preferences.watchStringList(key, defaultValue);
+  Stream<List<String>?> watchStringList(String key) => preferences.watchStringList(key);
 
   @override
-  Stream<T> watchObject<T>(String key, PreferenceAdapter<T> adapter, [T defaultValue]) =>
-      preferences.watchObject(key, adapter, defaultValue);
+  Stream<T?> watchObject<T>(String key, PreferenceAdapter<T> adapter) =>
+      preferences.watchObject(key, adapter);
 
   @override
-  Stream<List<T>> watchObjects<T>(String key, PreferenceAdapter<T> adapter,
-          [List<T> defaultValues]) =>
-      preferences.watchObjects(key, adapter, defaultValues);
+  Stream<List<T>?> watchObjects<T>(String key, PreferenceAdapter<T> adapter) =>
+      preferences.watchObjects(key, adapter);
 
   @override
   Future<bool> remove(String key) => preferences.remove(key);
 
   @override
-  Stream<T> watchEnum<T>(String key, List<T> values, [T defaultValue]) =>
-      preferences.watchEnum(key, values, defaultValue);
+  Stream<T?> watchEnum<T>(String key, List<T> values) =>
+      preferences.watchEnum(key, values);
 }

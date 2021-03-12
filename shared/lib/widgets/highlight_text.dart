@@ -3,18 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:core/core.dart';
 
 class HighlightText extends StatelessWidget {
-  final TextStyle activeStyle;
-  final TextStyle style;
+  final TextStyle? activeStyle;
+  final TextStyle? style;
   final String query;
   final String text;
   final TextAlign textAlign;
-  final TextDirection textDirection;
+  final TextDirection? textDirection;
   final bool softWrap;
   final TextOverflow overflow;
   final double textScaleFactor;
-  final int maxLines;
+  final int? maxLines;
   const HighlightText({
-    Key key,
+    Key? key,
     this.activeStyle,
     this.style,
     this.query = '',
@@ -31,7 +31,7 @@ class HighlightText extends StatelessWidget {
   Widget build(BuildContext context) {
     final idxs = _getQueryHighlights(text, query);
     final style = this.style ?? Theme.of(context).textTheme.bodyText2;
-    final activeStyle = this.activeStyle ?? style.copyWith(fontWeight: FontWeight.bold);
+    final activeStyle = this.activeStyle ?? style!.copyWith(fontWeight: FontWeight.bold);
 
     return RichText(
       textAlign: textAlign,
@@ -43,7 +43,7 @@ class HighlightText extends StatelessWidget {
       text: TextSpan(
         children: idxs.map((idx) {
           return TextSpan(
-            text: text?.substring(idx.first, idx.second) ?? '',
+            text: text.substring(idx.first, idx.second),
             style: idx.third ? activeStyle : style,
           );
         }).toList(),
@@ -53,8 +53,8 @@ class HighlightText extends StatelessWidget {
 }
 
 List<Triplet<int, int, bool>> _getQueryHighlights(String text, String query) {
-  final t = text?.toLowerCase() ?? '';
-  final q = query?.toLowerCase() ?? '';
+  final t = text.toLowerCase();
+  final q = query.toLowerCase();
 
   if (t.isEmpty || q.isEmpty || !t.contains(q)) return [Triplet(0, t.length, false)];
 
@@ -75,7 +75,7 @@ List<Triplet<int, int, bool>> _getQueryHighlights(String text, String query) {
   } else {
     final List<Triplet<int, int, bool>> result = [];
 
-    Triplet<int, int, bool> last;
+    Triplet<int, int, bool>? last;
     for (final idx in idxs) {
       final isLast = idx == idxs.last;
       if (last == null) {

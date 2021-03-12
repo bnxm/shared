@@ -5,9 +5,9 @@ class DoubleText extends StatelessWidget {
   final Text right;
   final double spacing;
   const DoubleText({
-    Key key,
-    @required this.left,
-    @required this.right,
+    Key? key,
+    required this.left,
+    required this.right,
     this.spacing = 16,
   }) : super(key: key);
 

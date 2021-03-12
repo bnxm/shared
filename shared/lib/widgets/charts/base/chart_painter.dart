@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared/shared.dart';
 
 abstract class ChartPainter<T, S extends ChartData<T>> extends BasePainter {
-  Interaction interaction;
-  double v;
+  Interaction? interaction;
+  double? v;
 
   bool isPreDraw = false;
 

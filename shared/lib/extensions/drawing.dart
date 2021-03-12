@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared/drawing/drawing.dart';
 
 extension PathExtensions on Path {
-  ui.Tangent fractionalTangent(double x) {
+  ui.Tangent? fractionalTangent(double x) {
     final metrics = computeMetrics().first;
     return metrics.getTangentForOffset(x.clamp(0.0, 1.0) * metrics.length);
   }
@@ -16,7 +16,7 @@ extension PathExtensions on Path {
     assert(!metrics.isClosed);
 
     Offset fractionalOffset(double x) {
-      return metrics.getTangentForOffset(x * metrics.length).position;
+      return metrics.getTangentForOffset(x * metrics.length)!.position;
     }
 
     final bounds = getBounds();
@@ -53,14 +53,14 @@ extension PathExtensions on Path {
         Offset.zero;
   }
 
-  Path trim(double from, double to, {bool isFractional = true}) {
+  Path trim(double from, double? to, {bool isFractional = true}) {
     final metrics = computeMetrics().toList();
     final bounds = getBounds();
 
-    double toFractional(double value) {
+    double? toFractional(double? value) {
       if (isFractional) return value;
 
-      return ((value - bounds.left) / bounds.width).clamp(0.0, 1.0);
+      return ((value! - bounds.left) / bounds.width).clamp(0.0, 1.0);
     }
 
     if (metrics.isEmpty) {
@@ -71,8 +71,8 @@ extension PathExtensions on Path {
     final length = metric.length;
 
     return metric.extractPath(
-      toFractional(from) * length,
-      toFractional(to) * length,
+      toFractional(from)! * length,
+      toFractional(to)! * length,
     );
   }
 }
@@ -95,10 +95,10 @@ extension CanvasExtension on Canvas {
   void drawDashPath(
     Path source,
     Paint paint, {
-    @required List<double> pattern,
-    DashOffset dashOffset,
+    required List<double> pattern,
+    DashOffset? dashOffset,
   }) {
-    final path = dashPath(source, pattern: pattern, dashOffset: dashOffset);
+    final path = dashPath(source, pattern: pattern, dashOffset: dashOffset)!;
     drawPath(path, paint);
   }
 }
@@ -107,17 +107,17 @@ extension PaintExtension on Paint {
   set fill(bool value) => style = value ? PaintingStyle.fill : PaintingStyle.stroke;
 
   Paint blur(
-    double radius, {
+    double? radius, {
     BlurStyle style = BlurStyle.normal,
   }) =>
       this
         ..maskFilter =
             radius == null || radius == 0 ? null : MaskFilter.blur(style, radius);
 
-  Paint setShader(dynamic rect, List<Color> colors, {List<double> stops, bool vertical}) {
+  Paint setShader(dynamic rect, List<Color>? colors, {List<double>? stops, bool? vertical}) {
     assert(rect is RRect || rect is Rect);
-    Offset start;
-    Offset end;
+    late Offset start;
+    late Offset end;
 
     final v = vertical ?? rect.width < rect.height;
 
@@ -142,10 +142,10 @@ extension PaintExtension on Paint {
     dynamic colors,
     Offset from,
     Offset to, {
-    List<double> stops,
+    List<double>? stops,
     ui.TileMode tileMode = ui.TileMode.clamp,
   }) {
-    final finalColors = dynamicToColors(colors, true);
+    final finalColors = dynamicToColors(colors, true)!;
     final finalStops = stops ?? calculateColorStops(finalColors);
 
     return ui.Gradient.linear(
@@ -184,7 +184,7 @@ extension RRectExtensions on RRect {
   }
 
   RRect copyWith(
-      {Rect r, double bottomRight, double bottomLeft, double topLeft, double topRight}) {
+      {Rect? r, double? bottomRight, double? bottomLeft, double? topLeft, double? topRight}) {
     return RRect.fromRectAndCorners(
       r ?? rect,
       bottomLeft: bottomLeft != null ? Radius.circular(bottomLeft) : blRadius,

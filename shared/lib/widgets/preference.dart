@@ -5,24 +5,24 @@ import 'package:flutter/material.dart';
 import 'package:shared/shared.dart';
 
 class Preference extends StatelessWidget {
-  final String dependentKey;
-  final bool Function(dynamic value) disableWhenDependent;
-  final bool isEnabled;
-  final bool reserveIconSpace;
+  final String? dependentKey;
+  final bool Function(dynamic value)? disableWhenDependent;
+  final bool? isEnabled;
+  final bool? reserveIconSpace;
   final dynamic title;
   final dynamic summary;
-  final Widget leading;
-  final Widget trailing;
-  final VoidCallback onTap;
+  final Widget? leading;
+  final Widget? trailing;
+  final VoidCallback? onTap;
   final EdgeInsets padding;
-  final bool show;
+  final bool? show;
   const Preference({
-    Key key,
+    Key? key,
     this.dependentKey,
     this.disableWhenDependent,
     this.isEnabled = true,
     this.reserveIconSpace,
-    @required this.title,
+    required this.title,
     this.summary,
     this.leading,
     this.trailing,
@@ -52,7 +52,7 @@ class Preference extends StatelessWidget {
           return preference;
         } else {
           return AnimatedSizeFade(
-            show: show,
+            show: show!,
             duration: const Millis(500),
             child: preference,
           );
@@ -70,7 +70,7 @@ class Preference extends StatelessWidget {
         PreferencePage.of(context)?.reserveIconSpace ??
         false;
 
-    Widget leading = this.leading;
+    Widget? leading = this.leading;
     if (leading is Icon || reserveIconSpace) {
       leading = Container(
         width: 40,
@@ -79,7 +79,7 @@ class Preference extends StatelessWidget {
       );
     }
 
-    Widget trailing = this.trailing;
+    Widget? trailing = this.trailing;
     if (trailing is Icon) {
       trailing = Container(
         width: 40,
@@ -102,7 +102,7 @@ class Preference extends StatelessWidget {
             this.summary,
             duration: const Millis(350),
             curve: Curves.ease,
-            style: textTheme.subtitle2,
+            style: textTheme.subtitle2!,
           )
         : this.summary;
 
@@ -116,7 +116,7 @@ class Preference extends StatelessWidget {
         trailing: trailing,
         reserveIconSpace: reserveIconSpace,
         onTap: onTap,
-        padding: padding ?? const EdgeInsets.all(16),
+        padding: padding,
       ),
     );
   }
@@ -124,24 +124,24 @@ class Preference extends StatelessWidget {
 
 class _CheckableBasePreference extends StatelessWidget {
   final bool isChecked;
-  final String prefsKey;
-  final bool defaultValue;
-  final VoidCallback onTap;
-  final void Function(bool value) onChanged;
-  final String dependentKey;
-  final bool Function(dynamic value) disableWhenDependent;
-  final bool isEnabled;
-  final bool reserveIconSpace;
+  final String? prefsKey;
+  final bool? defaultValue;
+  final VoidCallback? onTap;
+  final void Function(bool value)? onChanged;
+  final String? dependentKey;
+  final bool Function(dynamic value)? disableWhenDependent;
+  final bool? isEnabled;
+  final bool? reserveIconSpace;
   final dynamic title;
   final dynamic summary;
   final dynamic summaryActive;
   final dynamic summaryInActive;
-  final Widget leading;
+  final Widget? leading;
   final Widget Function(bool value, void Function(bool) set) trailing;
-  final EdgeInsets padding;
-  final bool show;
+  final EdgeInsets? padding;
+  final bool? show;
   const _CheckableBasePreference({
-    Key key,
+    Key? key,
     this.prefsKey,
     this.defaultValue,
     this.isChecked = false,
@@ -156,10 +156,10 @@ class _CheckableBasePreference extends StatelessWidget {
     this.title,
     this.summary,
     this.leading,
-    @required this.trailing,
+    required this.trailing,
     this.padding,
     this.show,
-  })  : assert(prefsKey == null || (prefsKey != null && defaultValue != null)),
+  })  : assert(prefsKey == null ||  defaultValue != null),
         super(key: key);
 
   bool get hasKey => key != null;
@@ -176,7 +176,7 @@ class _CheckableBasePreference extends StatelessWidget {
   Widget build(BuildContext context) {
     return _PreferenceKeyListenerBuilder(
       preferenceKey: prefsKey,
-      defaultValue: isChecked ?? defaultValue,
+      defaultValue: isChecked,
       builder: (context, isChecked) {
         final padding = this.padding ?? const EdgeInsets.all(16);
         final summary = (isChecked ? summaryActive : summaryInActive) ?? this.summary;
@@ -184,7 +184,7 @@ class _CheckableBasePreference extends StatelessWidget {
         return Preference(
           onTap: () {
             if (onTap != null) {
-              onTap();
+              onTap!();
             } else {
               setChecked(!isChecked);
             }
@@ -198,7 +198,7 @@ class _CheckableBasePreference extends StatelessWidget {
           reserveIconSpace: reserveIconSpace,
           disableWhenDependent: disableWhenDependent,
           padding: summary == null
-              ? padding.subtract(const EdgeInsets.only(top: 8, bottom: 8))
+              ? padding.subtract(const EdgeInsets.only(top: 8, bottom: 8)) as EdgeInsets
               : padding,
           show: show,
         );
@@ -210,22 +210,22 @@ class _CheckableBasePreference extends StatelessWidget {
 class SwitchPreference extends _CheckableBasePreference {
   SwitchPreference({
     bool isChecked = false,
-    String prefsKey,
-    bool defaultValue,
-    Key key,
-    String dependentKey,
-    bool isEnabled,
-    bool reserveIconSpace,
-    @required dynamic title,
+    String? prefsKey,
+    bool? defaultValue,
+    Key? key,
+    String? dependentKey,
+    bool? isEnabled,
+    bool? reserveIconSpace,
+    required dynamic title,
     dynamic summary,
     dynamic summaryActive,
     dynamic summaryInActive,
-    VoidCallback onTap,
-    void Function(bool value) onChanged,
-    bool Function(dynamic value) disableWhenDependent,
-    Widget leading,
-    EdgeInsets padding,
-    bool show,
+    VoidCallback? onTap,
+    void Function(bool value)? onChanged,
+    bool Function(dynamic value)? disableWhenDependent,
+    Widget? leading,
+    EdgeInsets? padding,
+    bool? show,
   }) : super(
           key: key,
           prefsKey: prefsKey,
@@ -253,22 +253,22 @@ class SwitchPreference extends _CheckableBasePreference {
 
 class CheckBoxPreference extends _CheckableBasePreference {
   CheckBoxPreference({
-    String prefsKey,
-    bool defaultValue,
-    Key key,
-    String dependentKey,
-    bool isEnabled,
-    bool reserveIconSpace,
-    @required dynamic title,
+    String? prefsKey,
+    bool? defaultValue,
+    Key? key,
+    String? dependentKey,
+    bool? isEnabled,
+    bool? reserveIconSpace,
+    required dynamic title,
     dynamic summary,
     dynamic summaryActive,
     dynamic summaryInActive,
-    VoidCallback onTap,
-    void Function(bool value) onChanged,
-    bool Function(dynamic value) disableWhenDependent,
-    Widget leading,
-    EdgeInsets padding,
-    bool show,
+    VoidCallback? onTap,
+    void Function(bool value)? onChanged,
+    bool Function(dynamic value)? disableWhenDependent,
+    Widget? leading,
+    EdgeInsets? padding,
+    bool? show,
   }) : super(
           key: key,
           prefsKey: prefsKey,
@@ -288,27 +288,27 @@ class CheckBoxPreference extends _CheckableBasePreference {
           show: show,
           trailing: (value, set) => Checkbox(
             value: value,
-            onChanged: (checked) => set(checked),
+            onChanged: (checked) => set(checked!),
           ),
         );
 }
 
 class PreferenceGroup extends StatelessWidget {
-  final String title;
-  final TextTheme style;
+  final String? title;
+  final TextTheme? style;
   final List<Widget> children;
   final bool isEnabled;
-  final bool reserveIconSpace;
+  final bool? reserveIconSpace;
   const PreferenceGroup({
-    Key key,
+    Key? key,
     this.title,
-    @required this.children,
+    required this.children,
     this.style,
     this.isEnabled = true,
     this.reserveIconSpace,
   }) : super(key: key);
 
-  static PreferenceGroup of(BuildContext context) =>
+  static PreferenceGroup? of(BuildContext context) =>
       context.findAncestorWidgetOfExactType<PreferenceGroup>();
 
   @override
@@ -328,11 +328,11 @@ class PreferenceGroup extends StatelessWidget {
           Padding(
             padding: EdgeInsets.fromLTRB(reserveIconSpace ? 72 : 16, 8, 16, 8),
             child: Text(
-              title,
+              title!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: style ??
-                  textTheme.bodyText1.copyWith(
+              style: style as TextStyle? ??
+                  textTheme.bodyText1!.copyWith(
                     fontWeight: FontWeight.w600,
                     color: theme.accentColor,
                     fontSize: 14,
@@ -360,12 +360,12 @@ class PreferencePage extends StatelessWidget {
   final bool reserveIconSpace;
   final WidgetBuilder builder;
   const PreferencePage({
-    Key key,
+    Key? key,
     this.reserveIconSpace = false,
-    @required this.builder,
+    required this.builder,
   }) : super(key: key);
 
-  static PreferencePage of(BuildContext context) {
+  static PreferencePage? of(BuildContext context) {
     return context.findAncestorWidgetOfExactType<PreferencePage>();
   }
 
@@ -374,7 +374,7 @@ class PreferencePage extends StatelessWidget {
     return FutureBuilder<RxSharedPreferences>(
       future: RxSharedPreferences.instance,
       builder: (context, snapshot) => StreamBuilder(
-        stream: snapshot?.data?.stream,
+        stream: snapshot.data?.stream,
         builder: (context, _) => builder(context),
       ),
     );
@@ -382,14 +382,14 @@ class PreferencePage extends StatelessWidget {
 }
 
 class _PreferenceKeyListenerBuilder extends StatelessWidget {
-  final String preferenceKey;
+  final String? preferenceKey;
   final bool defaultValue;
   final Widget Function(BuildContext context, bool value) builder;
   const _PreferenceKeyListenerBuilder({
-    Key key,
-    @required this.preferenceKey,
-    this.defaultValue = false,
-    @required this.builder,
+    Key? key,
+    required this.preferenceKey,
+    required this.defaultValue,
+    required this.builder,
   }) : super(key: key);
 
   @override
@@ -399,9 +399,9 @@ class _PreferenceKeyListenerBuilder extends StatelessWidget {
     } else {
       return FutureBuilder<RxSharedPreferences>(
         future: RxSharedPreferences.instance,
-        builder: (context, snapshot) => StreamBuilder(
+        builder: (context, snapshot) => StreamBuilder<bool?>(
           initialData: defaultValue,
-          stream: preferenceKey != null ? snapshot?.data?.watchBool(preferenceKey) : null,
+          stream: preferenceKey != null ? snapshot.data?.watchBool(preferenceKey!) : null,
           builder: (context, snapshot) => builder(context, snapshot.data ?? defaultValue),
         ),
       );
@@ -413,15 +413,15 @@ class ColorPreference extends StatelessWidget {
   final String title;
   final Color color;
   final void Function(Color color) onChanged;
-  final Widget leading;
-  final Widget trailing;
+  final Widget? leading;
+  final Widget? trailing;
   final bool isEnabled;
   final bool isAlphaEnabled;
   const ColorPreference({
-    Key key,
-    @required this.title,
-    @required this.color,
-    @required this.onChanged,
+    Key? key,
+    required this.title,
+    required this.color,
+    required this.onChanged,
     this.leading,
     this.trailing,
     this.isEnabled = true,
@@ -438,7 +438,7 @@ class ColorPreference extends StatelessWidget {
         AnimatedText(
           '#${color.value.toRadixString(16).toUpperCase()}',
           duration: const Millis(250),
-          style: textTheme.bodyText2.copyWith(color: color),
+          style: textTheme.bodyText2!.copyWith(color: color),
         ),
       ],
     );
@@ -473,18 +473,18 @@ class SliderPreference extends StatefulWidget {
   final void Function(num value) onChanged;
   final num min;
   final num max;
-  final String Function(num value) formatter;
-  final Widget leading;
-  final Widget trailing;
+  final String Function(num value)? formatter;
+  final Widget? leading;
+  final Widget? trailing;
   final bool isEnabled;
-  final String startAnnotation;
-  final String endAnnotation;
+  final String? startAnnotation;
+  final String? endAnnotation;
   final bool showValue;
   const SliderPreference({
-    Key key,
-    @required this.title,
-    @required this.value,
-    @required this.onChanged,
+    Key? key,
+    required this.title,
+    required this.value,
+    required this.onChanged,
     this.min = 0.0,
     this.max = 1.0,
     this.formatter,
@@ -540,7 +540,7 @@ class _SliderPreferenceState extends State<SliderPreference> {
           children: <Widget>[
             if (widget.startAnnotation != null)
               Text(
-                widget.startAnnotation,
+                widget.startAnnotation!,
                 style: textTheme.caption,
               ),
             Expanded(
@@ -548,7 +548,7 @@ class _SliderPreferenceState extends State<SliderPreference> {
             ),
             if (widget.endAnnotation != null)
               Text(
-                widget.endAnnotation,
+                widget.endAnnotation!,
                 style: textTheme.caption,
               ),
           ],

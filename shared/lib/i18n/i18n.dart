@@ -1,21 +1,18 @@
-import 'dart:io';
 import 'dart:ui';
 
 import 'package:collection/collection.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import 'package:meta/meta.dart';
 
 import 'package:shared/shared.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'i18n_loader.dart';
 import 'i18n_store.dart';
 import 'language.dart';
 
-typedef LanguageChangedCallback = void Function(Language language);
+typedef LanguageChangedCallback = void Function(Language? language);
 
 class I18n {
   const I18n._();
@@ -28,8 +25,8 @@ class I18n {
   @visibleForTesting
   static String dir = 'i18n';
 
-  static Language _language;
-  static Language get language => _language;
+  static Language? _language;
+  static Language? get language => _language;
   static List<Language> _languages = [];
   static List<Language> get languages => List.from(_languages);
   static List<Locale> get locales => _languages.map((l) => l.locale).toList();
@@ -41,9 +38,9 @@ class I18n {
   static final Set<LanguageChangedCallback> _listeners = {};
 
   @visibleForTesting
-  static Map<String, String> defaultTranslations = {};
+  static Map<String?, String> defaultTranslations = {};
   @visibleForTesting
-  static Map<String, String> currentTranslations = {};
+  static Map<String?, String> currentTranslations = {};
 
   static final placeholderRegex = RegExp(r'{(.*?)}');
 
@@ -66,7 +63,7 @@ class I18n {
     _inTestMode = true;
     _language = langs.first;
 
-    await init(langs);
+    await init(langs as List<Language>);
   }
 
   static void _subscribeToChangesInLocale() {
@@ -83,7 +80,7 @@ class I18n {
   static String of(String input) {
     if (input == null) return 'null';
 
-    String translationKey;
+    String? translationKey;
 
     // First check if there is a key (key or translation string)
     // that matches the input string.
@@ -101,9 +98,9 @@ class I18n {
       final inputNoPlaceholders = raw(input);
 
       for (final entry in defaultTranslations.entries) {
-        final key = entry.key, translation = entry.value;
+        final String? key = entry.key, translation = entry.value;
 
-        final translationNoPlaceholders = raw(translation);
+        final translationNoPlaceholders = raw(translation!);
 
         // When the value is only a placeholder, as with
         // {1: Hour, else: Hours}
@@ -115,11 +112,12 @@ class I18n {
           final placeholder = Placeholder.from(translation);
 
           if (placeholder?.orElse != null) {
-            final orElseValue = placeholder.orElse.replaceAll('\$i', '').removeWhitespace;
+            final orElseValue =
+                placeholder!.orElse!.replaceAll('\$i', '').removeWhitespace;
             final inputPlaceholders = placeholderRegex.allMatches(input);
 
             final hasMatch = inputPlaceholders.any(
-              (match) => match.group(0).contains(orElseValue),
+              (match) => match.group(0)!.contains(orElseValue),
             );
 
             if (hasMatch) {
@@ -142,7 +140,7 @@ class I18n {
     final translation = currentTranslations[translationKey];
     assert(
       translation != null,
-      "The string '$input' couldn't be matched to a key in the ${language.code} translation file!",
+      "The string '$input' couldn't be matched to a key in the ${language!.code} translation file!",
     );
 
     if (translation == null) {
@@ -157,7 +155,7 @@ class I18n {
     } else {
       assert(
         srcPlaceholders.length == targetPlaceholders.length,
-        "Input '$input' (in ${defaultLanguage.code}) and its translation '$translation' (in ${_language.code}) have a different amount of placeholders! This is not supported (yet).",
+        "Input '$input' (in ${defaultLanguage.code}) and its translation '$translation' (in ${_language!.code}) have a different amount of placeholders! This is not supported (yet).",
       );
 
       String result = translation;
@@ -169,7 +167,7 @@ class I18n {
 
         result = result.replaceLast(
           placeholder.src,
-          placeholder.format(src) ?? src,
+          placeholder.format(src),
         );
       }
 
@@ -177,13 +175,13 @@ class I18n {
     }
   }
 
-  static String key(String key, [dynamic placeholders = const []]) {
-    String translation = currentTranslations[key];
+  static String? key(String key, [dynamic placeholders = const []]) {
+    String? translation = currentTranslations[key];
 
     if (translation == null) {
       assert(
         translation != null,
-        'No translation for key $key in language file ${language.code}',
+        'No translation for key $key in language file ${language!.code}',
       );
 
       return key;
@@ -195,11 +193,11 @@ class I18n {
 
     final pairs = zip(
       Placeholder.all(translation),
-      placeholders as List,
+      placeholders,
     );
 
     for (final pair in pairs) {
-      translation = translation.replaceFirst(
+      translation = translation!.replaceFirst(
         placeholderRegex,
         pair.first.format(pair.second),
       );
@@ -212,12 +210,12 @@ class I18n {
   ///
   /// The app will use this language until a new language is set
   /// being set.
-  static Future<Language> setLanguage(dynamic language) async {
+  static Future<Language?> setLanguage(dynamic language) async {
     assert(language is String || language is Language);
 
-    final String code =
+    final String? code =
         language != null && language is Language ? language.code : language;
-    final Language lang = _resolveLanguageForCode(code);
+    final Language? lang = _resolveLanguageForCode(code);
 
     await _saveLanguage(lang);
     await _loadLanguage();
@@ -232,7 +230,7 @@ class I18n {
   /// If the system language is not in the supported [languages],
   /// the closest matching supported language or the default
   /// language will be selected.
-  static Future<Language> setSystemLanguage() => setLanguage(null);
+  static Future<Language?> setSystemLanguage() => setLanguage(null);
 
   static void addListener(LanguageChangedCallback callback) => _listeners.add(callback);
   static void removeListener(LanguageChangedCallback callback) =>
@@ -244,7 +242,7 @@ class I18n {
     }
   }
 
-  static Future<void> _saveLanguage(Language lang) async {
+  static Future<void> _saveLanguage(Language? lang) async {
     if (_inTestMode) {
       _language = lang;
     } else {
@@ -254,12 +252,12 @@ class I18n {
 
   static Future<void> _loadLanguage() async {
     _language = await _getPersistedLanguage();
-    currentTranslations = await loadTranslations(_language);
+    currentTranslations = await loadTranslations(_language!);
     defaultTranslations = await loadTranslations(defaultLanguage);
     _updateIntl();
   }
 
-  static Future<Language> _getPersistedLanguage() async {
+  static Future<Language?> _getPersistedLanguage() async {
     if (inTestMode) {
       return _language;
     }
@@ -279,14 +277,14 @@ class I18n {
 
   static void _updateIntl() {
     try {
-      initializeDateFormatting(language.code);
-      Intl.defaultLocale = language.code;
+      initializeDateFormatting(language!.code);
+      Intl.defaultLocale = language!.code;
     } catch (_) {}
   }
 
   /// Returns the closest system language that the app supports.
   static Language _getBestLanguageBasedOnSystemLanguage() {
-    var locales = window.locales ?? <Locale>[];
+    var locales = window.locales;
 
     // locales might be empty when init() is invoked
     // in background or there is no window instance
@@ -295,7 +293,7 @@ class I18n {
       // This method should give us the current locale
       // regardless of whether the app is in background or not.
       // observe: https://github.com/flutter/flutter/issues/73342
-      
+
       // window.computePlatformResolvedLocale(I18n.locales)?.also((it) => locales = [it]);
     }
 
@@ -313,7 +311,7 @@ class I18n {
 
   /// Returns the best corresponding [Language] for the given `code`
   /// or null if no language can be matched to the `code`.
-  static Language _resolveLanguageForCode(String code) {
+  static Language? _resolveLanguageForCode(String? code) {
     if (code == null || code == 'system') {
       return null;
     }
@@ -362,16 +360,16 @@ class Placeholder extends DelegatingMap<String, String> {
   static List<Placeholder> all(String src) {
     return I18n.placeholderRegex
         .allMatches(src)
-        .map((e) => Placeholder.from(e.group(0)))
+        .map((e) => Placeholder.from(e.group(0)!))
         .toList()
-          ..removeWhere((element) => element == null);
+        .removeNull();
   }
 
   String format(dynamic value) {
     return src.replaceFirst(regex, value.toString());
   }
 
-  factory Placeholder.from(String src) {
+  static Placeholder? from(String src) {
     final matchesAll = regex.stringMatch(src) == src;
 
     if (matchesAll) {
@@ -399,8 +397,8 @@ class Placeholder extends DelegatingMap<String, String> {
     return null;
   }
 
-  String get orElse {
-    final keys = this.keys.toList();
+  String? get orElse {
+    final List<String> keys = this.keys.toList();
 
     for (final i in 0.until(keys.length)) {
       final key = keys[i];
@@ -428,7 +426,7 @@ class PluralPlaceholder extends Placeholder {
   String format(dynamic value) {
     final onlyDigits = value.toString().replaceAll(RegExp(r'[^0-9, ^\., ^\,]'), '');
 
-    final number = num.tryParse(onlyDigits);
+    final number = num.tryParse(onlyDigits)!;
     assert(number != null, 'Plural placeholder was not given a valid number!');
 
     if (number == null) {
@@ -441,7 +439,7 @@ class PluralPlaceholder extends Placeholder {
 
       if (entry.key == 'else' || key == number) {
         final formatted = NumberFormat.decimalPattern(
-          I18n.language.locale.scriptCode,
+          I18n.language!.locale.scriptCode,
         ).format(number);
 
         return value.replaceAll('\$i', formatted);

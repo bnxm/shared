@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 /// A compact [Column].
 class Vertical extends Column {
   Vertical({
-    Key key,
+    Key? key,
     MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
     MainAxisSize mainAxisSize = MainAxisSize.min,
     CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.start,
-    TextDirection textDirection,
+    TextDirection? textDirection,
     VerticalDirection verticalDirection = VerticalDirection.down,
-    TextBaseline textBaseline,
-    @required List<Widget> children,
+    TextBaseline? textBaseline,
+    required List<Widget?> children,
   }) : super(
           key: key,
           mainAxisAlignment: mainAxisAlignment,
@@ -19,21 +19,21 @@ class Vertical extends Column {
           textDirection: textDirection,
           verticalDirection: verticalDirection,
           textBaseline: textBaseline,
-          children: children,
+          children: children as List<Widget>,
         );
 }
 
 /// A compact Row
 class Horizontal extends Row {
   Horizontal({
-    Key key,
+    Key? key,
     MainAxisAlignment mainAxisAlignment = MainAxisAlignment.start,
     MainAxisSize mainAxisSize = MainAxisSize.min,
     CrossAxisAlignment crossAxisAlignment = CrossAxisAlignment.center,
-    TextDirection textDirection,
+    TextDirection? textDirection,
     VerticalDirection verticalDirection = VerticalDirection.down,
-    TextBaseline textBaseline,
-    @required List<Widget> children,
+    TextBaseline? textBaseline,
+    required List<Widget> children,
   }) : super(
           key: key,
           mainAxisAlignment: mainAxisAlignment,
@@ -49,8 +49,8 @@ class Horizontal extends Row {
 class SizeBuilder extends StatelessWidget {
   final Widget Function(BuildContext context, double width, double height) builder;
   const SizeBuilder({
-    Key key,
-    @required this.builder,
+    Key? key,
+    required this.builder,
   })  : assert(builder != null),
         super(key: key);
 
@@ -68,9 +68,9 @@ class SizeBuilder extends StatelessWidget {
 
 class Invisible extends StatelessWidget {
   final bool invisible;
-  final Widget child;
+  final Widget? child;
   const Invisible({
-    Key key,
+    Key? key,
     this.child,
     this.invisible = true,
   }) : super(key: key);
@@ -82,7 +82,7 @@ class Invisible extends StatelessWidget {
       maintainSize: true,
       maintainAnimation: true,
       maintainState: true,
-      child: child,
+      child: child!,
     );
   }
 }

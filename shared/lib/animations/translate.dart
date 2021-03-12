@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class Translate extends StatefulWidget {
-  final Offset translation;
+  final Offset? translation;
   final Alignment alignment;
-  final Widget child;
+  final Widget? child;
   final bool isFractional;
   const Translate({
-    Key key,
+    Key? key,
     this.translation,
     this.alignment = Alignment.topLeft,
     this.child,
@@ -18,7 +18,7 @@ class Translate extends StatefulWidget {
 }
 
 class _TranslateState extends State<Translate> {
-  Offset offset;
+  late Offset offset;
   Alignment get align => widget.alignment;
 
   @override
@@ -45,14 +45,14 @@ class _TranslateState extends State<Translate> {
 
     return !widget.isFractional
         ? Transform.translate(
-            offset: widget.translation,
+            offset: widget.translation!,
             child: FractionalTranslation(
               translation: offset,
               child: widget.child,
             ),
           )
         : FractionalTranslation(
-            translation: widget.translation,
+            translation: widget.translation!,
             child: FractionalTranslation(
               translation: offset,
               child: widget.child,

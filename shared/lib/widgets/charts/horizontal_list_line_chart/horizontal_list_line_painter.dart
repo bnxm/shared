@@ -11,35 +11,35 @@ class HorizontaListLinePainer<T> extends BasePainter {
   final HorizontalListLineChartState<T> parent;
   final List<ListLineSeries<T>> allSeries;
   HorizontaListLinePainer({
-    @required List<ListLineSeries<T>> series,
-    @required this.index,
-    @required this.isFirst,
-    @required this.isLast,
-    @required this.parent,
+    required List<ListLineSeries<T>> series,
+    required this.index,
+    required this.isFirst,
+    required this.isLast,
+    required this.parent,
   }) : allSeries = List.from(series)
           ..sort(
-            (a, b) => a.elevation.compareTo(b.elevation),
+            (a, b) => a.elevation!.compareTo(b.elevation!),
           );
 
   double max = minDouble;
   double min = maxDouble;
   int totalItemCount = 0;
 
-  ListLineChartData<T> get data => parent.value;
+  ListLineChartData<T>? get data => parent.value;
   double get t => parent.v;
 
   double get itemExtent => parent.itemExtent;
-  EdgeInsets get padding => data.innerPadding;
-  double get leftInset => isFirst ? padding.left : 0.0;
-  double get rightInset => isLast ? padding.right : 0.0;
+  EdgeInsets? get padding => data!.innerPadding;
+  double get leftInset => isFirst ? padding!.left : 0.0;
+  double get rightInset => isLast ? padding!.right : 0.0;
 
-  HorizontalListLabelBuilder<T> get labelBuilder => parent.widget.labelBuilder;
+  HorizontalListLabelBuilder<T>? get labelBuilder => parent.widget.labelBuilder;
 
-  Rect shaderRect;
+  Rect? shaderRect;
 
-  double fontHeight;
-  ListLineSeries<T> series;
-  ListLineSeries<T> prevSeries;
+  late double fontHeight;
+  ListLineSeries<T>? series;
+  ListLineSeries<T>? prevSeries;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -60,18 +60,18 @@ class HorizontaListLinePainer<T> extends BasePainter {
 
   void _findOldSeries() {
     for (final oldSeries in parent.prevSeries ?? allSeries) {
-      if (series.id == oldSeries.id) {
+      if (series!.id == oldSeries.id) {
         prevSeries = oldSeries.copyWith();
       }
     }
-    prevSeries ??= series.copyWith();
+    prevSeries ??= series!.copyWith();
   }
 
   void _drawSeries() {
     final paint = Paint()
       ..isAntiAlias = true
-      ..strokeWidth = series.thickness
-      ..strokeJoin = series.strokeJoin
+      ..strokeWidth = series!.thickness!
+      ..strokeJoin = series!.strokeJoin!
       ..strokeCap = StrokeCap.square;
 
     final knots = _computeKnots();
@@ -86,22 +86,22 @@ class HorizontaListLinePainer<T> extends BasePainter {
     final prevY = computePath.fractionalOffset(0.0).dy;
     final nextY = computePath.fractionalOffset(1.0).dy;
 
-    if (series.hasFill) {
+    if (series!.hasFill) {
       _drawFill(fillPath, paint);
     }
 
     paint.style = PaintingStyle.stroke;
 
-    final hasLabelBuilder = series.labelBuilder != null || labelBuilder != null;
+    final hasLabelBuilder = series!.labelBuilder != null || labelBuilder != null;
     if (hasLabelBuilder) {
       _drawLabel(y);
     }
 
-    if (series.hasDivider) {
+    if (series!.hasDivider) {
       _drawDivider(prevY, nextY, fillPath, paint);
     }
 
-    if (series.hasShadow) {
+    if (series!.hasShadow) {
       _drawShadow(path, paint);
     }
 
@@ -116,26 +116,26 @@ class HorizontaListLinePainer<T> extends BasePainter {
   }
 
   List<Offset> _computeKnots() {
-    final labelStyle = series.labelStyle;
-    final labelInset = labelStyle != null ? series.labelSpacing + fontHeight : 0.0;
-    final h = height - (labelInset + padding.vertical);
+    final labelStyle = series!.labelStyle;
+    final labelInset = labelStyle != null ? series!.labelSpacing! + fontHeight : 0.0;
+    final h = height - (labelInset + padding!.vertical);
 
-    double getDyForValue(double value) {
-      value ??= series.values[index].y;
+    double getDyForValue(double? value) {
+      value ??= series!.values[index].y;
 
-      final m = (value - min) / (max - min);
+      final m = (value! - min) / (max - min);
       final dy = h - (m * h);
-      return dy + padding.top + labelInset - (series.thickness / 2);
+      return dy + padding!.top + labelInset - (series!.thickness! / 2);
     }
 
     final List<Offset> knots = [];
     int i = 0;
-    for (final value in series.values) {
+    for (final value in series!.values) {
       final isFirst = i == 0;
-      final isLast = value == series.values.last;
+      final isLast = value == series!.values.last;
 
       final dy = getDyForValue(value.y);
-      final dx = padding.left + (i * parent.itemExtent);
+      final dx = padding!.left + (i * parent.itemExtent);
 
       if (isFirst) knots.add(Offset(0, dy));
       knots.add(Offset(dx + ((width - (leftInset + rightInset)) / 2), dy));
@@ -148,10 +148,10 @@ class HorizontaListLinePainer<T> extends BasePainter {
   }
 
   Triplet<Path, Path, Path> _computePaths(List<Offset> knots) {
-    final dx = isFirst ? 0.0 : padding.left + (index * parent.itemExtent);
+    final dx = isFirst ? 0.0 : padding!.left + (index * parent.itemExtent);
     final shift = Offset(-dx, 0);
 
-    final wholePath = computeBezierCurve(knots, smoothFactor: series.smoothFactor ?? 0.0);
+    final wholePath = computeBezierCurve(knots, smoothFactor: series!.smoothFactor ?? 0.0);
 
     final path = wholePath
         .trim(
@@ -182,8 +182,8 @@ class HorizontaListLinePainer<T> extends BasePainter {
       ..style = PaintingStyle.fill
       ..setShader(
         drawingArea,
-        series.getFill(index),
-        vertical: series.verticalFill,
+        series!.getFill(index),
+        vertical: series!.verticalFill,
       );
 
     canvas.save();
@@ -192,18 +192,18 @@ class HorizontaListLinePainer<T> extends BasePainter {
     // no visible gap between each of the elements on
     // low resolution devices.
     drawRect(
-        series.hasDivider ? drawingArea : Rect.fromLTRB(-2, 0, width + 2, height), paint);
+        series!.hasDivider ? drawingArea : Rect.fromLTRB(-2, 0, width + 2, height), paint);
     canvas.restore();
   }
 
   void _drawShadow(Path path, Paint paint) {
     paint.setShader(
       drawingArea,
-      series.getShadow(index),
-      vertical: series.verticalGradient,
+      series!.getShadow(index),
+      vertical: series!.verticalGradient,
     );
 
-    paint.blur(series.elevation);
+    paint.blur(series!.elevation);
 
     drawPath(path, paint);
 
@@ -211,11 +211,11 @@ class HorizontaListLinePainer<T> extends BasePainter {
   }
 
   void _drawDivider(double prevY, double nextY, Path path, Paint paint) {
-    final hdt = series.dividerThickness;
+    final hdt = series!.dividerThickness!;
     final prevDivider =
-        Rect.fromLTRB(-hdt, series.smoothFactor == 0.0 ? prevY : 0.0, hdt, height);
+        Rect.fromLTRB(-hdt, series!.smoothFactor == 0.0 ? prevY : 0.0, hdt, height);
     final nextDivider = Rect.fromLTRB(
-        width - hdt, series.smoothFactor == 0.0 ? nextY : 0.0, width + hdt, height);
+        width - hdt, series!.smoothFactor == 0.0 ? nextY : 0.0, width + hdt, height);
 
     void draw(Rect divider) {
       drawLine(
@@ -224,7 +224,7 @@ class HorizontaListLinePainer<T> extends BasePainter {
         paint
           ..setShader(
             divider,
-            series.getDivider(index),
+            series!.getDivider(index),
           )
           ..strokeWidth = hdt,
       );
@@ -238,20 +238,20 @@ class HorizontaListLinePainer<T> extends BasePainter {
       draw(prevDivider);
     }
 
-    final isLastInSeries = index >= (series.values.length - 1);
+    final isLastInSeries = index >= (series!.values.length - 1);
     if (!isLastInSeries) {
       draw(nextDivider);
     }
 
     canvas.restore();
-    paint.strokeWidth = series.thickness;
+    paint.strokeWidth = series!.thickness!;
   }
 
   void _drawStroke(Path path, Paint paint) {
     paint.setShader(
       drawingArea,
-      series.getColor(index),
-      vertical: series.verticalGradient,
+      series!.getColor(index),
+      vertical: series!.verticalGradient,
     );
 
     canvas.save();
@@ -266,13 +266,13 @@ class HorizontaListLinePainer<T> extends BasePainter {
   }
 
   void _drawLabel(double y) {
-    final value = series.data[index];
-    final label = series.labelBuilder?.call(value, index) ??
+    final T value = series!.data[index];
+    final label = series!.labelBuilder?.call(value, index) ??
         labelBuilder?.call(series, value, index);
     if (label == null) return;
 
-    final style = series.labelStyle;
-    final labelInset = style != null ? series.labelSpacing + fontHeight : 0.0;
+    final style = series!.labelStyle;
+    final labelInset = style != null ? series!.labelSpacing! + fontHeight : 0.0;
 
     double dx = (width - (leftInset + rightInset)) / 2;
     if (isFirst) dx += leftInset;
@@ -286,11 +286,11 @@ class HorizontaListLinePainer<T> extends BasePainter {
 
   void _calculateExtremas() {
     if (parent.widget.min != null) {
-      min = parent.widget.min;
+      min = parent.widget.min as double;
     }
 
     if (parent.widget.max != null) {
-      max = parent.widget.max;
+      max = parent.widget.max as double;
     }
 
     for (final series in allSeries) {
@@ -300,16 +300,16 @@ class HorizontaListLinePainer<T> extends BasePainter {
 
       for (final value in series.values) {
         final v = value.y;
-        if (parent.widget.min == null && v < min) {
+        if (parent.widget.min == null && v! < min) {
           min = v;
         }
-        if (parent.widget.max == null && v > max) {
+        if (parent.widget.max == null && v! > max) {
           max = v;
         }
       }
     }
 
-    final padding = data.minDelta - (max - min);
+    final num padding = data!.minDelta! - (max - min);
     if (padding > 0) {
       max += padding / 2;
       min -= padding / 2;

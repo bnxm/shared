@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:meta/meta.dart';
 import 'package:shared/shared.dart';
 
 /// Creates a new path that is drawn from the segments of `source`.
@@ -12,14 +11,14 @@ import 'package:shared/shared.dart';
 ///
 /// Passing in a null `source` will result in a null result.  Passing a `source`
 /// that is an empty path will return an empty path.
-Path dashPath(
-  Path source, {
-  @required List<double> pattern,
-  DashOffset dashOffset,
+Path? dashPath(
+  Path? source, {
+  required List<double> pattern,
+  DashOffset? dashOffset,
 }) {
   final dashArray = DashPattern(pattern);
   
-  if (source == null || dashArray == null || dashArray.isZero) return source;
+  if (source == null || dashArray.isZero) return source;
   dashOffset ??= const DashOffset.absolute(0.0);
 
   final dest = Path();
@@ -52,7 +51,7 @@ class DashOffset {
   /// `percentage` will be clamped between 0.0 and 1.0; null will be converted
   /// to 0.0.
   DashOffset.percentage(double percentage)
-      : _rawVal = percentage.clamp(0.0, 1.0) ?? 0.0,
+      : _rawVal = percentage.clamp(0.0, 1.0),
         _dashOffsetType = _DashOffsetType.Percentage;
 
   /// Create a DashOffset that will be measured in terms of absolute pixels
@@ -60,7 +59,7 @@ class DashOffset {
   ///
   /// `start` will be coerced to 0.0 if null.
   const DashOffset.absolute(double start)
-      : _rawVal = start ?? 0.0,
+      : _rawVal = start,
         _dashOffsetType = _DashOffsetType.Absolute;
 
   final double _rawVal;
@@ -92,7 +91,7 @@ class DashPattern {
   }
 
   bool get isZero {
-    if (_values == null || _values.isEmpty) {
+    if (_values.isEmpty) {
       return true;
     }
 
@@ -108,7 +107,7 @@ class DashPattern {
 
   int get length => _values.length;
 
-  static DashPattern lerp(DashPattern a, DashPattern b, double v) {
+  static DashPattern? lerp(DashPattern? a, DashPattern? b, double v) {
     final List<double> result = [];
     a ??= DashPattern([0, 0]);
     if (b == null) return null;

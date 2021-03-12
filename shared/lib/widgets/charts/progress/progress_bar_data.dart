@@ -2,15 +2,15 @@ import 'dart:convert';
 import 'dart:ui';
 
 class ProgressBarData {
-  final double progress;
-  final double strokeWidth;
-  final double size;
-  final double backgroundStrokeWidth;
-  final double elevation;
-  final Color color;
-  final Color backgroundColor;
-  final Color shadowColor;
-  final bool round;
+  final double? progress;
+  final double? strokeWidth;
+  final double? size;
+  final double? backgroundStrokeWidth;
+  final double? elevation;
+  final Color? color;
+  final Color? backgroundColor;
+  final Color? shadowColor;
+  final bool? round;
   const ProgressBarData({
     this.progress,
     this.strokeWidth,
@@ -38,15 +38,15 @@ class ProgressBarData {
   }
 
   ProgressBarData copyWith({
-    double progress,
-    double strokeWidth,
-    double size,
-    double backgroundStrokeWidth,
-    double elevation,
-    Color color,
-    Color backgroundColor,
-    Color shadowColor,
-    bool round,
+    double? progress,
+    double? strokeWidth,
+    double? size,
+    double? backgroundStrokeWidth,
+    double? elevation,
+    Color? color,
+    Color? backgroundColor,
+    Color? shadowColor,
+    bool? round,
   }) {
     return ProgressBarData(
       progress: progress ?? this.progress,

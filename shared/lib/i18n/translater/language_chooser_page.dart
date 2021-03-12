@@ -1,7 +1,7 @@
 part of 'translater_page.dart';
 
 class LanguageChooserPage extends StatefulWidget {
-  const LanguageChooserPage({Key key}) : super(key: key);
+  const LanguageChooserPage({Key? key}) : super(key: key);
 
   @override
   _LanguageChooserPageState createState() => _LanguageChooserPageState();

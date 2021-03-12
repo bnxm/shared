@@ -8,8 +8,8 @@ class PressureStop implements Comparable<PressureStop> {
   final double thickness;
   final double stop;
   PressureStop({
-    @required this.thickness,
-    @required this.stop,
+    required this.thickness,
+    required this.stop,
   })  : assert(stop >= 0.0 && stop <= 1.0),
         assert(thickness >= 0.0);
 
@@ -27,17 +27,17 @@ class PressurePath {
     _computeMetrics();
   }
 
-  PathMetric _metrics;
-  PathMetric get metrics => _metrics;
+  PathMetric? _metrics;
+  PathMetric? get metrics => _metrics;
 
-  double _length;
-  double get length => _length;
+  double? _length;
+  double? get length => _length;
 
   void _computeMetrics() {
     final ms = path.computeMetrics();
     try {
       _metrics = ms.first;
-      _length = _metrics.length;
+      _length = _metrics!.length;
     } catch (_) {}
   }
 
@@ -61,10 +61,10 @@ class PressurePath {
     paint.style = PaintingStyle.fill;
 
     double stepSize = 0.5;
-    for (var step = 0.0; step < length; step += stepSize) {
-      final fraction = step / length;
-      final offset = metrics.getTangentForOffset(step).position;
-      final thickness = getThicknessForFraction(fraction);
+    for (var step = 0.0; step < length!; step += stepSize) {
+      final fraction = step / length!;
+      final offset = metrics!.getTangentForOffset(step)!.position;
+      final thickness = getThicknessForFraction(fraction)!;
 
       stepSize = math.min(
         0.5,
@@ -80,7 +80,7 @@ class PressurePath {
     }
   }
 
-  double getThicknessForFraction(double fraction) {
+  double? getThicknessForFraction(double fraction) {
     PressureStop targetStop = stops[0];
     PressureStop lastStop = stops[0];
 

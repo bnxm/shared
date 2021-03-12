@@ -6,11 +6,11 @@ import 'package:shared/constants/constants.dart';
 
 class Blur extends StatelessWidget {
   final double sigma;
-  final Color color;
-  final Widget child;
+  final Color? color;
+  final Widget? child;
   const Blur({
-    Key key,
-    @required this.sigma,
+    Key? key,
+    required this.sigma,
     this.color,
     this.child,
   }) : super(key: key);
@@ -33,7 +33,7 @@ class Blur extends StatelessWidget {
     } else {
       return Stack(
         fit: StackFit.passthrough,
-        children: [blur, child],
+        children: [blur, child!],
       );
     }
   }
@@ -43,10 +43,10 @@ class OuterElevation extends StatelessWidget {
   final double elevation;
   final Color shadowColor;
   final BorderRadiusGeometry borderRadius;
-  final Widget child;
+  final Widget? child;
   const OuterElevation({
-    Key key,
-    @required this.elevation,
+    Key? key,
+    required this.elevation,
     this.shadowColor = Colors.black26,
     this.borderRadius = BorderRadius.zero,
     this.child,
@@ -56,7 +56,7 @@ class OuterElevation extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: ClipRRect(
-        borderRadius: borderRadius,
+        borderRadius: borderRadius as BorderRadius?,
         child: child,
       ),
       decoration: BoxDecoration(

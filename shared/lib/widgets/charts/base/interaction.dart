@@ -8,13 +8,13 @@ abstract class InteractionResponse {
   final Interaction interaction;
   InteractionResponse(
     this.interaction,
-  ) : assert(interaction != null);
+  ) ;
 
-  Offset get offset => interaction?.offset;
+  Offset? get offset => interaction.offset;
 }
 
 abstract class Interaction {
-  final Offset offset;
+  final Offset? offset;
   Interaction(
     this.offset,
   );
@@ -26,7 +26,7 @@ abstract class Interaction {
 }
 
 abstract class PointerInteraction extends Interaction {
-  PointerInteraction(Offset offset) : super(offset);
+  PointerInteraction(Offset? offset) : super(offset);
 }
 
 class PointerDownInteraction extends PointerInteraction {

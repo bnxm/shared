@@ -15,8 +15,8 @@ extension SizedContext on BuildContext {
   /// Returns if Orientation is in portrait
   bool get isPortrait => mq.orientation == Orientation.portrait;
 
-  LayoutPreferences get layoutConfiguration => LayoutConfiguration.of(this);
-  DeviceType get deviceType => layoutConfiguration.getDeviceType(screenSize);
+  LayoutPreferences? get layoutConfiguration => LayoutConfiguration.of(this);
+  DeviceType get deviceType => layoutConfiguration!.getDeviceType(screenSize);
   bool get isMobile => deviceType == DeviceType.mobile;
   bool get isTablet => deviceType == DeviceType.tablet;
   bool get isDesktop => deviceType == DeviceType.desktop;
@@ -58,5 +58,5 @@ extension SizedContext on BuildContext {
 }
 
 extension TextStyleX on TextStyle {
-  double getHeight(BuildContext context) => context.mq.textScaleFactor * fontSize;
+  double getHeight(BuildContext context) => context.mq.textScaleFactor * fontSize!;
 }

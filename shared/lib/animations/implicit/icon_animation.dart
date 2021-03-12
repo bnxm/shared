@@ -6,18 +6,18 @@ class IconAnimation extends StatelessWidget {
   final AnimatedIconData icon;
   final bool forward;
   final double size;
-  final Color color;
-  final TextDirection textDirection;
+  final Color? color;
+  final TextDirection? textDirection;
   final Duration duration;
   final Curve curve;
   const IconAnimation({
-    Key key,
-    @required this.icon,
-    @required this.forward,
+    Key? key,
+    required this.icon,
+    required this.forward,
     this.size = 24.0,
     this.color,
     this.textDirection,
-    @required this.duration,
+    required this.duration,
     this.curve = Curves.linear,
   })  : assert(forward != null),
         super(key: key);

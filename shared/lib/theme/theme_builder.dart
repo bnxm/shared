@@ -5,7 +5,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared/shared.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AppTheme {
   final String key;
@@ -13,15 +12,13 @@ class AppTheme {
   final Schema schema;
   final SystemUiOverlayStyle uiOverlayStyle;
   const AppTheme({
-    @required this.key,
-    @required this.themeData,
-    @required this.schema,
-    @required this.uiOverlayStyle,
-  })  : assert(key != null),
-        assert(themeData != null),
-        assert(uiOverlayStyle != null);
+    required this.key,
+    required this.themeData,
+    required this.schema,
+    required this.uiOverlayStyle,
+  });
 
-  static AppTheme of(BuildContext context) => ThemeBuilder.theme(context);
+  static AppTheme? of(BuildContext context) => ThemeBuilder.theme(context);
 
   bool get isDark => themeData.isDark;
   bool get isLight => themeData.isLight;
@@ -40,45 +37,44 @@ class AppTheme {
 }
 
 class ThemeBuilder extends StatefulWidget {
-  final Widget Function(BuildContext, AppTheme lightTheme, AppTheme darkTheme, ThemeMode)
-      builder;
+  final Widget Function(
+      BuildContext, AppTheme? lightTheme, AppTheme? darkTheme, ThemeMode) builder;
   final List<AppTheme> themes;
   final bool setUiOverlayStyle;
   ThemeBuilder({
-    Key key,
-    @required this.builder,
-    @required this.themes,
+    Key? key,
+    required this.builder,
+    required this.themes,
     this.setUiOverlayStyle = true,
-  })  : assert(themes != null),
-        assert(themes.isNotEmpty, 'At least one theme data has to be provided.'),
+  })  : assert(themes.isNotEmpty, 'At least one theme data has to be provided.'),
         super(key: key);
 
   @override
   ThemeBuilderState createState() => ThemeBuilderState();
 
-  static AppTheme theme(BuildContext context) => of(context)?.getTheme(context);
+  static AppTheme? theme(BuildContext context) => of(context)?.getTheme(context);
 
   static List<AppTheme> getThemes(BuildContext context) {
-    return context.findAncestorWidgetOfExactType<ThemeBuilder>().themes;
+    return context.findAncestorWidgetOfExactType<ThemeBuilder>()!.themes;
   }
 
-  static ThemeBuilderState of(BuildContext context) {
+  static ThemeBuilderState? of(BuildContext context) {
     return context.findAncestorStateOfType<ThemeBuilderState>();
   }
 }
 
 class ThemeBuilderState extends State<ThemeBuilder> {
-  ThemePreferences _prefs;
+  late ThemePreferences _prefs;
 
-  ThemeMode themeMode;
-  AppTheme lightTheme;
-  AppTheme darkTheme;
+  ThemeMode? themeMode;
+  AppTheme? lightTheme;
+  AppTheme? darkTheme;
 
   List<AppTheme> get themes => widget.themes;
 
-  StreamSubscription _lightThemeSubscription;
-  StreamSubscription _darkThemeSubscription;
-  StreamSubscription _themeModeSubscription;
+  StreamSubscription? _lightThemeSubscription;
+  StreamSubscription? _darkThemeSubscription;
+  StreamSubscription? _themeModeSubscription;
 
   @override
   void initState() {
@@ -133,7 +129,7 @@ class ThemeBuilderState extends State<ThemeBuilder> {
     }
   }
 
-  AppTheme getTheme(BuildContext context) {
+  AppTheme? getTheme(BuildContext context) {
     switch (themeMode ?? ThemeMode.system) {
       case ThemeMode.system:
         return Theme.of(context).isLight ? lightTheme : darkTheme;
@@ -146,7 +142,7 @@ class ThemeBuilderState extends State<ThemeBuilder> {
 
   void _themeChanged() {
     if (widget.setUiOverlayStyle) {
-      SystemChrome.setSystemUIOverlayStyle(getTheme(context).uiOverlayStyle);
+      SystemChrome.setSystemUIOverlayStyle(getTheme(context)!.uiOverlayStyle);
     }
 
     setState(() {});
@@ -181,8 +177,8 @@ class ThemeBuilderState extends State<ThemeBuilder> {
 /// This allows the app to use and persist more than one light
 /// and/or dark themes.
 class ThemePreferences extends RxSharedPreferencesDelegate {
-  final AppTheme defaultLightTheme;
-  final AppTheme defaultDarkTheme;
+  final AppTheme? defaultLightTheme;
+  final AppTheme? defaultDarkTheme;
   final List<AppTheme> themes;
   final Map<String, AppTheme> _themeMap;
   ThemePreferences._(
@@ -193,11 +189,11 @@ class ThemePreferences extends RxSharedPreferencesDelegate {
   )   : _themeMap = {for (final theme in themes) theme.key: theme},
         super(instance);
 
-  static ThemePreferences instance;
+  static ThemePreferences? instance;
   static Future<ThemePreferences> init(List<AppTheme> themes) async {
     assert(themes.isNotEmpty);
 
-    AppTheme defaultLightTheme, defaultDarkTheme;
+    AppTheme? defaultLightTheme, defaultDarkTheme;
 
     for (final theme in themes) {
       theme.isLight ? defaultLightTheme ??= theme : defaultDarkTheme ??= theme;
@@ -227,32 +223,29 @@ class ThemePreferences extends RxSharedPreferencesDelegate {
     }
   }
 
-  AppTheme get lightTheme {
-    final key = getString(_lightThemeKey, defaultLightTheme?.key);
-    return _themeMap?.get(key) ?? defaultLightTheme;
+  AppTheme? get lightTheme {
+    final key = getString(_lightThemeKey);
+    return _themeMap.get(key) ?? defaultLightTheme;
   }
 
-  Stream<AppTheme> watchLightTheme() =>
-      watchString(_lightThemeKey, defaultLightTheme?.key).map((_) => lightTheme);
+  Stream<AppTheme?> watchLightTheme() =>
+      watchString(_lightThemeKey).map((_) => lightTheme);
 
-  AppTheme get darkTheme {
-    final key = getString(_darkThemeKey, defaultDarkTheme?.key);
-    return _themeMap?.get(key) ?? defaultDarkTheme;
+  AppTheme? get darkTheme {
+    final key = getString(_darkThemeKey)!;
+    return _themeMap.get(key) ?? defaultDarkTheme;
   }
 
-  Stream<AppTheme> watchDarkTheme() =>
-      watchString(_darkThemeKey, defaultDarkTheme?.key).map((_) => darkTheme);
+  Stream<AppTheme?> watchDarkTheme() => watchString(_darkThemeKey).map((_) => darkTheme);
 
   set themeMode(ThemeMode mode) {
-    if (mode != null) {
-      setInt(_themeModeKey, mode.index);
-    }
+    setInt(_themeModeKey, mode.index);
   }
 
   ThemeMode get themeMode {
-    final index = getInt(_themeModeKey, -1);
+    final index = getInt(_themeModeKey) ?? -1;
     return ThemeMode.values.getOrElse(index, ThemeMode.system);
   }
 
-  Stream<ThemeMode> watchThemeMode() => watchInt(_themeModeKey, -1).map((_) => themeMode);
+  Stream<ThemeMode> watchThemeMode() => watchInt(_themeModeKey).map((_) => themeMode);
 }

@@ -1,17 +1,17 @@
 part of 'progress_bar.dart';
 
 class RRectProgressBar extends _ProgressBar {
-  final Widget child;
+  final Widget? child;
   final Duration indeterminateDuration;
   final BorderRadiusGeometry borderRadius;
   final bool running;
   const RRectProgressBar({
-    Key key,
+    Key? key,
     bool round = true,
-    Color color,
-    Color backgroundColor,
-    Color shadowColor,
-    double value,
+    Color? color,
+    Color? backgroundColor,
+    Color? shadowColor,
+    double? value,
     double strokeWidth = 2.0,
     double backgroundStrokeWidth = 2.0,
     double elevation = 0.0,
@@ -19,7 +19,7 @@ class RRectProgressBar extends _ProgressBar {
     Curve curve = Curves.ease,
     this.child,
     this.indeterminateDuration = const Duration(milliseconds: 1000),
-    @required this.borderRadius,
+    required this.borderRadius,
     this.running = true,
   }) : super(
           key: key,
@@ -41,8 +41,8 @@ class RRectProgressBar extends _ProgressBar {
 }
 
 class _PathProgresBarState extends _ProgressBarState<RRectProgressBar> {
-  AnimationController lengthController;
-  Animation lengthAnimation;
+  late AnimationController lengthController;
+  late Animation lengthAnimation;
 
   @override
   Duration get indeterminateDuration => widget.indeterminateDuration;
@@ -94,7 +94,7 @@ class _PathProgresBarState extends _ProgressBarState<RRectProgressBar> {
   Widget buildProgressBar(
     BuildContext context,
     Size size,
-    ProgressBarData data,
+    ProgressBarData? data,
     double animationValue,
   ) {
     return AnimatedBuilder(
@@ -126,14 +126,14 @@ class _PathProgressPainter extends _ProgressBarPainter {
   final double lengthValue;
   final BorderRadius borderRadius;
   _PathProgressPainter(
-    ProgressBarData data,
+    ProgressBarData? data,
     double value,
     this.textDirection,
     this.lengthValue,
     this.borderRadius,
   ) : super(data, value);
 
-  Path path;
+  Path? path;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -150,15 +150,15 @@ class _PathProgressPainter extends _ProgressBarPainter {
           bottomRight: borderRadius.bottomRight,
           topLeft: borderRadius.topLeft,
           topRight: borderRadius.topRight,
-        ).deflate(strokeWidth / 2.0),
+        ).deflate(strokeWidth! / 2.0),
       );
 
     final backgroundPaint = Paint()
-      ..color = backgroundColor
+      ..color = backgroundColor!
       ..style = PaintingStyle.stroke
       ..isAntiAlias = true
-      ..strokeWidth = strokeWidth
-      ..strokeCap = round ? StrokeCap.round : StrokeCap.butt;
+      ..strokeWidth = strokeWidth!
+      ..strokeCap = round! ? StrokeCap.round : StrokeCap.butt;
 
     drawPath(path, backgroundPaint);
 
@@ -176,28 +176,28 @@ class _PathProgressPainter extends _ProgressBarPainter {
     }
   }
 
-  void drawBar(double x, double xe) {
+  void drawBar(double x, double? xe) {
     final paint = Paint()
-      ..color = color
+      ..color = color!
       ..style = PaintingStyle.stroke
       ..isAntiAlias = true
-      ..strokeWidth = strokeWidth
-      ..strokeCap = round ? StrokeCap.round : StrokeCap.butt;
+      ..strokeWidth = strokeWidth!
+      ..strokeCap = round! ? StrokeCap.round : StrokeCap.butt;
 
-    final path = this.path.trim(x, xe);
+    final path = this.path!.trim(x, xe);
 
     drawPath(
       path,
       paint
         ..blur(elevation)
-        ..color = shadowColor,
+        ..color = shadowColor!,
     );
 
     drawPath(
       path,
       paint
         ..blur(0.0)
-        ..color = color,
+        ..color = color!,
     );
   }
 }

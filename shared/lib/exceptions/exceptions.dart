@@ -1,5 +1,5 @@
 abstract class CustomException implements Exception {
-  final String message;
+  final String? message;
   const CustomException(
     dynamic message,
   ) : message = message != null ? '$message' : null;

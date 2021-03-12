@@ -156,10 +156,11 @@ class FadeThroughTransition extends StatefulWidget {
   /// The [animation] and [secondaryAnimation] argument are required and must
   /// not be null.
   const FadeThroughTransition({
-    @required this.animation,
-    Animation secondaryAnimation,
+    required this.animation,
+    Animation? secondaryAnimation,
     this.child,
-  })  : secondaryAnimation = secondaryAnimation ?? const AlwaysStoppedAnimation(0.0),
+  })  : secondaryAnimation =
+            secondaryAnimation as Animation<double>? ?? const AlwaysStoppedAnimation(0.0),
         assert(animation != null);
 
   /// The animation that drives the [child]'s entrance and exit.
@@ -183,15 +184,15 @@ class FadeThroughTransition extends StatefulWidget {
   ///
   /// This widget will transition in and out as driven by [animation] and
   /// [secondaryAnimation].
-  final Widget child;
+  final Widget? child;
 
   @override
   State<FadeThroughTransition> createState() => _FadeThroughTransitionState();
 }
 
 class _FadeThroughTransitionState extends State<FadeThroughTransition> {
-  AnimationStatus _effectiveAnimationStatus;
-  AnimationStatus _effectiveSecondaryAnimationStatus;
+  AnimationStatus? _effectiveAnimationStatus;
+  AnimationStatus? _effectiveSecondaryAnimationStatus;
 
   @override
   void initState() {
@@ -204,14 +205,14 @@ class _FadeThroughTransitionState extends State<FadeThroughTransition> {
 
   void _animationListener(AnimationStatus animationStatus) {
     _effectiveAnimationStatus = _calculateEffectiveAnimationStatus(
-      lastEffective: _effectiveAnimationStatus,
+      lastEffective: _effectiveAnimationStatus!,
       current: animationStatus,
     );
   }
 
   void _secondaryAnimationListener(AnimationStatus animationStatus) {
     _effectiveSecondaryAnimationStatus = _calculateEffectiveAnimationStatus(
-      lastEffective: _effectiveSecondaryAnimationStatus,
+      lastEffective: _effectiveSecondaryAnimationStatus!,
       current: animationStatus,
     );
   }
@@ -220,9 +221,9 @@ class _FadeThroughTransitionState extends State<FadeThroughTransition> {
   // animation in reverse. Switching to the actual reverse transition would
   // yield a disjoint experience since the forward and reverse transitions are
   // very different.
-  AnimationStatus _calculateEffectiveAnimationStatus({
-    @required AnimationStatus lastEffective,
-    @required AnimationStatus current,
+  AnimationStatus? _calculateEffectiveAnimationStatus({
+    required AnimationStatus lastEffective,
+    required AnimationStatus current,
   }) {
     assert(current != null);
     assert(lastEffective != null);
@@ -288,13 +289,14 @@ class _FadeThroughTransitionState extends State<FadeThroughTransition> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.animation,
-      builder: (BuildContext context, Widget child) {
+      builder: (context, child) {
         assert(_effectiveAnimationStatus != null);
-        switch (_effectiveAnimationStatus) {
+
+        switch (_effectiveAnimationStatus!) {
           case AnimationStatus.forward:
             return ZoomFadeInTransition(
               animation: widget.animation,
-              child: child,
+              child: child!,
             );
           case AnimationStatus.dismissed:
           case AnimationStatus.reverse:
@@ -304,15 +306,13 @@ class _FadeThroughTransitionState extends State<FadeThroughTransition> {
               child: child,
             );
         }
-        return null; // unreachable
       },
       child: Container(
         color: Theme.of(context).canvasColor,
         child: AnimatedBuilder(
           animation: widget.secondaryAnimation,
-          builder: (BuildContext context, Widget child) {
-            assert(_effectiveSecondaryAnimationStatus != null);
-            switch (_effectiveSecondaryAnimationStatus) {
+          builder: (BuildContext context, Widget? child) {
+            switch (_effectiveSecondaryAnimationStatus!) {
               case AnimationStatus.forward:
                 return _FadeOut(
                   child: child,
@@ -323,10 +323,9 @@ class _FadeThroughTransitionState extends State<FadeThroughTransition> {
               case AnimationStatus.completed:
                 return ZoomFadeInTransition(
                   animation: _flip(widget.secondaryAnimation),
-                  child: child,
+                  child: child!,
                 );
             }
-            return null; // unreachable
           },
           child: widget.child,
         ),
@@ -339,9 +338,9 @@ class ZoomFadeInTransition extends StatelessWidget {
   final Widget child;
   final Animation<double> animation;
   const ZoomFadeInTransition({
-    @required this.child,
-    @required this.animation,
-  })  : assert(child != null),
+    required this.child,
+    required this.animation,
+  })   : assert(child != null),
         assert(animation != null);
 
   static final CurveTween _inCurve = CurveTween(
@@ -390,8 +389,8 @@ class _FadeOut extends StatelessWidget {
     this.animation,
   });
 
-  final Widget child;
-  final Animation<double> animation;
+  final Widget? child;
+  final Animation<double>? animation;
 
   static final CurveTween _outCurve = CurveTween(
     curve: const Cubic(0.4, 0.0, 1.0, 1.0),
@@ -412,7 +411,7 @@ class _FadeOut extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FadeTransition(
-      opacity: _fadeOutOpacity.animate(animation),
+      opacity: _fadeOutOpacity.animate(animation!),
       child: child,
     );
   }

@@ -6,53 +6,32 @@ abstract class ImplicitAnimation extends StatefulWidget {
   final Duration duration;
   final Curve curve;
   const ImplicitAnimation(
-    Key key,
+    Key? key,
     this.duration,
     this.curve,
-  )   : assert(duration != null),
-        super(key: key);
+  ) : super(key: key);
 }
 
 abstract class ImplicitAnimationState<T, W extends ImplicitAnimation> extends State<W>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-  AnimationController get controller => _controller;
+  late final controller = AnimationController(
+    duration: duration,
+    vsync: this,
+  )..value = 1.0;
 
-  Animation<double> _animation;
-  Animation<double> get animation => _animation;
+  late Animation<double> animation = CurvedAnimation(
+    curve: widget.curve,
+    parent: controller,
+  )..addListener(
+      () => value = lerp(oldValue, newValue, v),
+    );
 
   Duration get duration => widget.duration;
 
   double get v => animation.value;
   T get newValue;
-  T value;
-  T oldValue;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: duration,
-      vsync: this,
-    )..value = 1.0;
-
-    _animation = CurvedAnimation(
-      curve: widget.curve ?? Curves.linear,
-      parent: controller,
-    );
-
-    animation.addListener(
-      () => value = lerp(oldValue, newValue, v),
-    );
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    value = newValue;
-    oldValue = newValue;
-  }
+  late T value = newValue;
+  late T oldValue = newValue;
 
   @override
   void didUpdateWidget(W oldWidget) {
@@ -62,8 +41,8 @@ abstract class ImplicitAnimationState<T, W extends ImplicitAnimation> extends St
     }
 
     if (oldWidget.curve != widget.curve) {
-      _animation = CurvedAnimation(
-        curve: widget.curve ?? Curves.linear,
+      animation = CurvedAnimation(
+        curve: widget.curve,
         parent: controller,
       );
     }
@@ -92,7 +71,7 @@ abstract class ImplicitAnimationState<T, W extends ImplicitAnimation> extends St
 
   @override
   void dispose() {
-    _controller.dispose();
+    controller.dispose();
     super.dispose();
   }
 }

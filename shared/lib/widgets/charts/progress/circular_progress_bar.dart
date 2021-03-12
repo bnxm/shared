@@ -19,8 +19,8 @@ final Animatable<double> _kRotationTween = CurveTween(curve: const SawTooth(5));
 
 class CircularProgressBar extends _ProgressBar {
   const CircularProgressBar({
-    Key key,
-    double value,
+    Key? key,
+    double? value,
     bool round = true,
     Color color = Colors.black,
     Color backgroundColor = Colors.grey,
@@ -58,7 +58,7 @@ class _CircularProgressBarState extends _ProgressBarState<CircularProgressBar> {
   Widget buildProgressBar(
     BuildContext context,
     Size size,
-    ProgressBarData data,
+    ProgressBarData? data,
     double animationValue,
   ) {
     final rotationValue = _kRotationTween.transform(animationValue);
@@ -86,7 +86,7 @@ class _CircularProgressPainter extends _ProgressBarPainter {
   final int stepValue;
   final double rotationValue;
   _CircularProgressPainter(
-    ProgressBarData data,
+    ProgressBarData? data,
     double animationValue,
     this.headValue,
     this.tailValue,
@@ -98,9 +98,9 @@ class _CircularProgressPainter extends _ProgressBarPainter {
   static const double _epsilon = .001;
   static const double _startAngle = -math.pi / 2.0;
 
-  double get capInset => round ? strokeWidth / 2 : 0;
+  double get capInset => round! ? strokeWidth! / 2 : 0;
 
-  Rect rect;
+  late Rect rect;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -117,7 +117,7 @@ class _CircularProgressPainter extends _ProgressBarPainter {
       ..color = backgroundColor ?? Colors.grey.shade200
       ..style = PaintingStyle.stroke
       ..isAntiAlias = true
-      ..strokeWidth = backgroundStrokeWidth;
+      ..strokeWidth = backgroundStrokeWidth!;
 
     final backgroundPath = Path()
       ..reset()
@@ -145,8 +145,8 @@ class _CircularProgressPainter extends _ProgressBarPainter {
       ..color = color ?? Colors.black
       ..style = PaintingStyle.stroke
       ..isAntiAlias = true
-      ..strokeWidth = strokeWidth
-      ..strokeCap = progress == 1.0 || !round ? StrokeCap.butt : StrokeCap.round;
+      ..strokeWidth = strokeWidth!
+      ..strokeCap = progress == 1.0 || !round! ? StrokeCap.butt : StrokeCap.round;
 
     final path = Path()
       ..reset()
@@ -157,14 +157,14 @@ class _CircularProgressPainter extends _ProgressBarPainter {
       path,
       paint
         ..blur(elevation)
-        ..color = shadowColor,
+        ..color = shadowColor!,
     );
 
     drawPath(
       path,
       paint
         ..blur(0.0)
-        ..color = color,
+        ..color = color!,
     );
   }
 }

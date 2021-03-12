@@ -21,8 +21,8 @@ enum ChartAxis {
 }
 
 class ChartValue {
-  double x;
-  double y;
+  double? x;
+  double? y;
   ChartValue(
     dynamic x, [
     dynamic y,
@@ -55,8 +55,8 @@ class ChartValue {
 
   static ChartValue lerp(ChartValue a, ChartValue b, double v) {
     return ChartValue(
-      lerpDouble(a.x, b.x, v),
-      lerpDouble(a.y, b.y, v),
+      lerpDouble(a.x!, b.x!, v),
+      lerpDouble(a.y!, b.y!, v),
     );
   }
 
@@ -72,8 +72,8 @@ class ChartValue {
   }
 
   ChartValue copyWith({
-    double x,
-    double y,
+    double? x,
+    double? y,
   }) {
     return ChartValue(
       x ?? this.x,
@@ -96,7 +96,7 @@ class ListChanges<T> {
   });
 }
 
-ListChanges<T> detectChanges<T>(List<T> a, List<T> b, [bool Function(T, T) predicate]) {
+ListChanges<T> detectChanges<T>(List<T> a, List<T> b, [bool Function(T, T)? predicate]) {
   if (b == null) return ListChanges(removed: a);
   if (a == null) return ListChanges(added: b);
 

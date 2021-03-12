@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 import 'package:shared/shared.dart';
 
 class CustomDialog extends StatelessWidget {
-  final Widget child;
+  final Widget? child;
   final dynamic title;
   final double maxHeight;
   final double maxWidth;
-  final String positiveAction;
-  final String negativeAction;
-  final String neutralAction;
+  final String? positiveAction;
+  final String? negativeAction;
+  final String? neutralAction;
   final double titleElevation;
-  final VoidCallback onPositive;
-  final VoidCallback onNegative;
-  final VoidCallback onNeutral;
-  final Color accent;
+  final VoidCallback? onPositive;
+  final VoidCallback? onNegative;
+  final VoidCallback? onNeutral;
+  final Color? accent;
   final EdgeInsets padding;
-  final BorderSide border;
+  final BorderSide? border;
   final dynamic borderRadius;
-  final Widget header;
+  final Widget? header;
   final bool floatingButtons;
   const CustomDialog({
-    Key key,
+    Key? key,
     this.child,
     this.title,
     this.maxHeight = 800.0,
@@ -60,7 +59,7 @@ class CustomDialog extends StatelessWidget {
             shrinkWrap: true,
             padding: EdgeInsets.zero,
             children: <Widget>[
-              if (isPortrait && header != null) header,
+              if (isPortrait && header != null) header!,
               Padding(
                 padding: EdgeInsets.fromLTRB(
                   padding.left,
@@ -69,7 +68,7 @@ class CustomDialog extends StatelessWidget {
                   0.0,
                 ),
                 child: Vertical(
-                  children: <Widget>[
+                  children: <Widget?>[
                     if (title != null) _getTitle(context),
                     child,
                     if (!floatingButtons) _getButtons(context),
@@ -83,7 +82,7 @@ class CustomDialog extends StatelessWidget {
         if (!isPortrait) {
           content = Row(
             children: [
-              if (header != null) header,
+              if (header != null) header!,
               Expanded(child: content),
             ],
           );
@@ -103,7 +102,7 @@ class CustomDialog extends StatelessWidget {
           insetAnimationDuration: const Duration(milliseconds: 375),
           child: Box(
             constraints: constraints,
-            border: border != null ? Border.fromBorderSide(border) : null,
+            border: border != null ? Border.fromBorderSide(border!) : null,
             borderRadius: borderRadius,
             color: theme.dialogTheme.backgroundColor,
             child: content,
@@ -147,7 +146,7 @@ class CustomDialog extends StatelessWidget {
         shape is RoundedRectangleBorder ? shape.borderRadius : BorderRadius.zero;
 
     Color buttonColor = (accent ?? theme.accentColor).withOpacity(1.0);
-    final dialogBackgroundColor = theme.dialogTheme.backgroundColor;
+    final dialogBackgroundColor = theme.dialogTheme.backgroundColor!;
     if ((dialogBackgroundColor.brightness - buttonColor.brightness).abs() < 0.1) {
       buttonColor = dialogBackgroundColor.toContrast();
     }
@@ -175,7 +174,7 @@ class CustomDialog extends StatelessWidget {
           positiveAction ?? '',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: theme.textTheme.button.copyWith(
+          style: theme.textTheme.button!.copyWith(
             color: buttonColor.toContrast(),
           ),
         ),
@@ -193,7 +192,7 @@ class CustomDialog extends StatelessWidget {
       hoverColor: buttonColor.withOpacity(0.2),
       highlightColor: buttonColor.withOpacity(0.2),
       disabledBorderColor: buttonColor.withOpacity(.5),
-      disabledTextColor: theme.textTheme.button.color.withOpacity(.5),
+      disabledTextColor: theme.textTheme.button!.color!.withOpacity(.5),
       highlightedBorderColor: buttonColor,
       onPressed: onNeutral,
       shape: RoundedRectangleBorder(
@@ -206,13 +205,13 @@ class CustomDialog extends StatelessWidget {
         neutralAction ?? '',
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: theme.textTheme.button.copyWith(color: buttonColor),
+        style: theme.textTheme.button!.copyWith(color: buttonColor),
       ),
     );
 
     final nt = Text(
       negativeAction ?? '',
-      style: theme.textTheme.button.copyWith(color: buttonColor),
+      style: theme.textTheme.button!.copyWith(color: buttonColor),
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
     );

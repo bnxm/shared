@@ -6,21 +6,16 @@ class SizeFadeTransition extends StatefulWidget {
   final double sizeFraction;
   final Axis axis;
   final double axisAlignment;
-  final Widget child;
+  final Widget? child;
   const SizeFadeTransition({
-    Key key,
-    @required this.animation,
+    Key? key,
+    required this.animation,
     this.sizeFraction = 0.5,
     this.curve = Curves.linear,
     this.axis = Axis.vertical,
     this.axisAlignment = 0.0,
     this.child,
-  })  : assert(animation != null),
-        assert(axisAlignment != null),
-        assert(axis != null),
-        assert(curve != null),
-        assert(sizeFraction != null),
-        assert(sizeFraction >= 0.0 && sizeFraction <= 1.0),
+  })  : assert(sizeFraction >= 0.0 && sizeFraction <= 1.0),
         super(key: key);
 
   @override
@@ -28,8 +23,8 @@ class SizeFadeTransition extends StatefulWidget {
 }
 
 class _SizeFadeTransitionState extends State<SizeFadeTransition> {
-  Animation size;
-  Animation opacity;
+  late Animation size;
+  late Animation opacity;
 
   @override
   void initState() {
@@ -49,11 +44,11 @@ class _SizeFadeTransitionState extends State<SizeFadeTransition> {
   @override
   Widget build(BuildContext context) {
     return SizeTransition(
-      sizeFactor: size,
+      sizeFactor: size as Animation<double>,
       axis: widget.axis,
       axisAlignment: widget.axisAlignment,
       child: FadeTransition(
-        opacity: opacity,
+        opacity: opacity as Animation<double>,
         child: widget.child,
       ),
     );

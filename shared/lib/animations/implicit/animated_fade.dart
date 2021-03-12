@@ -5,9 +5,9 @@ class AnimatedFade extends StatelessWidget {
   final Widget child;
   final Duration duration;
   const AnimatedFade({
-    Key key,
-    @required this.show,
-    @required this.child,
+    Key? key,
+    required this.show,
+    required this.child,
     this.duration = const Duration(milliseconds: 500),
   }) : super(key: key);
 

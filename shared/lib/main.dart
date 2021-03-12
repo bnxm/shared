@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
 }
 
 class AnimatedColor extends StatefulWidget {
-  const AnimatedColor({Key key}) : super(key: key);
+  const AnimatedColor({Key? key}) : super(key: key);
 
   @override
   _AnimatedColorState createState() => _AnimatedColorState();
@@ -32,9 +32,9 @@ class AnimatedColor extends StatefulWidget {
 
 class _AnimatedColorState extends State<AnimatedColor>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
+  late AnimationController _controller;
 
-  Color color = Colors.red;
+  Color? color = Colors.red;
 
   @override
   void initState() {

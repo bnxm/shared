@@ -3,8 +3,8 @@ part of 'translater_page.dart';
 class _TranslaterEditPage extends StatefulWidget {
   final TranslaterCube cube;
   const _TranslaterEditPage({
-    Key key,
-    this.cube,
+    Key? key,
+    required this.cube,
   }) : super(key: key);
 
   @override
@@ -15,7 +15,7 @@ class _TranslaterEditPageState extends State<_TranslaterEditPage> {
   final List<FocusNode> nodes = [];
 
   final _formKey = GlobalKey<FormState>();
-  FormState get form => _formKey.currentState;
+  FormState? get form => _formKey.currentState;
 
   TranslaterCube get cube => widget.cube;
 
@@ -27,7 +27,7 @@ class _TranslaterEditPageState extends State<_TranslaterEditPage> {
         builder: (_, cube) {
           return LiftOnScrollAppBar(
             maxElevation: 12,
-            title: Text(cube.language),
+            title: Text(cube.language!),
             actions: [
               buildOverflowMenu(),
             ],
@@ -144,7 +144,7 @@ class _TranslaterEditPageState extends State<_TranslaterEditPage> {
   }
 
   List<Widget> buildFields() {
-    return cube.translations
+    return cube.translations!
         .imap((index, translation) {
           var node = nodes.getOrNull(index);
           final nextNode = nodes.getOrNull(index + 1);
@@ -175,13 +175,13 @@ class _TranslaterEditPageState extends State<_TranslaterEditPage> {
 
 class _TranslationFormField extends StatefulWidget {
   final FocusNode node;
-  final FocusNode nextNode;
+  final FocusNode? nextNode;
   final Translation translation;
   const _TranslationFormField({
-    Key key,
-    @required this.node,
-    @required this.nextNode,
-    @required this.translation,
+    Key? key,
+    required this.node,
+    required this.nextNode,
+    required this.translation,
   }) : super(key: key);
 
   @override
@@ -189,9 +189,9 @@ class _TranslationFormField extends StatefulWidget {
 }
 
 class _TranslationFormFieldState extends State<_TranslationFormField> {
-  TextController controller;
+  TextController? controller;
 
-  Translation translation;
+  Translation? translation;
 
   @override
   void initState() {
@@ -200,9 +200,10 @@ class _TranslationFormFieldState extends State<_TranslationFormField> {
     translation = widget.translation;
 
     controller = TextController()
-      ..text = translation.translation
+      ..text = translation!.translation
       ..addListener(() {
-        setState(() => translation = translation.copyWith(translation: controller.text));
+        setState(
+            () => translation = translation!.copyWith(translation: controller!.text));
       });
   }
 
@@ -217,7 +218,7 @@ class _TranslationFormFieldState extends State<_TranslationFormField> {
   @override
   Widget build(BuildContext context) {
     final hasMissingLineBreaks =
-        translation.translation.count('\n') < controller.text.count('\n');
+        translation!.translation.count('\n') < controller!.text.count('\n');
 
     final field = TextFormField(
       focusNode: widget.node,
@@ -243,28 +244,28 @@ class _TranslationFormFieldState extends State<_TranslationFormField> {
       },
       // ignore: missing_return
       validator: (value) {
-        if (value.isNotEmpty && translation.hasMissingPlaceholders) {
-          return 'The original translation has ${translation.placeholders.length} placeholders, however the translation has only ${translation.translatedPlaceholders}';
+        if (value!.isNotEmpty && translation!.hasMissingPlaceholders) {
+          return 'The original translation has ${translation!.placeholders.length} placeholders, however the translation has only ${translation!.translatedPlaceholders}';
         }
       },
     );
 
     final placeholderInserter = AnimatedSizeFade(
-      show: widget.node.hasFocus && translation.hasMissingPlaceholders,
+      show: widget.node.hasFocus && translation!.hasMissingPlaceholders,
       duration: const Millis(350),
       child: Vertical(
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           const SizedBox(height: 8),
           RaisedButton(
-            onPressed: () => controller.text += translation.nextPlaceholder.src,
+            onPressed: () => controller!.text += translation!.nextPlaceholder!.src,
             child: const Text('Add Placeholder'),
           ),
         ],
       ),
     );
 
-    final sectionStyle = textTheme.headline6.copyWith(
+    final sectionStyle = textTheme.headline6!.copyWith(
       fontSize: 13,
     );
 
@@ -273,7 +274,7 @@ class _TranslationFormFieldState extends State<_TranslationFormField> {
       child: Vertical(
         children: [
           Text(
-            translation.key,
+            translation!.key,
             style: textTheme.caption,
           ),
           const SizedBox(height: 16),
@@ -283,7 +284,7 @@ class _TranslationFormFieldState extends State<_TranslationFormField> {
           ),
           const SizedBox(height: 16),
           PlaceholderText(
-            translation.original,
+            translation!.original,
             style: textTheme.bodyText2,
           ),
           const SizedBox(height: 16),
@@ -300,17 +301,17 @@ class _TranslationFormFieldState extends State<_TranslationFormField> {
 
   @override
   void dispose() {
-    controller.dispose();
+    controller!.dispose();
     super.dispose();
   }
 }
 
 class PlaceholderText extends StatelessWidget {
   final String text;
-  final TextStyle style;
+  final TextStyle? style;
   const PlaceholderText(
     this.text, {
-    Key key,
+    Key? key,
     this.style,
   }) : super(key: key);
 
@@ -321,7 +322,7 @@ class PlaceholderText extends StatelessWidget {
         children: spans.map((span) {
           return TextSpan(
             text: span.text,
-            style: span.isPlaceholder ? style.copyWith(color: Colors.red) : style,
+            style: span.isPlaceholder ? style!.copyWith(color: Colors.red) : style,
           );
         }).toList(),
       ),
@@ -331,7 +332,7 @@ class PlaceholderText extends StatelessWidget {
   List<_Span> get spans {
     final List<_Span> spans = [];
 
-    final matches = I18n.placeholderRegex.allMatches(text)?.toList();
+    final matches = I18n.placeholderRegex.allMatches(text).toList();
 
     int lastEnd = 0;
     for (final match in matches) {

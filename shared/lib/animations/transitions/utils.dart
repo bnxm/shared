@@ -52,7 +52,7 @@ final Tween<double> _flippedTween = Tween<double>(
 class FlippedCurveTween extends CurveTween {
   /// Creates a vertically flipped [CurveTween].
   FlippedCurveTween({
-    @required Curve curve,
+    required Curve curve,
   })  : assert(curve != null),
         super(curve: curve);
 

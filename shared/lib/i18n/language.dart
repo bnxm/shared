@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 
 class Language {
   final String name;
-  final String englishName;
+  final String? englishName;
   final String code;
   const Language({
-    @required this.name,
+    required this.name,
     this.englishName,
-    @required this.code,
+    required this.code,
   });
 
   String get langCode => code.split('_').first;
-  String get countryCode {
+  String? get countryCode {
     final codes = code.split('_');
     return codes.length > 1 ? codes[1] : null;
   }
@@ -39,10 +39,10 @@ class Language {
   );
 
   Language copyWith({
-    String name,
-    String englishName,
-    String code,
-    Locale locale,
+    String? name,
+    String? englishName,
+    String? code,
+    Locale? locale,
   }) {
     return Language(
       name: name ?? this.name,
@@ -60,8 +60,6 @@ class Language {
   }
 
   factory Language.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return Language(
       name: map['name'] ?? '',
       englishName: map['englishName'] ?? '',

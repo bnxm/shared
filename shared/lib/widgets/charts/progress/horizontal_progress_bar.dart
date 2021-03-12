@@ -5,12 +5,12 @@ const int _kIndeterminateLinearDuration = 1800;
 class HorizontalProgressBar extends _ProgressBar {
   final EdgeInsets padding;
   const HorizontalProgressBar({
-    Key key,
+    Key? key,
     bool round = true,
-    Color color,
-    Color backgroundColor,
-    Color shadowColor,
-    double value,
+    Color? color,
+    Color? backgroundColor,
+    Color? shadowColor,
+    double? value,
     double strokeWidth = 2.0,
     double backgroundStrokeWidth = 2.0,
     double elevation = 0.0,
@@ -41,7 +41,7 @@ class _HorizontalProgressBarState extends _ProgressBarState<HorizontalProgressBa
   Widget buildProgressBar(
     BuildContext context,
     Size size,
-    ProgressBarData data,
+    ProgressBarData? data,
     double animationValue,
   ) {
     return AnimatedContainer(
@@ -65,7 +65,7 @@ class _HorizontalProgressBarState extends _ProgressBarState<HorizontalProgressBa
 class _HorizontalProgressPainter extends _ProgressBarPainter {
   final TextDirection textDirection;
   _HorizontalProgressPainter(
-    ProgressBarData data,
+    ProgressBarData? data,
     double animationValue,
     this.textDirection,
   ) : super(data, animationValue);
@@ -93,18 +93,18 @@ class _HorizontalProgressPainter extends _ProgressBarPainter {
     curve: Cubic(0.10, 0.0, 0.45, 1.0),
   );
 
-  double get capInset => round ? strokeWidth / 2 : 0.0;
+  double get capInset => round! ? strokeWidth! / 2 : 0.0;
 
   @override
   void paint(Canvas canvas, Size size) {
     super.paint(canvas, size);
 
     final backgroundPaint = Paint()
-      ..color = backgroundColor
+      ..color = backgroundColor!
       ..style = PaintingStyle.stroke
       ..isAntiAlias = true
-      ..strokeWidth = strokeWidth
-      ..strokeCap = round ? StrokeCap.round : StrokeCap.butt;
+      ..strokeWidth = strokeWidth!
+      ..strokeCap = round! ? StrokeCap.round : StrokeCap.butt;
 
     final backgroundPath = Path()
       ..reset()
@@ -114,7 +114,7 @@ class _HorizontalProgressPainter extends _ProgressBarPainter {
     drawPath(backgroundPath, backgroundPaint);
 
     if (progress != null) {
-      drawBar(0.0, progress * width);
+      drawBar(0.0, progress! * width);
     } else {
       final double x1 = width * line1Tail.transform(value);
       final double width1 = width * line1Head.transform(value) - x1;
@@ -131,15 +131,15 @@ class _HorizontalProgressPainter extends _ProgressBarPainter {
     if (width <= 0.0) return;
 
     final paint = Paint()
-      ..color = color
+      ..color = color!
       ..style = PaintingStyle.stroke
       ..isAntiAlias = true
-      ..strokeWidth = strokeWidth
-      ..strokeCap = round ? StrokeCap.round : StrokeCap.butt;
+      ..strokeWidth = strokeWidth!
+      ..strokeCap = round! ? StrokeCap.round : StrokeCap.butt;
 
     final y = (height - capInset) / 2;
 
-    double dx;
+    late double dx;
     switch (textDirection) {
       case TextDirection.rtl:
         dx = this.width - width - x;
@@ -158,14 +158,14 @@ class _HorizontalProgressPainter extends _ProgressBarPainter {
       path,
       paint
         ..blur(elevation)
-        ..color = shadowColor,
+        ..color = shadowColor!,
     );
 
     drawPath(
       path,
       paint
         ..blur(0.0)
-        ..color = color,
+        ..color = color!,
     );
   }
 }

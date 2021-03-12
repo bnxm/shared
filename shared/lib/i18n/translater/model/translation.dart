@@ -1,8 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
-import 'package:meta/meta.dart';
-
 import 'package:shared/shared.dart';
 
 class Translation {
@@ -11,24 +8,22 @@ class Translation {
   final String translation;
   final List<Placeholder> placeholders;
   Translation({
-    @required this.key,
-    @required this.original,
+    required this.key,
+    required this.original,
     this.translation = '',
-  })  : assert(key != null),
-        assert(original != null),
-        placeholders = Placeholder.all(original);
+  }) : placeholders = Placeholder.all(original);
 
   bool get hasPlaceholders => placeholders.isNotEmpty;
   bool get hasMissingPlaceholders =>
       hasPlaceholders && translatedPlaceholders < placeholders.length;
 
   int get translatedPlaceholders => Placeholder.all(translation).length;
-  Placeholder get nextPlaceholder => placeholders.getOrNull(translatedPlaceholders);
+  Placeholder? get nextPlaceholder => placeholders.getOrNull(translatedPlaceholders);
 
   Translation copyWith({
-    String key,
-    String original,
-    String translation,
+    String? key,
+    String? original,
+    String? translation,
   }) {
     return Translation(
       key: key ?? this.key,
@@ -46,8 +41,6 @@ class Translation {
   }
 
   factory Translation.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return Translation(
       key: map['key'] ?? '',
       original: map['original'] ?? '',

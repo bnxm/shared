@@ -4,7 +4,7 @@ publish_to: none
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.8.0 <3.0.0"
+  sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
   flutter:
@@ -15,21 +15,21 @@ dependencies:
   core: 
     path: ../core
   
-  yaml: ^2.2.1
+  yaml: ^3.1.0
 
-  provider: ^4.3.2+3
-  bloc: ^6.1.1
-  flutter_bloc: ^6.1.1
+  provider: ^5.0.0
+  bloc: ^7.0.0-nullsafety.3
+  flutter_bloc: ^7.0.0-nullsafety.5
   cube:
     path: ../../packages/cube
 
-  auto_size_text: ^2.1.0
-  flutter_svg: ^0.19.1
+  auto_size_text: ^3.0.0-nullsafety.0
+  flutter_svg: ^0.21.0-nullsafety.0 
 
-  shared_preferences: ^0.5.12+4
-  hive_flutter: ^0.3.1
+  shared_preferences: ^2.0.4
+  hive_flutter: ^1.0.0
 
-  flutter_displaymode: ^0.1.1
+  flutter_displaymode: ^0.2.0-nullsafety.0
 
 dev_dependencies:
   flutter_test:

@@ -129,7 +129,7 @@ class MathParser {
       throw 'Unexpected: $_ch';
     }
 
-    if (_eat('^')) x = pow(x, _parseFactor()); // exponentiation
+    if (_eat('^')) x = pow(x, _parseFactor()) as double; // exponentiation
 
     return x;
   }

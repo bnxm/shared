@@ -13,44 +13,46 @@ class TranslaterCube extends Cube {
 
   final _dao = _TranslationDao();
 
-  bool get isLoading => language == null || translations == null || translations.isEmpty;
+  bool get isLoading => language == null || translations == null || translations!.isEmpty;
 
   final _language = Rx<String>();
-  String get language => _language.value;
+  String? get language => _language.value;
 
-  final _translations = <Translation>[].rx;
-  List<Translation> get translations => _translations.value;
+  final RxMap<String, Translation> _translations = <String, Translation>{}.rx;
+  List<Translation>? get translations => _translations.values.toList();
 
   final _didChangeTranslations = Rx(false);
-  bool get didChangeTranslations => _didChangeTranslations.value;
+  bool? get didChangeTranslations => _didChangeTranslations.value;
 
   void _load() async {
     final cached = await _dao.getTranslations();
+
     if (cached != null) {
       _didChangeTranslations.value = true;
       _language.value = cached.language;
-      _translations.value = cached.translations;
+      _createTranslationsFromList(cached.translations);
     }
   }
 
   void onLanguageChoosen(Language language) async {
     _language.value = language.name;
     final map = await I18n.loadTranslations(language);
-    _translations.value = _createTranslations(map);
+    _createTranslationsFromMap(map);
   }
 
-  void onAddLanguage(String language) async {
+  void onAddLanguage(String? language) async {
     // ignore: invalid_use_of_visible_for_testing_member
     final emptyMap = I18n.defaultTranslations.map((key, value) => MapEntry(key, ''));
-    _translations.value = _createTranslations(emptyMap);
+    _createTranslationsFromMap(emptyMap);
   }
 
-  void onTranslationSubmitted(Translation translation) {
-    final translations = this.translations.copy();
+  void onTranslationSubmitted(Translation? translation) {
+    final translations = List<Translation>.from(this.translations!);
 
     for (var i = 0; i < translations.length; i++) {
       final tr = translations[i];
-      if (tr.key == translation.key) {
+
+      if (tr.key == translation!.key) {
         translations
           ..insert(i, translation)
           ..removeAt(i + 1);
@@ -58,7 +60,7 @@ class TranslaterCube extends Cube {
       }
     }
 
-    _translations.value = translations;
+    _createTranslationsFromList(translations);
   }
 
   void onSubmitAll() {
@@ -68,20 +70,20 @@ class TranslaterCube extends Cube {
 
   void onSave() => _dao.saveTranslations(_state);
 
-  LanguageTranslation get _state => LanguageTranslation(language, translations);
+  LanguageTranslation get _state => LanguageTranslation(language!, translations!);
 
   void onReset() {
     _dao.reset();
     onAddLanguage(language);
   }
 
-  List<Translation> _createTranslations(Map<String, String> mapping) {
+  void _createTranslationsFromMap(Map<String?, String> mapping) {
     // ignore: invalid_use_of_visible_for_testing_member
     final defaultMapping = I18n.defaultTranslations;
 
-    final List<Translation> translations = [];
-    mapping.forEach((key, value) {
-      translations.add(
+    _translations.value = mapping.map((key, value) {
+      return MapEntry(
+        key!,
         Translation(
           key: key,
           original: defaultMapping[key] ?? '',
@@ -89,8 +91,13 @@ class TranslaterCube extends Cube {
         ),
       );
     });
+  }
 
-    return translations;
+  void _createTranslationsFromList(List<Translation> translations) {
+    _translations.value = Map.fromIterable(
+      translations,
+      key: (t) => t.key,
+    );
   }
 }
 
@@ -100,9 +107,13 @@ class _TranslationDao {
   static const String activeKey = 'active_translation';
   static const String submittedKey = 'submitted_translations';
 
-  Future<void> saveTranslations(LanguageTranslation translations) async =>
-      (await prefs).setString(activeKey, translations?.toJson());
-  Future<LanguageTranslation> getTranslations() async =>
+  Future<bool> saveTranslations(LanguageTranslation? translations) async {
+    if (translations == null) return (await prefs).remove(activeKey);
+
+    return (await prefs).setString(activeKey, translations.toJson());
+  }
+
+  Future<LanguageTranslation?> getTranslations() async =>
       _fromJson((await prefs).getString(activeKey));
 
   Future<void> submitTranslation(LanguageTranslation translations) async {
@@ -115,10 +126,13 @@ class _TranslationDao {
   }
 
   Future<List<LanguageTranslation>> getSubmittedTranslations() async {
-    return (await prefs).getStringList(submittedKey).map(_fromJson).toList();
+    return (await prefs)
+        .getStringList(submittedKey)!
+        .map((json) => _fromJson(json)!)
+        .toList();
   }
 
-  LanguageTranslation _fromJson(String json) => LanguageTranslation.fromJson(json);
+  LanguageTranslation? _fromJson(String? json) => LanguageTranslation.fromJson(json);
 
   Future<void> reset() => saveTranslations(null);
 }

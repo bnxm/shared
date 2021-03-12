@@ -6,17 +6,14 @@ class AnimatedIndexedStack extends StatefulWidget {
   final int index;
   final List<Widget> children;
   final Duration duration;
-  final Widget Function(Animation<double> animation, Widget child) builder;
+  final Widget Function(Animation<double> animation, Widget? child)? builder;
   const AnimatedIndexedStack({
-    Key key,
-    @required this.index,
-    @required this.children,
+    Key? key,
+    required this.index,
+    required this.children,
     this.duration = const Millis(250),
     this.builder,
-  })  : assert(index != null),
-        assert(children != null),
-        assert(duration != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   _AnimatedIndexedStackState createState() => _AnimatedIndexedStackState();
@@ -24,27 +21,18 @@ class AnimatedIndexedStack extends StatefulWidget {
 
 class _AnimatedIndexedStackState extends State<AnimatedIndexedStack>
     with SingleTickerProviderStateMixin {
-  AnimationController controller;
-  Animation<double> animation;
-  int index = 0;
+  late final controller = AnimationController(
+    duration: widget.duration * 0.5,
+    vsync: this,
+    value: 1.0,
+  );
 
-  @override
-  void initState() {
-    super.initState();
+  late Animation<double> animation = CurvedAnimation(
+    parent: controller,
+    curve: Curves.ease,
+  );
 
-    controller = AnimationController(
-      duration: widget.duration * 0.5,
-      vsync: this,
-      value: 1.0,
-    );
-
-    animation = CurvedAnimation(
-      parent: controller,
-      curve: Curves.ease,
-    );
-
-    index = widget.index;
-  }
+  late int index = widget.index;
 
   @override
   void didUpdateWidget(AnimatedIndexedStack oldWidget) {
@@ -70,7 +58,7 @@ class _AnimatedIndexedStackState extends State<AnimatedIndexedStack>
       animation: animation,
       builder: (context, child) {
         if (widget.builder != null) {
-          return widget.builder(controller, child);
+          return widget.builder!(controller, child);
         }
 
         return Opacity(

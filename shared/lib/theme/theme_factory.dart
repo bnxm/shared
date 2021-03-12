@@ -6,8 +6,8 @@ class ThemeFactory {
   ThemeFactory._();
 
   static ThemeData create({
-    @required Schema schema,
-    String fontFamily,
+    required Schema schema,
+    String? fontFamily,
   }) {
     assert(schema != null);
 

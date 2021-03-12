@@ -6,9 +6,9 @@ class TransparentRoute<T> extends PageRoute<T> {
   final Widget Function(BuildContext, Animation) builder;
   final Duration duration;
   TransparentRoute({
-    @required this.builder,
+    required this.builder,
     this.duration = const Millis(250),
-    RouteSettings settings,
+    RouteSettings? settings,
   })  : assert(builder != null),
         super(settings: settings, fullscreenDialog: false);
 
@@ -16,10 +16,10 @@ class TransparentRoute<T> extends PageRoute<T> {
   bool get opaque => false;
 
   @override
-  Color get barrierColor => null;
+  Color? get barrierColor => null;
 
   @override
-  String get barrierLabel => null;
+  String? get barrierLabel => null;
 
   @override
   bool get maintainState => true;

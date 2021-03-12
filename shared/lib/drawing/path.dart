@@ -17,10 +17,7 @@ Path computeLinearCurve(List<Offset> knots) {
 }
 
 Path computeBezierCurve(List<Offset> knots, {double smoothFactor = 1.0}) {
-  assert(knots != null);
-  assert(smoothFactor != null);
-
-  if (knots == null || knots.isEmpty) return Path();
+  if (knots.isEmpty) return Path();
 
   smoothFactor = smoothFactor.clamp(0.0, 1.0);
 
@@ -99,11 +96,11 @@ class _Point {
     this.dy = 0.0,
   ]);
 
-  _Point plus({double factor = 1.0, _Point point}) {
+  _Point plus({double factor = 1.0, required _Point point}) {
     return _Point(x + factor * point.x, y + factor * point.y);
   }
 
-  _Point minus({double factor = 1.0, _Point point}) {
+  _Point minus({double factor = 1.0, required _Point point}) {
     return _Point(x - factor * point.x, y - factor * point.y);
   }
 
@@ -137,7 +134,7 @@ Path computeCubicMeanCurve(List<Offset> knots) {
   final points = knots.map((k) => _Point(k.dx, k.dy)).toList();
 
   if (points.length >= 2) {
-    _Point prevPoint;
+    late _Point prevPoint;
     for (int i = 0; i < points.length; i++) {
       final point = points[i];
 
@@ -185,36 +182,37 @@ Path computePolyBezierCurve(List<Offset> knots) {
 
     for (var i = 0; i < n; i++) {
       final target = nodes[i + 1];
-      _appendCurveToPath(path, controllPoints[i], controllPoints[n + i], target);
+      _appendCurveToPath(path, controllPoints[i]!, controllPoints[n + i]!, target);
     }
   }
 
   return path;
 }
 
-List<_Point> _computeControlPoints(int n, List<_Point> knots) {
-  final List<_Point> result = List<_Point>(n * 2);
+List<_Point?> _computeControlPoints(int n, List<_Point> knots) {
+  final List<_Point?> result = List<_Point?>.filled(n * 2, null);
 
   final target = _constructTargetVector(n, knots);
   final lowerDiag = _constructLowerDiagonalVector(n - 1);
   final mainDiag = _constructMainDiagonalVector(n);
   final upperDiag = _constructUpperDiagonalVector(n - 1);
 
-  final newTarget = List<_Point>(n);
-  final newUpperDiag = List<double>(n - 1);
+  final newTarget = List<_Point?>.filled(n, null);
+  final newUpperDiag = List<double?>.filled(n - 1, null);
 
   // forward sweep for control points c_i,0:
-  newUpperDiag[0] = upperDiag[0] / mainDiag[0];
-  newTarget[0] = target[0].scaleBy(1 / mainDiag[0]);
+  newUpperDiag[0] = upperDiag[0]! / mainDiag[0]!;
+  newTarget[0] = target[0]!.scaleBy(1 / mainDiag[0]!);
 
   for (int i = 1; i < n - 1; i++) {
     newUpperDiag[i] =
-        upperDiag[i] / (mainDiag[i] - lowerDiag[i - 1] * newUpperDiag[i - 1]);
+        upperDiag[i]! / (mainDiag[i]! - lowerDiag[i - 1]! * newUpperDiag[i - 1]!);
   }
 
   for (int i = 1; i < n; i++) {
-    final double targetScale = 1 / (mainDiag[i] - lowerDiag[i - 1] * newUpperDiag[i - 1]);
-    newTarget[i] = (target[i].minus(point: newTarget[i - 1].scaleBy(lowerDiag[i - 1])))
+    final double targetScale =
+        1 / (mainDiag[i]! - lowerDiag[i - 1]! * newUpperDiag[i - 1]!);
+    newTarget[i] = (target[i]!.minus(point: newTarget[i - 1]!.scaleBy(lowerDiag[i - 1]!)))
         .scaleBy(targetScale);
   }
 
@@ -222,21 +220,21 @@ List<_Point> _computeControlPoints(int n, List<_Point> knots) {
   result[n - 1] = newTarget[n - 1];
 
   for (int i = n - 2; i >= 0; i--) {
-    result[i] = newTarget[i].minus(factor: newUpperDiag[i], point: result[i + 1]);
+    result[i] = newTarget[i]!.minus(factor: newUpperDiag[i]!, point: result[i + 1]!);
   }
 
   // calculate remaining control points c_i,1 directly:
   for (int i = 0; i < n - 1; i++) {
-    result[n + i] = knots[i + 1].scaleBy(2).minus(point: result[i + 1]);
+    result[n + i] = knots[i + 1].scaleBy(2).minus(point: result[i + 1]!);
   }
 
-  result[2 * n - 1] = knots[n].plus(point: result[n - 1]).scaleBy(0.5);
+  result[2 * n - 1] = knots[n].plus(point: result[n - 1]!).scaleBy(0.5);
 
   return result;
 }
 
-List<_Point> _constructTargetVector(int n, List<_Point> knots) {
-  final result = List<_Point>(n);
+List<_Point?> _constructTargetVector(int n, List<_Point> knots) {
+  final result = List<_Point?>.filled(n, null);
 
   result[0] = knots[0].plus(factor: 2, point: knots[1]);
 
@@ -249,8 +247,8 @@ List<_Point> _constructTargetVector(int n, List<_Point> knots) {
   return result;
 }
 
-List<double> _constructLowerDiagonalVector(int length) {
-  final result = List<double>(length);
+List<double?> _constructLowerDiagonalVector(int length) {
+  final result = List<double?>.filled(length, null);
 
   for (int i = 0; i < result.length - 1; i++) {
     result[i] = 1.0;
@@ -261,8 +259,8 @@ List<double> _constructLowerDiagonalVector(int length) {
   return result;
 }
 
-List<double> _constructMainDiagonalVector(int n) {
-  final result = List<double>(n);
+List<double?> _constructMainDiagonalVector(int n) {
+  final result = List<double?>.filled(n, null);
   result[0] = 2.0;
 
   for (int i = 1; i < result.length - 1; i++) {
@@ -274,8 +272,8 @@ List<double> _constructMainDiagonalVector(int n) {
   return result;
 }
 
-List<double> _constructUpperDiagonalVector(int length) {
-  final result = List<double>(length);
+List<double?> _constructUpperDiagonalVector(int length) {
+  final result = List<double?>.filled(length, null);
 
   for (int i = 0; i < result.length; i++) {
     result[i] = 1.0;

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:shared/shared.dart';
 
 abstract class BasePainter extends CustomPainter {
-  Canvas canvas;
-  Size size;
+  late Canvas canvas;
+  late Size size;
 
   double get width => size.width;
   double get height => size.height;
@@ -39,11 +39,11 @@ abstract class BasePainter extends CustomPainter {
     } else if (area is Path) {
       canvas.clipPath(area);
     } else {
-      canvas.clipRect(null);
+      canvas.clipRect(drawingArea);
     }
   }
 
-  void rotate(double radians, {Offset center}) {
+  void rotate(double radians, {Offset? center}) {
     center ??= this.center;
     canvas
       ..translate(center.dx, center.dy)
@@ -52,26 +52,25 @@ abstract class BasePainter extends CustomPainter {
   }
 
   Path drawPath(
-    Path path,
+    Path? path,
     Paint paint, {
-    List<double> dashPattern,
-    DashOffset dashOffset,
+    List<double>? dashPattern,
+    DashOffset? dashOffset,
   }) {
     final p = dashPattern == null
-        ? path
+        ? path!
         : dashPath(
             path,
             pattern: dashPattern,
             dashOffset: dashOffset,
-          );
+          )!;
 
     canvas.drawPath(p, paint);
     return p;
   }
 
-  Rect drawRect(Rect rect, Paint paint) {
+  void drawRect(Rect rect, Paint paint) {
     canvas.drawRect(rect, paint);
-    return rect;
   }
 
   void drawShadow(
@@ -91,12 +90,12 @@ abstract class BasePainter extends CustomPainter {
   RRect drawRRect(
     dynamic rect,
     Paint paint, {
-    double topLeft,
-    double topRight,
-    double bottomLeft,
-    double bottomRight,
+    double? topLeft,
+    double? topRight,
+    double? bottomLeft,
+    double? bottomRight,
     double all = 0.0,
-    BorderRadius borderRadius,
+    BorderRadius? borderRadius,
   }) {
     assert(rect is Rect || rect is RRect);
 
@@ -114,17 +113,15 @@ abstract class BasePainter extends CustomPainter {
     return r;
   }
 
-  TextPainter drawText(
+  TextPainter? drawText(
     TextSpan text,
     Offset position, {
-    Alignment align = Alignment.topCenter,
+    Alignment? align = Alignment.topCenter,
     double angle = 0,
     String ellipsis = '...',
-    int maxLines,
+    int? maxLines,
   }) {
-    assert(canvas != null || text != null);
     assert(angle == 0 || angle == 90 || angle == 180 || angle == 270);
-    if (canvas == null || text == null) return null;
 
     final painter = TextPainter(
       text: text,
@@ -136,7 +133,7 @@ abstract class BasePainter extends CustomPainter {
     final w = angle == 0 || angle == 180 ? painter.width : painter.height;
     final h = angle == 0 || angle == 180 ? painter.height : painter.width;
 
-    Offset offset;
+    late Offset offset;
     if (align == Alignment.center) {
       offset = Offset(position.dx - (w / 2), position.dy - (h / 2));
     } else if (align == Alignment.centerLeft) {
@@ -181,7 +178,7 @@ abstract class BasePainter extends CustomPainter {
   Size measureText(
     TextSpan text, {
     Alignment align = Alignment.topCenter,
-    int maxLines,
+    int? maxLines,
     String ellipsis = '...',
   }) {
     final painter = TextPainter(
@@ -201,8 +198,8 @@ abstract class BasePainter extends CustomPainter {
     Offset a,
     Offset b,
     Paint paint, {
-    List<double> dashPattern,
-    DashOffset dashOffset,
+    List<double>? dashPattern,
+    DashOffset? dashOffset,
   }) {
     if (dashPattern != null) {
       drawPath(

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class BouncingScroll extends StatelessWidget {
-  final Widget child;
+  final Widget? child;
   const BouncingScroll({
-    Key key,
+    Key? key,
     this.child,
   }) : super(key: key);
 
@@ -11,15 +11,15 @@ class BouncingScroll extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScrollConfiguration(
       behavior: BouncingScrollBehaviour(),
-      child: child,
+      child: child!,
     );
   }
 }
 
 class NoOverscroll extends StatelessWidget {
-  final Widget child;
+  final Widget? child;
   const NoOverscroll({
-    Key key,
+    Key? key,
     this.child,
   }) : super(key: key);
 
@@ -27,7 +27,7 @@ class NoOverscroll extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScrollConfiguration(
       behavior: const NoOverscrollBehaviour(),
-      child: child,
+      child: child!,
     );
   }
 }

@@ -11,19 +11,15 @@ class AnimatedSizeFade extends StatefulWidget {
   final Curve curve;
   final double sizeFraction;
   const AnimatedSizeFade({
-    Key key,
-    @required this.show,
-    @required this.duration,
+    Key? key,
+    required this.show,
+    required this.duration,
     this.curve = Curves.ease,
     this.axis = Axis.vertical,
     this.axisAlignment = 0.0,
     this.sizeFraction = 0.75,
-    @required this.child,
-  })  : assert(show != null),
-        assert(duration != null),
-        assert(curve != null),
-        assert(sizeFraction != null),
-        super(key: key);
+    required this.child,
+  }) : super(key: key);
 
   @override
   _AnimatedSizeFadeState createState() => _AnimatedSizeFadeState();
@@ -31,26 +27,19 @@ class AnimatedSizeFade extends StatefulWidget {
 
 class _AnimatedSizeFadeState extends State<AnimatedSizeFade>
     with SingleTickerProviderStateMixin {
-  AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      duration: widget.duration,
-      vsync: this,
-      value: widget.show ? 1.0 : 0.0,
-    );
-  }
+  late final controller = AnimationController(
+    duration: widget.duration,
+    vsync: this,
+    value: widget.show ? 1.0 : 0.0,
+  );
 
   @override
   void didUpdateWidget(AnimatedSizeFade oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _controller.duration = widget.duration;
+    controller.duration = widget.duration;
 
     if (widget.show != oldWidget.show) {
-      widget.show ? _controller.forward() : _controller.reverse();
+      widget.show ? controller.forward() : controller.reverse();
     }
   }
 
@@ -60,7 +49,7 @@ class _AnimatedSizeFadeState extends State<AnimatedSizeFade>
       axis: widget.axis,
       curve: widget.curve,
       child: widget.child,
-      animation: _controller,
+      animation: controller,
       sizeFraction: widget.sizeFraction,
       axisAlignment: widget.axisAlignment,
     );
@@ -68,7 +57,7 @@ class _AnimatedSizeFadeState extends State<AnimatedSizeFade>
 
   @override
   void dispose() {
-    _controller.dispose();
+    controller.dispose();
     super.dispose();
   }
 }

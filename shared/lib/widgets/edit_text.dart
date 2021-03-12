@@ -14,13 +14,13 @@ class EditText extends StatefulWidget {
   final InputDecoration decoration;
 
   /// {@macro flutter.widgets.editableText.keyboardType}
-  final TextInputType keyboardType;
+  final TextInputType? keyboardType;
 
   /// The type of action button to use for the keyboard.
   ///
   /// Defaults to [TextInputAction.newline] if [keyboardType] is
   /// [TextInputType.multiline] and [TextInputAction.done] otherwise.
-  final TextInputAction textInputAction;
+  final TextInputAction? textInputAction;
 
   /// {@macro flutter.widgets.editableText.textCapitalization}
   final TextCapitalization textCapitalization;
@@ -30,19 +30,19 @@ class EditText extends StatefulWidget {
   /// This text style is also used as the base style for the [decoration].
   ///
   /// If null, defaults to the `subhead` text style from the current [Theme].
-  final TextStyle style;
+  final TextStyle? style;
 
   /// {@macro flutter.widgets.editableText.strutStyle}
-  final StrutStyle strutStyle;
+  final StrutStyle? strutStyle;
 
   /// {@macro flutter.widgets.editableText.textAlign}
   final TextAlign textAlign;
 
   /// {@macro flutter.widgets.inputDecorator.textAlignVertical}
-  final TextAlignVertical textAlignVertical;
+  final TextAlignVertical? textAlignVertical;
 
   /// {@macro flutter.widgets.editableText.textDirection}
-  final TextDirection textDirection;
+  final TextDirection? textDirection;
 
   /// {@macro flutter.widgets.editableText.autofocus}
   final bool autofocus;
@@ -54,10 +54,10 @@ class EditText extends StatefulWidget {
   final bool autocorrect;
 
   /// {@macro flutter.services.textInput.smartDashesType}
-  final SmartDashesType smartDashesType;
+  final SmartDashesType? smartDashesType;
 
   /// {@macro flutter.services.textInput.smartQuotesType}
-  final SmartQuotesType smartQuotesType;
+  final SmartQuotesType? smartQuotesType;
 
   /// {@macro flutter.services.textInput.enableSuggestions}
   final bool enableSuggestions;
@@ -66,7 +66,7 @@ class EditText extends StatefulWidget {
   final int maxLines;
 
   /// {@macro flutter.widgets.editableText.minLines}
-  final int minLines;
+  final int? minLines;
 
   /// {@macro flutter.widgets.editableText.expands}
   final bool expands;
@@ -79,10 +79,10 @@ class EditText extends StatefulWidget {
   /// If not set, select all and paste will default to be enabled. Copy and cut
   /// will be disabled if [obscureText] is true. If [readOnly] is true,
   /// paste and cut will be disabled regardless.
-  final ToolbarOptions toolbarOptions;
+  final ToolbarOptions? toolbarOptions;
 
   /// {@macro flutter.widgets.editableText.showCursor}
-  final bool showCursor;
+  final bool? showCursor;
 
   /// If [maxLength] is set to this value, only the "current input length"
   /// part of the character counter is shown.
@@ -139,7 +139,7 @@ class EditText extends StatefulWidget {
   ///
   ///  * [LengthLimitingTextInputFormatter] for more information on how it
   ///    counts characters, and how it may differ from the intuitive meaning.
-  final int maxLength;
+  final int? maxLength;
 
   /// If true, prevents the field from allowing more than [maxLength]
   /// characters.
@@ -157,10 +157,10 @@ class EditText extends StatefulWidget {
   ///    runs and can validate and change ("format") the input value.
   ///  * [onEditingComplete], [onSubmitted], [onSelectionChanged]:
   ///    which are more specialized input change notifications.
-  final ValueChanged<String> onChanged;
+  final ValueChanged<String>? onChanged;
 
   /// {@macro flutter.widgets.editableText.onEditingComplete}
-  final VoidCallback onEditingComplete;
+  final VoidCallback? onEditingComplete;
 
   /// {@macro flutter.widgets.editableText.onSubmitted}
   ///
@@ -169,36 +169,36 @@ class EditText extends StatefulWidget {
   ///  * [EditableText.onSubmitted] for an example of how to handle moving to
   ///    the next/previous field when using [TextInputAction.next] and
   ///    [TextInputAction.previous] for [textInputAction].
-  final ValueChanged<String> onSubmitted;
+  final ValueChanged<String>? onSubmitted;
 
   /// {@macro flutter.widgets.editableText.inputFormatters}
-  final List<TextInputFormatter> inputFormatters;
+  final List<TextInputFormatter>? inputFormatters;
 
   /// If false the text field is "disabled": it ignores taps and its
   /// [decoration] is rendered in grey.
   ///
   /// If non-null this property overrides the [decoration]'s
   /// [Decoration.enabled] property.
-  final bool enabled;
+  final bool? enabled;
 
   /// {@macro flutter.widgets.editableText.cursorWidth}
   final double cursorWidth;
 
   /// {@macro flutter.widgets.editableText.cursorRadius}
-  final Radius cursorRadius;
+  final Radius? cursorRadius;
 
   /// The color to use when painting the cursor.
   ///
   /// Defaults to [ThemeData.cursorColor] or [CupertinoTheme.primaryColor]
   /// depending on [ThemeData.platform].
-  final Color cursorColor;
+  final Color? cursorColor;
 
   /// The appearance of the keyboard.
   ///
   /// This setting is only honored on iOS devices.
   ///
   /// If unset, defaults to the brightness of [ThemeData.primaryColorBrightness].
-  final Brightness keyboardAppearance;
+  final Brightness? keyboardAppearance;
 
   /// {@macro flutter.widgets.editableText.scrollPadding}
   final EdgeInsets scrollPadding;
@@ -229,7 +229,7 @@ class EditText extends StatefulWidget {
   /// To listen to arbitrary pointer events without competing with the
   /// text field's internal gesture detector, use a [Listener].
   /// {@endtemplate}
-  final GestureTapCallback onTap;
+  final GestureTapCallback? onTap;
 
   /// Callback that generates a custom [InputDecorator.counter] widget.
   ///
@@ -261,21 +261,21 @@ class EditText extends StatefulWidget {
   ///
   /// If buildCounter returns null, then no counter and no Semantics widget will
   /// be created at all.
-  final InputCounterWidgetBuilder buildCounter;
+  final InputCounterWidgetBuilder? buildCounter;
 
   /// {@macro flutter.widgets.editableText.scrollPhysics}
-  final ScrollPhysics scrollPhysics;
+  final ScrollPhysics? scrollPhysics;
 
   /// {@macro flutter.widgets.editableText.scrollController}
-  final ScrollController scrollController;
+  final ScrollController? scrollController;
 
-  final TextController controller;
+  final TextController? controller;
 
-  final String Function(String) inputValidator;
+  final String Function(String)? inputValidator;
 
-  final EditTextDecorator decorator;
+  final EditTextDecorator? decorator;
   const EditText({
-    Key key,
+    Key? key,
     this.controller,
     this.decorator,
     this.inputValidator,
@@ -325,9 +325,9 @@ class EditText extends StatefulWidget {
 }
 
 class _EditTextState extends State<EditText> {
-  String get text => controller.text;
-  TextController get controller => widget.controller;
-  EditTextDecorator get decorator => widget.decorator;
+  String get text => controller!.text;
+  TextController? get controller => widget.controller;
+  EditTextDecorator? get decorator => widget.decorator;
 
   void _onTextChanged(String text) {
     widget.onChanged?.call(text);
@@ -338,16 +338,16 @@ class _EditTextState extends State<EditText> {
     final editText = _buildEditText(decorator);
 
     if (decorator != null) {
-      return decorator.build(context, editText);
+      return decorator!.build(context, editText as TextField);
     }
 
     return editText;
   }
 
-  Widget _buildEditText(EditTextDecorator decorator) {
+  Widget _buildEditText(EditTextDecorator? decorator) {
     return TextField(
       controller: controller,
-      focusNode: controller.node,
+      focusNode: controller!.node,
       autocorrect: widget.autocorrect,
       autofocus: widget.autofocus,
       buildCounter: widget.buildCounter,
@@ -397,7 +397,7 @@ abstract class EditTextDecorator {
 }
 
 class SimpleLineDecorator extends EditTextDecorator {
-  final String error;
+  final String? error;
   SimpleLineDecorator({
     this.error,
   });
@@ -412,8 +412,8 @@ class SimpleLineDecorator extends EditTextDecorator {
 
   @override
   Widget build(BuildContext context, TextField editText) {
-    final isInputValid = error == null || error.isEmpty;
-    final schema = Schema.of(context);
+    final isInputValid = error == null || error!.isEmpty;
+    final schema = Schema.of(context)!;
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
 
@@ -434,7 +434,7 @@ class SimpleLineDecorator extends EditTextDecorator {
               const SizedBox(height: 4),
               Text(
                 error ?? '',
-                style: textTheme.bodyText2.copyWith(
+                style: textTheme.bodyText2!.copyWith(
                   fontSize: 12,
                   color: schema.error,
                 ),

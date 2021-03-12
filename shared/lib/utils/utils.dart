@@ -13,24 +13,24 @@ double lpToPx(BuildContext context, double px) {
 
 void postFrame(VoidCallback callback) {
   assert(callback != null);
-  WidgetsBinding.instance.addPostFrameCallback((_) => callback());
+  WidgetsBinding.instance!.addPostFrameCallback((_) => callback());
 }
 
-T lerp<T>(T a, T b, double t) {
+T? lerp<T>(T a, T b, double t) {
   if (T is double) {
     return lerpDouble(a as double, b as double, t) as T;
   } else if (T is int) {
     return lerpInt(a as int, b as int, t) as T;
   } else if (T is Color) {
-    return Color.lerp(a as Color, b as Color, t) as T;
+    return Color.lerp(a as Color, b as Color, t) as T?;
   } else if (T is Offset) {
-    return Offset.lerp(a as Offset, b as Offset, t) as T;
+    return Offset.lerp(a as Offset, b as Offset, t) as T?;
   } else {
     throw ArgumentError('$T cannot be interpolated');
   }
 }
 
-Future<T> openDialog<T>(BuildContext context, Widget dialog,
+Future<T?> openDialog<T>(BuildContext context, Widget dialog,
     {bool dismissable = true}) async {
   return showGeneralDialog(
     context: context,

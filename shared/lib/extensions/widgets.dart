@@ -24,27 +24,27 @@ extension ListWidgetExtensions on Iterable<Widget> {
 extension StateExtensions<T extends StatefulWidget> on State<T> {
   ThemeData get theme => Theme.of(context);
   TextTheme get textTheme => theme.textTheme;
-  Schema get schema => Schema.of(context);
+  Schema? get schema => Schema.of(context);
 }
 
 extension GlobalKeyExtension on GlobalKey {
-  RenderBox get renderBox => currentContext?.renderBox;
+  RenderBox? get renderBox => currentContext?.renderBox;
 
-  Size get size => renderBox?.hasSize == true ? renderBox?.size : Size.zero;
-  double get height => size?.height;
-  double get width => size?.width;
+  Size? get size => renderBox?.hasSize == true ? renderBox?.size : Size.zero;
+  double? get height => size?.height;
+  double? get width => size?.width;
 
-  Offset get offset => renderBox?.offset;
+  Offset? get offset => renderBox?.offset;
 }
 
 extension BuildContextUiExtension on BuildContext {
-  RenderBox get renderBox => findRenderObject() as RenderBox;
+  RenderBox? get renderBox => findRenderObject() as RenderBox?;
 
-  Size get size => renderBox?.hasSize == true ? renderBox?.size : Size.zero;
-  double get height => size?.height;
-  double get width => size?.width;
+  Size? get size => renderBox?.hasSize == true ? renderBox?.size : Size.zero;
+  double? get height => size?.height;
+  double? get width => size?.width;
 
-  Offset get offset => renderBox?.offset;
+  Offset? get offset => renderBox?.offset;
 }
 
 extension RenderBoxExtension on RenderBox {

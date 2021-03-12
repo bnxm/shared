@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:shared/shared.dart';
 
-Future<Color> showMaterialColorPicker(
+Future<Color?> showMaterialColorPicker(
   BuildContext context, {
-  void Function(Color color) onColorChange,
-  bool includeShades,
-  bool includeBW,
-  List<Color> colors,
-  Color selectedColor,
-  double circleSize,
-  double spacing,
-  double elevation,
-  Color backgroundColor,
-  String title,
+  void Function(Color color)? onColorChange,
+  bool? includeShades,
+  bool? includeBW,
+  List<Color>? colors,
+  Color? selectedColor,
+  double? circleSize,
+  double? spacing,
+  double? elevation,
+  Color? backgroundColor,
+  String? title,
   double maxWidth = 500.0,
   bool withAlpha = false,
   bool withHex = false,
@@ -24,7 +24,7 @@ Future<Color> showMaterialColorPicker(
     context,
     ValueListenableBuilder(
       valueListenable: choosenColor,
-      builder: (context, value, _) {
+      builder: (context, dynamic value, _) {
         return AnimatedColor(
           color: value,
           duration: const Millis(500),
@@ -71,19 +71,19 @@ Future<Color> showMaterialColorPicker(
 }
 
 class MaterialColorPicker extends StatefulWidget {
-  final void Function(Color color) onColorChange;
-  final bool includeShades;
-  final bool includeBW;
-  final List<Color> colors;
-  final Color selectedColor;
-  final Color lerpColor;
-  final double circleSize;
-  final double spacing;
-  final double elevation;
+  final void Function(Color color)? onColorChange;
+  final bool? includeShades;
+  final bool? includeBW;
+  final List<Color>? colors;
+  final Color? selectedColor;
+  final Color? lerpColor;
+  final double? circleSize;
+  final double? spacing;
+  final double? elevation;
   final bool withAlpha;
   final bool withHex;
   const MaterialColorPicker({
-    Key key,
+    Key? key,
     this.onColorChange,
     this.includeShades = true,
     this.colors,
@@ -102,10 +102,10 @@ class MaterialColorPicker extends StatefulWidget {
 }
 
 class _MaterialColorPickerState extends State<MaterialColorPicker> {
-  ColorSwatch shadeColor;
+  ColorSwatch? shadeColor;
 
-  FocusNode node;
-  TextController hexController;
+  FocusNode? node;
+  TextController? hexController;
 
   Color get selectedColor => widget.selectedColor ?? Colors.white;
   Color get lerpColor => (widget.lerpColor ?? selectedColor).withOpacity(1.0);
@@ -127,7 +127,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
       ..text = selectedColor.value.hex.removePrefix('#')
       ..addListener(() {
         try {
-          final color = HexColor(hexController.text);
+          final color = HexColor(hexController!.text);
           isHexValid = true;
 
           if (color != selectedColor) {
@@ -146,13 +146,13 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
     setHexColor();
   }
 
-  void _onColorChanged(Color color, [double opacity]) =>
+  void _onColorChanged(Color color, [double? opacity]) =>
       widget.onColorChange?.call(color.withOpacity(opacity ?? this.opacity));
 
   List<Widget> _buildColors() {
-    final colors = shadeColor != null ? _getShades(shadeColor) : materialColors;
+    final colors = shadeColor != null ? _getShades(shadeColor!) : materialColors;
 
-    Widget buildCircle(Color color) {
+    Widget buildCircle(Color? color) {
       return GestureDetector(
         onTap: () {
           setState(() {
@@ -164,7 +164,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
                 _onColorChanged(color.shade200);
               }
             } else {
-              _onColorChanged(color);
+              _onColorChanged(color!);
             }
           });
         },
@@ -176,7 +176,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
           duration: const Duration(milliseconds: 200),
           alignment: Alignment.center,
           borderRadius: circleSize / 2,
-          color: color.withOpacity(opacity),
+          color: color!.withOpacity(opacity),
           shadowColor: Colors.black.withOpacity(0.12 * opacity),
           child: Visibility(
             visible: color == selectedColor.withOpacity(1),
@@ -222,8 +222,8 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
     return circles;
   }
 
-  List<Color> _getShades(ColorSwatch color) {
-    final List<Color> colors = [];
+  List<Color?> _getShades(ColorSwatch color) {
+    final List<Color?> colors = [];
     if (color[50] != null) colors.add(color[50]);
     if (color[100] != null) colors.add(color[100]);
     if (color[200] != null) colors.add(color[200]);
@@ -239,8 +239,8 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
   }
 
   void setHexColor() {
-    if (!node.hasFocus) {
-      hexController.text = selectedColor.value.hex.removePrefix('#');
+    if (!node!.hasFocus) {
+      hexController!.text = selectedColor.value.hex.removePrefix('#');
     }
   }
 
@@ -312,7 +312,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
                       decoration: InputDecoration(
                         prefixText: '# ',
                         prefixStyle:
-                            textTheme.bodyText1.copyWith(fontWeight: FontWeight.w600),
+                            textTheme.bodyText1!.copyWith(fontWeight: FontWeight.w600),
                         focusColor: lerpColor,
                         border: theme.inputDecorationTheme.border,
                         focusedBorder: OutlineInputBorder(
@@ -331,7 +331,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
                     duration: const Millis(250),
                     child: Icon(
                       Icons.error_outline,
-                      color: schema.error,
+                      color: schema!.error,
                     ),
                   ),
                 ],

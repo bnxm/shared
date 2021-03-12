@@ -8,15 +8,15 @@ class ScaleEntry {
   final num value;
   final Color color;
   final Color shadow;
-  final String label;
-  final String endLabel;
-  final String startLabel;
+  final String? label;
+  final String? endLabel;
+  final String? startLabel;
   final double elevation;
-  final TextStyle labelStyle;
+  final TextStyle? labelStyle;
   ScaleEntry({
-    Color shadow,
-    @required this.value,
-    @required this.color,
+    Color? shadow,
+    required this.value,
+    required this.color,
     dynamic label,
     dynamic startLabel,
     dynamic endLabel,
@@ -82,7 +82,7 @@ class ScaleEntry {
   ScaleEntry scaleTo(ScaleEntry b, double t) {
     return ScaleEntry(
       value: lerpDouble(value, b.value, t),
-      color: Color.lerp(color, b.color, t),
+      color: Color.lerp(color, b.color, t)!,
       shadow: Color.lerp(shadow, b.shadow, t),
       elevation: lerpDouble(elevation, b.elevation, t),
       label: t <= 0.5 ? label : b.label,
@@ -95,14 +95,14 @@ class ScaleEntry {
   }
 
   ScaleEntry copyWith({
-    num value,
-    Color color,
-    Color shadow,
-    String label,
-    String endLabel,
-    String startLabel,
-    double elevation,
-    TextStyle labelStyle,
+    num? value,
+    Color? color,
+    Color? shadow,
+    String? label,
+    String? endLabel,
+    String? startLabel,
+    double? elevation,
+    TextStyle? labelStyle,
   }) {
     return ScaleEntry(
       value: value ?? this.value,
@@ -155,18 +155,18 @@ class ScaleData {
   final double thickness;
   final double labelSpacing;
   final num indicatorValue;
-  final EdgeInsets padding;
-  final TextStyle labelStyle;
-  final BorderRadius borderRadius;
+  final EdgeInsets? padding;
+  final TextStyle? labelStyle;
+  final BorderRadius? borderRadius;
   ScaleData({
-    @required this.data,
-    @required this.spacing,
-    @required this.thickness,
-    @required this.labelSpacing,
-    @required this.indicatorValue,
-    @required this.padding,
-    @required this.labelStyle,
-    @required this.borderRadius,
+    required this.data,
+    required this.spacing,
+    required this.thickness,
+    required this.labelSpacing,
+    required this.indicatorValue,
+    required this.padding,
+    required this.labelStyle,
+    required this.borderRadius,
   });
 
   ScaleData scaleTo(ScaleData b, double t) {
@@ -183,14 +183,14 @@ class ScaleData {
   }
 
   ScaleData copyWith({
-    List<ScaleEntry> data,
-    double spacing,
-    double thickness,
-    double labelSpacing,
-    num indicatorValue,
-    EdgeInsets padding,
-    TextStyle labelStyle,
-    BorderRadius borderRadius,
+    List<ScaleEntry>? data,
+    double? spacing,
+    double? thickness,
+    double? labelSpacing,
+    num? indicatorValue,
+    EdgeInsets? padding,
+    TextStyle? labelStyle,
+    BorderRadius? borderRadius,
   }) {
     return ScaleData(
       data: data ?? this.data,

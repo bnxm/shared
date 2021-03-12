@@ -7,8 +7,8 @@ class PumpingIcon extends StatelessWidget {
   final Duration interval;
   final double intensity;
   const PumpingIcon({
-    Key key,
-    @required this.icon,
+    Key? key,
+    required this.icon,
     this.duration = const Millis(250),
     this.interval = const Millis(750),
     this.intensity = 0.15,
@@ -32,12 +32,12 @@ class PumpingIcon extends StatelessWidget {
 
 class CircularRipple extends StatelessWidget {
   final double size;
-  final Color color;
+  final Color? color;
   final Duration duration;
   final Duration interval;
   const CircularRipple({
-    Key key,
-    @required this.size,
+    Key? key,
+    required this.size,
     this.color,
     this.duration = const Millis(200),
     this.interval = const Seconds(1),
@@ -70,12 +70,12 @@ class CircularRipple extends StatelessWidget {
 }
 
 class PumpingHeart extends StatelessWidget {
-  final double size;
+  final double? size;
   final Duration duration;
   final Duration interval;
   final Color color;
   const PumpingHeart({
-    Key key,
+    Key? key,
     this.size,
     this.duration = const Millis(250),
     this.interval = const Millis(750),

@@ -11,20 +11,20 @@ class Scale extends ImplicitAnimation {
   final double thickness;
   final double spacing;
   final double labelSpacing;
-  final TextStyle labelStyle;
+  final TextStyle? labelStyle;
   final bool labelAbove;
   final bool indicatorOnTop;
   final bool spaceEvenly;
   final bool placeEdgeLabelsBetweenEntries;
   final BorderRadius borderRadius;
   final EdgeInsets padding;
-  final Widget indicator;
+  final Widget? indicator;
   final num indicatorValue;
   const Scale({
-    Key key,
-    @required Duration duration,
+    Key? key,
+    required Duration duration,
     Curve curve = Curves.ease,
-    @required this.data,
+    required this.data,
     this.thickness = 3.0,
     this.spacing = 0.0,
     this.labelSpacing = 4.0,
@@ -63,15 +63,15 @@ class ScaleState extends ImplicitAnimationState<ScaleData, Scale> {
   }
 
   @override
-  ScaleData lerp(ScaleData a, ScaleData b, double t) => a.scaleTo(b, t);
+  ScaleData lerp(ScaleData? a, ScaleData b, double t) => a!.scaleTo(b, t);
 
-  ScaleData get data => value;
+  ScaleData? get data => value;
 
   List<ScaleEntry> get entries => value.data;
   List<ScaleEntry> get activeEntries => entries.filter((item) => !item.isOutgoing);
 
   @override
-  Widget builder(BuildContext context, ScaleData data) {
+  Widget builder(BuildContext context, ScaleData? data) {
     final prevEntries = entries.filter((item) => !item.isIncoming);
     final length = lerpDouble(prevEntries.length, activeEntries.length, v);
 
@@ -100,28 +100,28 @@ class ScaleState extends ImplicitAnimationState<ScaleData, Scale> {
       final entry = entries[index];
       final f = entry.f(v);
 
-      final hasSpacing = data.spacing > 0.0;
+      final hasSpacing = data!.spacing > 0.0;
       final isFirst = index == 0;
       final isLast = index == (activeEntries.length - 1);
 
       final bar = Container(
-        height: data.thickness,
+        height: data!.thickness,
         decoration: BoxDecoration(
           color: entry.color.scaleOpacity(f),
           borderRadius: BorderRadius.only(
-            topLeft: isFirst || hasSpacing ? data.borderRadius.topLeft : Radius.zero,
+            topLeft: isFirst || hasSpacing ? data!.borderRadius!.topLeft : Radius.zero,
             bottomLeft:
-                isFirst || hasSpacing ? data.borderRadius.bottomLeft : Radius.zero,
-            topRight: isLast || hasSpacing ? data.borderRadius.topRight : Radius.zero,
+                isFirst || hasSpacing ? data!.borderRadius!.bottomLeft : Radius.zero,
+            topRight: isLast || hasSpacing ? data!.borderRadius!.topRight : Radius.zero,
             bottomRight:
-                isLast || hasSpacing ? data.borderRadius.bottomRight : Radius.zero,
+                isLast || hasSpacing ? data!.borderRadius!.bottomRight : Radius.zero,
           ),
         ),
       );
 
       Widget buildLabel(
         AlignmentGeometry alignment,
-        String label, {
+        String? label, {
         double offset = 0.0,
       }) {
         return Align(
@@ -164,7 +164,7 @@ class ScaleState extends ImplicitAnimationState<ScaleData, Scale> {
       final labelBelow = !widget.labelAbove && hasLabel;
 
       final widthFactor = (widget.spaceEvenly ? 1 / length : entry.value / total) * f;
-      final spacing = hasSpacing ? (data.spacing / 2.0) * f : 0.0;
+      final spacing = hasSpacing ? (data!.spacing / 2.0) * f : 0.0;
 
       return Container(
         width: width * widthFactor,
@@ -194,7 +194,7 @@ class ScaleState extends ImplicitAnimationState<ScaleData, Scale> {
 
   Widget buildIndicator(double width, double total, double length) {
     final value = widget.indicatorValue;
-    final totalFractionalSpacing = (data.spacing * (length - 1)) / width;
+    final totalFractionalSpacing = (data!.spacing * (length - 1)) / width;
 
     final translation = () {
           if (widget.indicator == null) return 0.0;
@@ -217,6 +217,8 @@ class ScaleState extends ImplicitAnimationState<ScaleData, Scale> {
                 return t + (f * (1 / length));
               }
             }
+
+            return 0.0;
           } else {
             return value / total;
           }
@@ -234,16 +236,16 @@ class ScaleState extends ImplicitAnimationState<ScaleData, Scale> {
         }
       }
 
-      return (data.spacing * i) / width;
+      return (data!.spacing * i) / width;
     });
 
-    final t = (translation + spacingToSkip).clamp(0.0, 1.0);
+    final num t = (translation + spacingToSkip).clamp(0.0, 1.0);
 
     return Visibility(
       visible: widget.indicator != null,
       child: AnimatedAlign(
         duration: duration,
-        alignment: AlignmentDirectional(lerpDouble(-1.0, 1.0, t), 0.0),
+        alignment: AlignmentDirectional(lerpDouble(-1.0, 1.0, t as double), 0.0),
         child: AnimatedTranslation(
           duration: duration,
           isFractional: true,

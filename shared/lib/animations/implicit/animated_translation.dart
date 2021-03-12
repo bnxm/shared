@@ -6,15 +6,15 @@ import 'package:shared/shared.dart';
 class AnimatedTranslation extends StatelessWidget {
   final Offset translation;
   final Duration duration;
-  final Widget child;
+  final Widget? child;
   final Curve curve;
   final Alignment alignment;
   final bool isFractional;
   const AnimatedTranslation({
-    Key key,
-    @required this.translation,
-    @required this.duration,
-    @required this.child,
+    Key? key,
+    required this.translation,
+    required this.duration,
+    required this.child,
     this.curve = Curves.linear,
     this.alignment = Alignment.topLeft,
     this.isFractional = false,
@@ -22,7 +22,7 @@ class AnimatedTranslation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ImplicitAnimationBuilder<Offset>(
+    return ImplicitAnimationBuilder<Offset?>(
       lerp: Offset.lerp,
       value: translation,
       curve: curve,

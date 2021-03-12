@@ -5,17 +5,17 @@ import 'package:shared/widgets/widgets.dart';
 
 class CircleButton extends StatelessWidget {
   final dynamic icon;
-  final Color color;
-  final double size;
+  final Color? color;
+  final double? size;
   final bool active;
   final VoidCallback onTap;
   final EdgeInsets padding;
   const CircleButton({
-    Key key,
+    Key? key,
     this.color,
     this.active = true,
-    @required this.icon,
-    @required this.onTap,
+    required this.icon,
+    required this.onTap,
     this.padding = const EdgeInsets.all(6),
     this.size,
   }) : super(key: key);
@@ -26,7 +26,7 @@ class CircleButton extends StatelessWidget {
     final color = this.color ?? theme.iconTheme.color;
     final size = this.size ?? theme.iconTheme.size;
 
-    Widget child;
+    Widget? child;
     if (icon is IconData) {
       child = Icon(icon, color: color, size: size);
     } else if (icon is String) {

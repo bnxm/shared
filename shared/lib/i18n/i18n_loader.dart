@@ -6,8 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:shared/shared.dart';
 import 'package:yaml/yaml.dart';
 
-abstract class I18nMap extends DelegatingMap<String, String> {
-  const I18nMap(Map<String, String> map) : super(map);
+abstract class I18nMap extends DelegatingMap<String?, String> {
+  const I18nMap(Map<String?, String> map) : super(map);
 
   static const List<String> supportedFormats = ['yaml', 'json'];
 
@@ -57,7 +57,7 @@ Future<Pair<String, String>> _loadFile(String path, bool inTestMode) async {
 class I18nYamlMap extends I18nMap {
   I18nYamlMap(String file) : super(parse(file));
 
-  static Map<String, String> parse(String file) {
+  static Map<String?, String> parse(String file) {
     return (loadYaml(file) as YamlMap).flatten();
   }
 }
@@ -65,18 +65,18 @@ class I18nYamlMap extends I18nMap {
 class I18nJsonMap extends I18nMap {
   I18nJsonMap(String file) : super(parse(file));
 
-  static Map<String, String> parse(String file) {
+  static Map<String?, String> parse(String file) {
     return (json.decode(file) as Map<String, dynamic>).flatten();
   }
 }
 
 extension _ on Map {
-  Map<String, String> flatten() {
-    Map<String, String> mapSubtree(Map map, {String parent = ''}) {
-      final Map<String, String> result = {};
+  Map<String?, String> flatten() {
+    Map<String?, String> mapSubtree(Map map, {String? parent = ''}) {
+      final Map<String?, String> result = {};
 
       for (final entry in map.entries) {
-        final key = parent.isNotEmpty ? '${parent}_${entry.key}' : entry.key;
+        final key = parent!.isNotEmpty ? '${parent}_${entry.key}' : entry.key;
 
         if (entry.value is Map) {
           final subEntries = mapSubtree(entry.value, parent: key);

@@ -1,7 +1,7 @@
 part of 'translater_page.dart';
 
 class _SubmittedPage extends StatelessWidget {
-  const _SubmittedPage({Key key}) : super(key: key);
+  const _SubmittedPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

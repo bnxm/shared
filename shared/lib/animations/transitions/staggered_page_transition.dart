@@ -8,13 +8,12 @@ class StaggeredPageTransition extends StatelessWidget {
   final Animation<double> animation;
   final Widget child;
   const StaggeredPageTransition({
-    Key key,
+    Key? key,
     this.count = 2,
     this.delayFraction = 0.0,
-    @required this.animation,
-    @required this.child,
-  })  : assert(animation != null),
-        assert(count >= 1),
+    required this.animation,
+    required this.child,
+  })   : assert(count >= 1),
         assert(delayFraction >= 0.0 && delayFraction <= 1.0),
         super(key: key);
 
@@ -60,7 +59,8 @@ class _Clipper extends CustomClipper<Path> {
   Rect getRectForIndex(Size size, int index) {
     final animationFraction = lerpDouble(1.0, 1.0 / count.toDouble(), delayFraction);
     final delay = (delayFraction / count) * index;
-    final translation = (1.0 - interval(delay, delay + animationFraction, t)) * size.width;
+    final translation =
+        (1.0 - interval(delay, delay + animationFraction, t)) * size.width;
     final height = size.height / count;
 
     return Rect.fromLTWH(

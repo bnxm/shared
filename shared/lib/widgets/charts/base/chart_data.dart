@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared/shared.dart';
 
-typedef SeriesColorBuilder<T> = dynamic Function(T value, int index);
+enum AnimState {
+  incoming, staying, outgoing
+}
+
+typedef SeriesColorBuilder<T> = dynamic Function(T? value, int index);
 
 abstract class ChartLifecycleObject {
   /// A unique id representing this [ChartLifecycleObject].
@@ -33,19 +37,19 @@ abstract class ChartLifecycleObject {
 /// Every chart should have its own Data class to hold its state
 /// to be able to lerp between them and thus animate the changes.
 abstract class ChartData<T> {
-  ChartData<T> scaleTo(ChartData<T> end, double t);
+  ChartData<T> scaleTo(ChartData<T>? end, double t);
 }
 
 /// The base class for a Series in a [Chart].
 ///
 /// A Series holds a data set for a [Chart] and how it is visualized.
 abstract class Series<T> extends ChartLifecycleObject {
-  final String label;
+  final String? label;
 
   Series({
     /// A unique id representing this [LineSeries].
     /// Needed to be able to detect changes and animate between them.
-    @required dynamic id,
-    @required this.label,
+    required dynamic id,
+    required this.label,
   }) : super(true, id);
 }

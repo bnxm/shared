@@ -4,7 +4,8 @@
 
 import 'package:flutter/animation.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' hide accelerateEasing, standardEasing, decelerateEasing;
+import 'package:flutter/material.dart'
+    hide accelerateEasing, standardEasing, decelerateEasing;
 import 'package:flutter/widgets.dart';
 
 import 'utils.dart';
@@ -83,7 +84,7 @@ class SharedAxisPageTransitionsBuilder extends PageTransitionsBuilder {
   });
 
   /// Determines which [SharedAxisTransitionType] to build.
-  final SharedAxisTransitionType transitionType;
+  final SharedAxisTransitionType? transitionType;
 
   @override
   Widget buildTransitions<T>(
@@ -96,7 +97,7 @@ class SharedAxisPageTransitionsBuilder extends PageTransitionsBuilder {
     return SharedAxisTransition(
       animation: animation,
       secondaryAnimation: secondaryAnimation,
-      transitionType: transitionType,
+      transitionType: transitionType!,
       child: child,
     );
   }
@@ -182,12 +183,13 @@ class SharedAxisTransition extends StatefulWidget {
   /// The [animation] and [secondaryAnimation] argument are required and must
   /// not be null.
   const SharedAxisTransition({
-    Key key,
-    @required this.animation,
-    Animation secondaryAnimation,
+    Key? key,
+    required this.animation,
+    Animation? secondaryAnimation,
     this.transitionType = SharedAxisTransitionType.horizontal,
     this.child,
-  })  : secondaryAnimation = secondaryAnimation ?? const AlwaysStoppedAnimation(0.0),
+  })  : secondaryAnimation =
+            secondaryAnimation as Animation<double>? ?? const AlwaysStoppedAnimation(0.0),
         assert(transitionType != null),
         super(key: key);
 
@@ -220,15 +222,15 @@ class SharedAxisTransition extends StatefulWidget {
   ///
   /// This widget will transition in and out as driven by [animation] and
   /// [secondaryAnimation].
-  final Widget child;
+  final Widget? child;
 
   @override
   _SharedAxisTransitionState createState() => _SharedAxisTransitionState();
 }
 
 class _SharedAxisTransitionState extends State<SharedAxisTransition> {
-  AnimationStatus _effectiveAnimationStatus;
-  AnimationStatus _effectiveSecondaryAnimationStatus;
+  AnimationStatus? _effectiveAnimationStatus;
+  AnimationStatus? _effectiveSecondaryAnimationStatus;
 
   @override
   void initState() {
@@ -241,14 +243,14 @@ class _SharedAxisTransitionState extends State<SharedAxisTransition> {
 
   void _animationListener(AnimationStatus animationStatus) {
     _effectiveAnimationStatus = _calculateEffectiveAnimationStatus(
-      lastEffective: _effectiveAnimationStatus,
+      lastEffective: _effectiveAnimationStatus!,
       current: animationStatus,
     );
   }
 
   void _secondaryAnimationListener(AnimationStatus animationStatus) {
     _effectiveSecondaryAnimationStatus = _calculateEffectiveAnimationStatus(
-      lastEffective: _effectiveSecondaryAnimationStatus,
+      lastEffective: _effectiveSecondaryAnimationStatus!,
       current: animationStatus,
     );
   }
@@ -257,9 +259,9 @@ class _SharedAxisTransitionState extends State<SharedAxisTransition> {
   // animation in reverse. Switching to the actual reverse transition would
   // yield a disjoint experience since the forward and reverse transitions are
   // very different.
-  AnimationStatus _calculateEffectiveAnimationStatus({
-    @required AnimationStatus lastEffective,
-    @required AnimationStatus current,
+  AnimationStatus? _calculateEffectiveAnimationStatus({
+    required AnimationStatus lastEffective,
+    required AnimationStatus current,
   }) {
     assert(current != null);
     assert(lastEffective != null);
@@ -325,9 +327,8 @@ class _SharedAxisTransitionState extends State<SharedAxisTransition> {
   Widget build(BuildContext context) {
     return AnimatedBuilder(
       animation: widget.animation,
-      builder: (BuildContext context, Widget child) {
-        assert(_effectiveAnimationStatus != null);
-        switch (_effectiveAnimationStatus) {
+      builder: (BuildContext context, Widget? child) {
+        switch (_effectiveAnimationStatus!) {
           case AnimationStatus.forward:
             return _EnterTransition(
               animation: widget.animation,
@@ -344,13 +345,11 @@ class _SharedAxisTransitionState extends State<SharedAxisTransition> {
               child: child,
             );
         }
-        return null; // unreachable
       },
       child: AnimatedBuilder(
         animation: widget.secondaryAnimation,
-        builder: (BuildContext context, Widget child) {
-          assert(_effectiveSecondaryAnimationStatus != null);
-          switch (_effectiveSecondaryAnimationStatus) {
+        builder: (BuildContext context, Widget? child) {
+          switch (_effectiveSecondaryAnimationStatus!) {
             case AnimationStatus.forward:
               return _ExitTransition(
                 animation: widget.secondaryAnimation,
@@ -367,7 +366,6 @@ class _SharedAxisTransitionState extends State<SharedAxisTransition> {
                 child: child,
               );
           }
-          return null; // unreachable
         },
         child: widget.child,
       ),
@@ -383,9 +381,9 @@ class _EnterTransition extends StatelessWidget {
     this.child,
   });
 
-  final Animation<double> animation;
-  final SharedAxisTransitionType transitionType;
-  final Widget child;
+  final Animation<double>? animation;
+  final SharedAxisTransitionType? transitionType;
+  final Widget? child;
   final bool reverse;
 
   static final Animatable<double> _fadeInTransition = CurveTween(
@@ -404,7 +402,7 @@ class _EnterTransition extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    switch (transitionType) {
+    switch (transitionType!) {
       case SharedAxisTransitionType.horizontal:
         final Animatable<Offset> slideInTransition = Tween<Offset>(
           begin: Offset(!reverse ? 30.0 : -30.0, 0.0),
@@ -412,13 +410,12 @@ class _EnterTransition extends StatelessWidget {
         ).chain(CurveTween(curve: standardEasing));
 
         return FadeTransition(
-          opacity: _fadeInTransition.animate(animation),
+          opacity: _fadeInTransition.animate(animation!),
           child: Transform.translate(
-            offset: slideInTransition.evaluate(animation),
+            offset: slideInTransition.evaluate(animation!),
             child: child,
           ),
         );
-        break;
       case SharedAxisTransitionType.vertical:
         final Animatable<Offset> slideInTransition = Tween<Offset>(
           begin: Offset(0.0, !reverse ? 30.0 : -30.0),
@@ -426,24 +423,22 @@ class _EnterTransition extends StatelessWidget {
         ).chain(CurveTween(curve: standardEasing));
 
         return FadeTransition(
-          opacity: _fadeInTransition.animate(animation),
+          opacity: _fadeInTransition.animate(animation!),
           child: Transform.translate(
-            offset: slideInTransition.evaluate(animation),
+            offset: slideInTransition.evaluate(animation!),
             child: child,
           ),
         );
-        break;
       case SharedAxisTransitionType.scaled:
         return FadeTransition(
-          opacity: _fadeInTransition.animate(animation),
+          opacity: _fadeInTransition.animate(animation!),
           child: ScaleTransition(
-            scale: (!reverse ? _scaleUpTransition : _scaleDownTransition).animate(animation),
+            scale: (!reverse ? _scaleUpTransition : _scaleDownTransition)
+                .animate(animation!),
             child: child,
           ),
         );
-        break;
     }
-    return null; // unreachable
   }
 }
 
@@ -455,9 +450,9 @@ class _ExitTransition extends StatelessWidget {
     this.child,
   });
 
-  final Animation<double> animation;
-  final SharedAxisTransitionType transitionType;
-  final Widget child;
+  final Animation<double>? animation;
+  final SharedAxisTransitionType? transitionType;
+  final Widget? child;
   final bool reverse;
 
   static final Animatable<double> _fadeOutTransition = FlippedCurveTween(
@@ -476,7 +471,7 @@ class _ExitTransition extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    switch (transitionType) {
+    switch (transitionType!) {
       case SharedAxisTransitionType.horizontal:
         final Animatable<Offset> slideOutTransition = Tween<Offset>(
           begin: Offset.zero,
@@ -484,16 +479,15 @@ class _ExitTransition extends StatelessWidget {
         ).chain(CurveTween(curve: standardEasing));
 
         return FadeTransition(
-          opacity: _fadeOutTransition.animate(animation),
+          opacity: _fadeOutTransition.animate(animation!),
           child: Container(
             color: Theme.of(context).canvasColor,
             child: Transform.translate(
-              offset: slideOutTransition.evaluate(animation),
+              offset: slideOutTransition.evaluate(animation!),
               child: child,
             ),
           ),
         );
-        break;
       case SharedAxisTransitionType.vertical:
         final Animatable<Offset> slideOutTransition = Tween<Offset>(
           begin: Offset.zero,
@@ -501,29 +495,27 @@ class _ExitTransition extends StatelessWidget {
         ).chain(CurveTween(curve: standardEasing));
 
         return FadeTransition(
-          opacity: _fadeOutTransition.animate(animation),
+          opacity: _fadeOutTransition.animate(animation!),
           child: Container(
             color: Theme.of(context).canvasColor,
             child: Transform.translate(
-              offset: slideOutTransition.evaluate(animation),
+              offset: slideOutTransition.evaluate(animation!),
               child: child,
             ),
           ),
         );
-        break;
       case SharedAxisTransitionType.scaled:
         return FadeTransition(
-          opacity: _fadeOutTransition.animate(animation),
+          opacity: _fadeOutTransition.animate(animation!),
           child: Container(
             color: Theme.of(context).canvasColor,
             child: ScaleTransition(
-              scale: (!reverse ? _scaleUpTransition : _scaleDownTransition).animate(animation),
+              scale: (!reverse ? _scaleUpTransition : _scaleDownTransition)
+                  .animate(animation!),
               child: child,
             ),
           ),
         );
-        break;
     }
-    return null; // unreachable
   }
 }
