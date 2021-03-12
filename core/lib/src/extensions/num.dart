@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:intl/intl.dart';
 
 extension NumExtensions<T extends num> on T {
-  T get neg => isNegative ? this * -1 : this;
+  T get neg => (isNegative ? this * -1 : this) as T;
 
   T atLeast(T value) => math.max(this, value);
 
@@ -11,15 +11,15 @@ extension NumExtensions<T extends num> on T {
 
   bool isBetween(num lower, num upper) => this >= lower && this <= upper;
 
-  String format([String pattern]) => NumberFormat(pattern).format(this);
+  String format([String? pattern]) => NumberFormat(pattern).format(this);
 
-  T swapSign() => this * -1;
+  T swapSign() => this * -1 as T;
 
   T wrapAt(T min, T max) {
     if (this < min) {
-      return max - (min - this);
+      return max - (min - this) as T;
     } else if (this > max) {
-      return min + (this - max);
+      return min + (this - max) as T;
     } else {
       return this;
     }
@@ -67,16 +67,4 @@ extension DoubleExtensions on double {
   }
 }
 
-double lerpDouble(num a, num b, double t) {
-  if (a == null && b == null) return null;
-  a ??= 0.0;
-  b ??= 0.0;
-  return a + (b - a) * t as double;
-}
 
-int lerpInt(num a, num b, double t) {
-  if (a == null && b == null) return null;
-  a ??= 0.0;
-  b ??= 0.0;
-  return (a + (b - a) * t).round();
-}

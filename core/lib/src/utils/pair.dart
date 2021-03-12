@@ -7,8 +7,8 @@ class Pair<A, B> {
   );
 
   Pair copyWith({
-    A first,
-    B second,
+    A? first,
+    B? second,
   }) {
     return Pair(
       first ?? this.first,
@@ -41,9 +41,9 @@ class Triplet<A, B, C> {
   );
 
   Triplet copyWith({
-    A first,
-    B second,
-    C third,
+    A? first,
+    B? second,
+    C? third,
   }) {
     return Triplet(
       first ?? this.first,
@@ -82,10 +82,10 @@ class Quartet<A, B, C, D> {
   );
 
   Quartet copyWith({
-    A first,
-    B second,
-    C third,
-    D fourth,
+    A? first,
+    B? second,
+    C? third,
+    D? fourth,
   }) {
     return Quartet(
       first ?? this.first,

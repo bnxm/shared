@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:core/core.dart';
-import 'package:intl/intl.dart';
+import 'package:unit_convert/unit_convert.dart';
 
 import 'distance/distance.dart';
 
@@ -23,17 +23,17 @@ class LatLng {
           'Longitude must be between -180 and 180 degrees but was $longitude',
         );
 
-  factory LatLng.tryParse(String src) {
+  static LatLng? tryParse(String src) {
     final coordinates = src.split(',').map((e) => double.tryParse(e.trim())).toList();
 
     final isValid = coordinates.length == 2 || !coordinates.contains(null);
     if (!isValid) return null;
 
-    final isLatitudeValid = coordinates[0] >= -90.0 && coordinates[0] <= 90.0;
-    final isLongitudeValid = coordinates[1] >= -180.0 && coordinates[1] <= 180.0;
+    final isLatitudeValid = coordinates[0]! >= -90.0 && coordinates[0]! <= 90.0;
+    final isLongitudeValid = coordinates[1]! >= -180.0 && coordinates[1]! <= 180.0;
     if (!(isLatitudeValid && isLongitudeValid)) return null;
 
-    return LatLng(coordinates[0], coordinates[1]);
+    return LatLng(coordinates[0]!, coordinates[1]!);
   }
 
   static const LatLng primeMeridian = LatLng(0.0, 0.0);
@@ -60,12 +60,13 @@ class LatLng {
 
   double distanceTo(
     LatLng latLng, {
-    LengthUnit unit = LengthUnit.meter,
+    LengthConverter unit = LengthUnit.meter,
     DistanceAlgorithm algorithm = DistanceAlgorithm.vincenty,
   }) {
     final Distance distance = algorithm == DistanceAlgorithm.vincenty
         ? const DistanceVincenty()
-        : DistanceHaversine;
+        : const DistanceHaversine();
+
     return distance.as(unit, this, latLng);
   }
 
@@ -99,8 +100,6 @@ class LatLng {
   }
 
   static LatLng fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return LatLng(
       (map['latitude'] ?? map['lat'])?.toDouble() ?? 0.0,
       (map['longitude'] ?? map['lng'] ?? map['long'])?.toDouble() ?? 0.0,

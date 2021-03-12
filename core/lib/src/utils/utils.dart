@@ -21,4 +21,15 @@ int randomInt({int min = 0, int max = 100}) {
   return min + (r - 1);
 }
 
+double lerpDouble(num a, num b, double t) => a + (b - a) * t;
+int lerpInt(num a, num b, double t) => lerpDouble(a, b, t).round();
 
+T lerp<T>(T a, T b, double t) {
+  if (T is double) {
+    return lerpDouble(a as double, b as double, t) as T;
+  } else if (T is int) {
+    return lerpInt(a as int, b as int, t) as T;
+  } else {
+    throw ArgumentError('$T is not cannot be interpolated!');
+  }
+}

@@ -1,24 +1,26 @@
 import 'package:get_it/get_it.dart';
 
-const Di di = Di._();
+const DI di = DI._();
 
-class Di {
-  const Di._();
-  static const Di instance = di;
+class DI {
+  const DI._();
+  static const DI instance = di;
 
   set allowReassignment(bool value) => GetIt.I.allowReassignment = value;
 
   /// Singleton.
-  void put<T>(T dependency) => GetIt.I.registerSingleton<T>(dependency);
+  void put<T extends Object>(T dependency) => GetIt.I.registerSingleton<T>(dependency);
 
   /// Factory.
-  void builder<T>(T Function() builder) => GetIt.I.registerFactory(builder);
+  void builder<T extends Object>(T Function() builder) =>
+      GetIt.I.registerFactory(builder);
 
   /// Lazy singleton.
-  void lazy<T>(T Function() builder) => GetIt.I.registerLazySingleton<T>(builder);
+  void lazy<T extends Object>(T Function() builder) =>
+      GetIt.I.registerLazySingleton<T>(builder);
 
   /// Async singleton.
-  void putAsync<T>(Future<T> Function() builder) =>
+  void putAsync<T extends Object>(Future<T> Function() builder) =>
       GetIt.I.registerSingletonAsync(builder);
 
   T call<T>() => find<T>();

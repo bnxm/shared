@@ -1,5 +1,5 @@
 abstract class DBModel {
-  int key;
+  int? key;
 }
 
 abstract class Dao<T extends DBModel> {

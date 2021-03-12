@@ -6,7 +6,7 @@ import 'num.dart';
 typedef Predicate<T> = bool Function(T item);
 
 extension MyIterableExtension<T> on Iterable<T> {
-  T get firstOrNull {
+  T? get firstOrNull {
     try {
       return first;
     } catch (_) {
@@ -14,7 +14,7 @@ extension MyIterableExtension<T> on Iterable<T> {
     }
   }
 
-  T get lastOrNull {
+  T? get lastOrNull {
     try {
       return last;
     } catch (_) {
@@ -50,14 +50,12 @@ extension MyIterableExtension<T> on Iterable<T> {
     return sum;
   }
 
-  /// Returns a copy of this list.
-  List<T> copy([T Function(T) copier]) => map((t) => copier?.call(t) ?? t).toList();
-
   /// Returns the first occurance that matches the given [predicate].
-  T find(Predicate<T> predicate, {T orElse}) {
+  T? find(Predicate<T> predicate, {T? orElse}) {
     for (final item in this) {
       if (predicate(item)) return item;
     }
+
     return orElse;
   }
 
@@ -84,11 +82,13 @@ extension MyIterableExtension<T> on Iterable<T> {
 
   /// Returns the min and max values as a Pair(min, max)
   Pair<T, T> getExtremas(Comparable Function(T item) comparator) {
-    T maxResult;
-    Comparable max;
+    assert(isNotEmpty);
 
-    T minResult;
-    Comparable min;
+    T? maxResult;
+    Comparable? max;
+
+    T? minResult;
+    Comparable? min;
 
     for (final element in this) {
       final item = comparator(element);
@@ -108,33 +108,23 @@ extension MyIterableExtension<T> on Iterable<T> {
       }
     }
 
-    return Pair(minResult, maxResult);
+    return Pair(minResult!, maxResult!);
   }
 
   T getMax(Comparable Function(T item) comparator) => getExtremas(comparator).second;
   T getMin(Comparable Function(T item) comparator) => getExtremas(comparator).first;
 
-  List<List<T>> groupBy<E>(E Function(T item) value) {
-    final List<List<T>> result = [];
+  List<List<T>> groupBy<E>(E Function(T item) key) {
+    final Map<E, List<T>> result = {};
 
     for (final item in this) {
-      final v = value(item);
-      List<T> groupToAdd;
-      for (final group in result) {
-        if (value(group.first) == v) {
-          groupToAdd = group;
-          break;
-        }
-      }
+      final gkey = key(item);
 
-      if (groupToAdd != null) {
-        groupToAdd.add(item);
-      } else {
-        result.add([item]);
-      }
+      result[gkey] ??= [];
+      result[gkey]!.add(item);
     }
 
-    return result;
+    return result.values.toList();
   }
 
   /// Filters all duplicates from this [List].
@@ -164,9 +154,7 @@ extension My2DimensionIterableExtenions<T> on Iterable<Iterable<T>> {
 }
 
 extension MyListExtension<T> on List<T> {
-  T getOrNull(dynamic index) {
-    if (this == null) return null;
-
+  T? getOrNull(dynamic index) {
     try {
       return this[index];
     } catch (_) {
@@ -183,7 +171,6 @@ extension MyListExtension<T> on List<T> {
   }
 
   void forEachIndexed(void Function(T, int) callback, {int skip = 1}) {
-    assert(skip != null);
     for (var i = 0; i < length; i += skip) {
       callback(this[i], i);
     }
@@ -197,14 +184,10 @@ extension MyListExtension<T> on List<T> {
 
   /// Removes the [item] if already present and inserts the [item] at the specified
   /// [index]. If [index] is null the [item] gets added to the list.
-  bool upsert(T item, {int index}) {
-    final contains = this.contains(item);
-    if (contains) {
-      remove(item);
-    }
-
+  bool upsert(T item, {int? index}) {
+    final removed = remove(item);
     index == null ? add(item) : insert(index, item);
-    return contains;
+    return removed;
   }
 
   void sortBy(List<Comparable Function(T item)> fields) {

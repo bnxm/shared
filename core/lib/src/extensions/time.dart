@@ -1,10 +1,10 @@
+import 'package:core/core.dart';
 import 'package:duration/duration.dart'
     hide aMicrosecond, aMillisecond, aSecond, aMinute, anHour, aDay, aWeek;
 import 'package:duration/locale.dart';
 import 'package:intl/intl.dart';
 
 import '../constants/constants.dart';
-import 'num.dart';
 
 // ignore_for_file: non_constant_identifier_names
 
@@ -116,15 +116,13 @@ extension MyDateTimeExtensions on DateTime {
   int getDifferenceInYears(DateTime date2) => (date2.year - year).abs();
 
   DateTime scaleTo(DateTime b, double t) {
-    if (t == null || b == null) return null;
-
     return DateTime.fromMillisecondsSinceEpoch(
       lerpInt(millisecondsSinceEpoch.toDouble(), b.millisecondsSinceEpoch.toDouble(), t),
     );
   }
 
   // * FORMATTER EXTENSIONS
-  String format(String pattern, {String code}) {
+  String format(String pattern, {String? code}) {
     code ??= Intl.defaultLocale;
     final dateFormat = code != null ? DateFormat(pattern, code) : DateFormat(pattern);
     return dateFormat.format(this);
@@ -263,13 +261,15 @@ extension IntTimeExtensions on int {
 extension MyDurationExtensions on Duration {
   String format({
     bool abbreviated = true,
-    String conjunction,
-    String spacer,
-    String delimiter,
+    String? conjunction,
+    String? spacer,
+    String? delimiter,
     bool first = false,
     DurationTersity tersity = DurationTersity.minute,
   }) {
-    final locale = DurationLocale.fromLanguageCode(Intl.defaultLocale) ?? englishLocale;
+    final locale = Intl.defaultLocale != null
+        ? DurationLocale.fromLanguageCode(Intl.defaultLocale!) ?? englishLocale
+        : englishLocale;
 
     return prettyDuration(
       this,

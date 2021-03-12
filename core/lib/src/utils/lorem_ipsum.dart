@@ -13,8 +13,8 @@ class LoremIpsum {
 
   static String generate({
     int paragraphs = 1,
-    int sentences,
-    int words,
+    int? sentences,
+    int? words,
   }) {
     if (words != null) {
       assert(words > 0);

@@ -6,7 +6,6 @@ import 'package:hive/hive.dart';
 
 import 'dao.dart';
 
-
 abstract class HiveDao<T extends DBModel> implements Dao<T> {
   HiveDao(
     this.name,
@@ -16,7 +15,7 @@ abstract class HiveDao<T extends DBModel> implements Dao<T> {
   }
 
   final String name;
-  Future<Box<String>> _box;
+  late Future<Box<String>> _box;
 
   final Handler handler = Handler();
   final StreamController<List<T>> _controller = StreamController.broadcast();
@@ -106,7 +105,7 @@ abstract class HiveDao<T extends DBModel> implements Dao<T> {
   }
 
   @override
-  Future<void> nuke([List<T> replacement]) async {
+  Future<void> nuke([List<T>? replacement]) async {
     await (await _box).deleteFromDisk();
     _openBox();
 

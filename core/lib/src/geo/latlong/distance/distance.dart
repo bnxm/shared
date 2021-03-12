@@ -1,26 +1,26 @@
+import 'package:unit_convert/unit_convert.dart';
+
 import '../lat_long.dart';
 import 'haversine.dart';
-import 'length_unit.dart';
 import 'vincenty.dart';
 
 export 'haversine.dart';
-export 'length_unit.dart';
 export 'vincenty.dart';
 
 /// Equator radius in meter (WGS84 ellipsoid)
-const double EQUATOR_RADIUS = 6378137.0;
+const double equatorRadius = 6378137.0;
 
 /// Earth radius in meter
-const double EARTH_RADIUS = EQUATOR_RADIUS;
+const double earthRadius = equatorRadius;
 
 /// Polar radius in meter (WGS84 ellipsoid)
-const double POLAR_RADIUS = 6356752.314245;
+const double polarRadius = 6356752.314245;
 
 /// WGS84
-const double FLATTENING = 1 / 298.257223563;
+const double flattening = 1 / 298.257223563;
 
 abstract class DistanceCalculator {
-  num distance(final LatLng p1, final LatLng p2);
+  double distance(final LatLng p1, final LatLng p2);
   LatLng offset(final LatLng from, final double distanceInMeter, final double bearing);
 }
 
@@ -30,7 +30,7 @@ class Distance implements DistanceCalculator {
 
   const Distance({
     final DistanceCalculator calculator = const Vincenty(),
-  })  : _radius = EARTH_RADIUS,
+  })  : _radius = earthRadius,
         _calculator = calculator;
 
   Distance.withRadius(
@@ -54,7 +54,7 @@ class Distance implements DistanceCalculator {
   ///     final int km = distance.as(LengthUnit.Kilometer,
   ///         new LatLng(52.518611,13.408056),new LatLng(51.519475,7.46694444));
   ///
-  double as(final LengthUnit unit, final LatLng p1, final LatLng p2) {
+  double as(LengthConverter unit, LatLng p1, LatLng p2) {
     final double dist = _calculator.distance(p1, p2);
     return LengthUnit.meter.to(unit, dist);
   }

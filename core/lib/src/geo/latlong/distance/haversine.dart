@@ -22,7 +22,7 @@ class Haversine implements DistanceCalculator {
         sinDLng * sinDLng * math.cos(p1.latitudeInRad) * math.cos(p2.latitudeInRad);
     final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
 
-    return EQUATOR_RADIUS * c;
+    return equatorRadius * c;
   }
 
   /// Returns a destination point based on the given [distance] and [bearing]
@@ -45,7 +45,7 @@ class Haversine implements DistanceCalculator {
 
     final double h = bearing.radians;
 
-    final double a = distanceInMeter / EQUATOR_RADIUS;
+    final double a = distanceInMeter / equatorRadius;
 
     final double lat2 = math.asin(math.sin(from.latitudeInRad) * math.cos(a) +
         math.cos(from.latitudeInRad) * math.sin(a) * math.cos(h));

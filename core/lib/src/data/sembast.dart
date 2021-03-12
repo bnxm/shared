@@ -13,33 +13,32 @@ abstract class BaseSembastDao<T extends DBModel> implements Dao<T> {
   final String name;
   BaseSembastDao(this.name);
 
-  DatabaseClient _trx;
+  DatabaseClient? _trx;
 
-  StoreRef<int, Map<String, dynamic>> _store;
-  StoreRef<int, Map<String, dynamic>> get store {
-    return _store ??= intMapStoreFactory.store(name);
-  }
+  StoreRef<int, Map<String, dynamic>>? _store;
+  StoreRef<int, Map<String, dynamic>> get store =>
+      _store ??= intMapStoreFactory.store(name);
 
-  Completer<Database> _dbOpenCompleter;
+  Completer<Database>? _dbOpenCompleter;
   Future<Database> get _db async {
     if (_dbOpenCompleter == null) {
       _dbOpenCompleter = Completer();
       _openDatabase();
     }
 
-    return _dbOpenCompleter.future;
+    return _dbOpenCompleter!.future;
   }
 
   Future _openDatabase() async {
     final path = join((await directory).path, name);
     final db = await databaseFactoryIo.openDatabase(path);
-    _dbOpenCompleter.complete(db);
+    _dbOpenCompleter?.complete(db);
   }
 
   Future<Directory> get directory;
 
-  Pair<String, dynamic> putFinder(T item) => null;
-  Finder getFinder() => null;
+  Pair<String, dynamic>? putFinder(T item) => null;
+  Finder? getFinder() => null;
 
   Map<String, dynamic> toMap(T item);
   T fromMap(Map<String, dynamic> map);
@@ -59,7 +58,7 @@ abstract class BaseSembastDao<T extends DBModel> implements Dao<T> {
   }
 
   @override
-  Future<void> add(T item) async {
+  Future<int> add(T item) async {
     return store.add(
       _trx ?? await _db,
       toMap(item),
@@ -107,7 +106,7 @@ abstract class BaseSembastDao<T extends DBModel> implements Dao<T> {
   Future<void> updateAll(List<T> items) => transaction(items, update);
 
   @override
-  Future<void> delete(T item) async {
+  Future<int> delete(T item) async {
     return store.delete(
       _trx ?? await _db,
       finder: _getFinder(item),
@@ -146,7 +145,7 @@ abstract class BaseSembastDao<T extends DBModel> implements Dao<T> {
       mapSnapshots(await store.find(await _db, finder: finder));
 
   Future<void> transaction(List<T> items, Future Function(T item) action) async {
-    if (items == null || items.isEmpty) return;
+    if (items.isEmpty) return;
 
     return customTransaction((trx) async {
       for (final item in items) {
@@ -159,7 +158,6 @@ abstract class BaseSembastDao<T extends DBModel> implements Dao<T> {
       Future<void> Function(Transaction trx) transaction) async {
     await (await _db).transaction((trx) async {
       _trx = trx;
-
       await transaction(trx);
     });
 

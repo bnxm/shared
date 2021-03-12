@@ -4,7 +4,7 @@ import 'dart:async';
 /// Additionally it supports canceling the future by not invoking the callback function
 /// if it was canceled before.
 class Handler {
-  Timer _timer;
+  Timer? _timer;
 
   void call(dynamic delay, void Function() callback) => post(delay, callback);
 
