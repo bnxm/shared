@@ -23,6 +23,6 @@ class DI {
   void putAsync<T extends Object>(Future<T> Function() builder) =>
       GetIt.I.registerSingletonAsync(builder);
 
-  T call<T>() => find<T>();
-  T find<T>() => GetIt.I<T>();
+  T call<T extends Object>() => find<T>();
+  T find<T extends Object>() => GetIt.I<T>();
 }

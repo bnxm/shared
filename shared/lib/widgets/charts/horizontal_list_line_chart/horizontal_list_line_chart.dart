@@ -96,11 +96,13 @@ class HorizontalListLineChartState<T>
   List<ListLineSeries<T>>? prevSeries;
 
   @override
-  ListLineChartData<T> lerp(ListLineChartData<T>? a, ListLineChartData<T> b, double t) =>
-      a!.scaleTo(b, v) as ListLineChartData<T>;
+  ListLineChartData<T> lerp(ListLineChartData<T> a, ListLineChartData<T> b, double t) =>
+      a.scaleTo(b, v) as ListLineChartData<T>;
 
   @override
   Widget builder(BuildContext context, ListLineChartData<T>? data) {
+    return const SizedBox();
+    
     return AnimatedContainer(
       height: widget.height,
       duration: widget.duration,
@@ -114,6 +116,12 @@ class HorizontalListLineChartState<T>
         itemBuilder: (context, index) {
           final series = getSeriesForIndex(data!.series, index);
           if (series.isEmpty) return const SizedBox();
+
+          return Container(
+            width: 10,
+            height: 50,
+            color: Colors.red,
+          );
 
           final isFirst = index == 0;
           final isLast = !series.includes((item) => index != (item.data.length - 1));
@@ -151,13 +159,6 @@ class HorizontalListLineChartState<T>
     return series.filter(
       (series) => index < series.values.length,
     );
-  }
-
-  @override
-  void didUpdateWidget(HorizontalListLineChart<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    prevSeries = List.from(value.series);
   }
 
   @override

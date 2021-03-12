@@ -150,7 +150,7 @@ extension MyIterableExtension<T> on Iterable<T> {
 }
 
 extension MyNullableListExtensions<T> on List<T?> {
-  List<T> removeNull() => where((element) => element != null) as List<T>;
+  List<T> removeNull() => where((element) => element != null).toList() as List<T>;
 }
 
 extension My2DimensionIterableExtenions<T> on Iterable<Iterable<T>> {
@@ -185,6 +185,8 @@ extension MyListExtension<T> on List<T> {
     final index = (length * random()).floor();
     return this[index];
   }
+
+  List<T> copy([T Function(T item)? copy]) => List.from(copy != null ? map(copy) : this);
 
   /// Removes the [item] if already present and inserts the [item] at the specified
   /// [index]. If [index] is null the [item] gets added to the list.

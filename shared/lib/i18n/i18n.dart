@@ -25,8 +25,10 @@ class I18n {
   @visibleForTesting
   static String dir = 'i18n';
 
-  static Language? _language;
-  static Language? get language => _language;
+  static bool _initalized = false;
+  static bool get initialized => _initalized;
+
+  static late Language language;
   static List<Language> _languages = [];
   static List<Language> get languages => List.from(_languages);
   static List<Locale> get locales => _languages.map((l) => l.locale).toList();
@@ -54,6 +56,8 @@ class I18n {
     await _loadLanguage();
 
     _subscribeToChangesInLocale();
+    
+    I18n._initalized = true;
   }
 
   static Future<void> test(dynamic languages) async {
@@ -61,7 +65,7 @@ class I18n {
     final langs = languages is List ? languages : <Language>[languages];
 
     _inTestMode = true;
-    _language = langs.first;
+    language = langs.first;
 
     await init(langs as List<Language>);
   }
@@ -140,7 +144,7 @@ class I18n {
     final translation = currentTranslations[translationKey];
     assert(
       translation != null,
-      "The string '$input' couldn't be matched to a key in the ${language!.code} translation file!",
+      "The string '$input' couldn't be matched to a key in the ${language.code} translation file!",
     );
 
     if (translation == null) {
@@ -155,7 +159,7 @@ class I18n {
     } else {
       assert(
         srcPlaceholders.length == targetPlaceholders.length,
-        "Input '$input' (in ${defaultLanguage.code}) and its translation '$translation' (in ${_language!.code}) have a different amount of placeholders! This is not supported (yet).",
+        "Input '$input' (in ${defaultLanguage.code}) and its translation '$translation' (in ${language.code}) have a different amount of placeholders! This is not supported (yet).",
       );
 
       String result = translation;
@@ -175,13 +179,13 @@ class I18n {
     }
   }
 
-  static String? key(String key, [dynamic placeholders = const []]) {
+  static String key(String key, [dynamic placeholders = const []]) {
     String? translation = currentTranslations[key];
 
     if (translation == null) {
       assert(
         translation != null,
-        'No translation for key $key in language file ${language!.code}',
+        'No translation for key $key in language file ${language.code}',
       );
 
       return key;
@@ -203,7 +207,7 @@ class I18n {
       );
     }
 
-    return translation;
+    return translation!;
   }
 
   /// Sets the given [language] and persists it to local storage.
@@ -244,22 +248,22 @@ class I18n {
 
   static Future<void> _saveLanguage(Language? lang) async {
     if (_inTestMode) {
-      _language = lang;
+      language = lang ?? language;
     } else {
       await store.setLanguageCode(lang?.code);
     }
   }
 
   static Future<void> _loadLanguage() async {
-    _language = await _getPersistedLanguage();
-    currentTranslations = await loadTranslations(_language!);
+    language = await _getPersistedLanguage();
+    currentTranslations = await loadTranslations(language);
     defaultTranslations = await loadTranslations(defaultLanguage);
     _updateIntl();
   }
 
-  static Future<Language?> _getPersistedLanguage() async {
+  static Future<Language> _getPersistedLanguage() async {
     if (inTestMode) {
-      return _language;
+      return language;
     }
 
     final code = await store.getLanguageCode();
@@ -277,8 +281,8 @@ class I18n {
 
   static void _updateIntl() {
     try {
-      initializeDateFormatting(language!.code);
-      Intl.defaultLocale = language!.code;
+      initializeDateFormatting(language.code);
+      Intl.defaultLocale = language.code;
     } catch (_) {}
   }
 
@@ -439,7 +443,7 @@ class PluralPlaceholder extends Placeholder {
 
       if (entry.key == 'else' || key == number) {
         final formatted = NumberFormat.decimalPattern(
-          I18n.language!.locale.scriptCode,
+          I18n.language.locale.scriptCode,
         ).format(number);
 
         return value.replaceAll('\$i', formatted);

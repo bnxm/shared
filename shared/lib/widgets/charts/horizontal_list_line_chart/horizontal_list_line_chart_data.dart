@@ -288,7 +288,6 @@ class ListLineChartData<T> extends ChartData<T> {
 
   @override
   ChartData<T> scaleTo(ChartData<T>? b, double v) {
-    assert(v != null);
     if (b is ListLineChartData<T>) {
       return ListLineChartData(
         series: ListLineSeries.lerp<T>(series, b.series, v),

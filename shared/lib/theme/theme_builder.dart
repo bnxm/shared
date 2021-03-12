@@ -232,7 +232,7 @@ class ThemePreferences extends RxSharedPreferencesDelegate {
       watchString(_lightThemeKey).map((_) => lightTheme);
 
   AppTheme? get darkTheme {
-    final key = getString(_darkThemeKey)!;
+    final key = getString(_darkThemeKey);
     return _themeMap.get(key) ?? defaultDarkTheme;
   }
 

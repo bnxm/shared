@@ -211,7 +211,7 @@ class MyApp extends StatelessWidget {
       return I18nBuilder(
         languages: languages as List<Language>,
         builder: (context, language, loaded) {
-          return buildApp(language.locale, loaded);
+          return buildApp(language?.locale, loaded);
         },
       );
     } else {

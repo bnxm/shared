@@ -3,12 +3,12 @@ import 'package:shared/shared.dart';
 
 class I18nBuilder extends StatefulWidget {
   final List<Language> languages;
-  final Widget Function(BuildContext context, Language language, bool loaded) builder;
+  final Widget Function(BuildContext context, Language? language, bool loaded) builder;
   const I18nBuilder({
     Key? key,
     required this.languages,
     required this.builder,
-  })  : assert(builder != null),
+  })   :
         // ignore: prefer_is_empty
         assert(languages.length > 0),
         super(key: key);
@@ -40,8 +40,8 @@ class _I18nBuilderState extends State<I18nBuilder> {
   Widget build(BuildContext context) {
     return widget.builder(
       context,
-      I18n.language ?? widget.languages[0],
-      I18n.language != null,
+      I18n.initialized ? I18n.language : null,
+      I18n.initialized,
     );
   }
 
