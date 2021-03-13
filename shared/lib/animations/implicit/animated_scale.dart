@@ -20,7 +20,7 @@ class AnimatedScale extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ImplicitAnimationBuilder<double>(
-      lerp: lerpDouble,
+      lerp: (a, b, t) => lerpDouble(a, b, t)!,
       curve: curve,
       value: scale,
       duration: duration,

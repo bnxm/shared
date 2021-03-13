@@ -22,7 +22,7 @@ class AnimatedRotation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ImplicitAnimationBuilder<double>(
-      lerp: lerpDouble,
+      lerp: (a, b, t) => lerpDouble(a, b, t)!,
       value: angle,
       duration: duration,
       builder: (context, value, _) {

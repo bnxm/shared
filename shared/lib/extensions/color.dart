@@ -17,8 +17,6 @@ extension ColorExtensions on Color {
       isBright ? onBright : onDark;
 
   Color blend(Color other) {
-    if (this == null || other == null) return this;
-
     return Color.fromARGB(
       (alpha + other.alpha) ~/ 2,
       (red + other.red) ~/ 2,
@@ -46,6 +44,10 @@ extension ColorExtensions on Color {
   }
 
   Color scaleOpacity(double factor) => withOpacity(opacity * factor);
+}
+
+extension ListColorExtensions on List<Color> {
+  List<Color> scaleOpacity(double factor) => map((c) => c.scaleOpacity(factor)).toList();
 }
 
 class HexColor extends Color {

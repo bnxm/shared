@@ -11,33 +11,6 @@ export 'path.dart';
 export 'point_interpolator.dart';
 export 'pressure_path.dart';
 
-List<Color>? dynamicToColors(dynamic color, [bool gradient = false]) {
-  if (color is List && color.isEmpty) return <Color>[];
-
-  assert(
-    color == null ||
-        (color is Color || color is List<Color> || color is SeriesColorBuilder),
-    'Only Color, List<Color>, or SeriesColorBuilder are supported color values. ${color.runtimeType} is not.',
-  );
-
-  if (color != null) {
-    if (color is List<Color>) {
-      final List<Color> colors = List.from(color);
-      if (colors.length <= 1 && gradient) {
-        for (var i = 0; i < (2 - colors.length); i++) {
-          colors.add(colors[0]);
-        }
-      }
-
-      return colors;
-    } else if (color is Color) {
-      return [color, color];
-    }
-  }
-
-  return null;
-}
-
 List<Color> lerpColors(List<Color>? a, List<Color>? b, double v) {
   if (a == null && b != null) return b;
   if (a == null || b == null) return [];

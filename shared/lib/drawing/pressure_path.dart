@@ -2,7 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:shared/animations/animations.dart';
+import 'package:shared/utils/utils.dart';
 
 class PressureStop implements Comparable<PressureStop> {
   final double thickness;

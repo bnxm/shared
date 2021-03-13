@@ -19,13 +19,12 @@ class IconAnimation extends StatelessWidget {
     this.textDirection,
     required this.duration,
     this.curve = Curves.linear,
-  })  : assert(forward != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ImplicitAnimationBuilder<double>(
-      lerp: lerpDouble,
+      lerp: (a, b, t) => lerpDouble(a, b, t)!,
       value: forward ? 1.0 : 0.0,
       curve: curve,
       duration: duration,

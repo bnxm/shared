@@ -15,7 +15,9 @@ export 'theme/theme.dart';
 export 'utils/utils.dart';
 export 'widgets/widgets.dart';
 
-export 'package:core/core.dart' hide BaseSembastDao, lerp;
+
+export 'dart:ui' show lerpDouble;
+export 'package:core/core.dart' hide BaseSembastDao, lerp, lerpDouble;
 export 'package:cube/cube.dart';
 export 'package:bloc/bloc.dart';
 export 'package:intl/intl.dart' hide TextDirection;

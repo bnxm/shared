@@ -5,6 +5,7 @@ import 'package:shared/shared.dart';
 
 export 'android_refreshrate_unlocker.dart';
 export 'inputs.dart';
+export 'interpolation.dart';
 export 'math_string_parser.dart';
 
 double lpToPx(BuildContext context, double px) {

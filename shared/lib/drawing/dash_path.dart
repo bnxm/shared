@@ -116,11 +116,11 @@ class DashPattern {
       final value = b._values[i];
       if (i < a._values.length) {
         result.add(
-          lerpDouble(a._values[i], value, v),
+          lerpDouble(a._values[i], value, v)!,
         );
       } else {
         result.add(
-          lerpDouble(0, value, v),
+          lerpDouble(0, value, v)!,
         );
       }
     }

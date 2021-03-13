@@ -81,7 +81,7 @@ extension MyIterableExtension<T> on Iterable<T> {
   }
 
   /// Returns the min and max values as a Pair(min, max)
-  Pair<T, T> getExtremas(Comparable Function(T item) comparator) {
+  Pair<T, T> getExtremas([Comparable Function(T item)? comparator]) {
     assert(isNotEmpty);
 
     T? maxResult;
@@ -91,7 +91,7 @@ extension MyIterableExtension<T> on Iterable<T> {
     Comparable? min;
 
     for (final element in this) {
-      final item = comparator(element);
+      final item = comparator?.call(element) ?? element as Comparable;
 
       max ??= item;
       min ??= item;
@@ -111,8 +111,8 @@ extension MyIterableExtension<T> on Iterable<T> {
     return Pair(minResult!, maxResult!);
   }
 
-  T getMax(Comparable Function(T item) comparator) => getExtremas(comparator).second;
-  T getMin(Comparable Function(T item) comparator) => getExtremas(comparator).first;
+  T getMax([Comparable Function(T item)? comparator]) => getExtremas(comparator).second;
+  T getMin([Comparable Function(T item)? comparator]) => getExtremas(comparator).first;
 
   List<List<T>> groupBy<E>(E Function(T item) key) {
     final Map<E, List<T>> result = {};

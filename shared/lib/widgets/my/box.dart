@@ -15,18 +15,6 @@ enum ShadowDirection {
   center,
 }
 
-class SimpleGradient {
-  final List<Color>? colors;
-  final Axis axis;
-  final List<double> stops;
-  SimpleGradient({
-    required List<Color> colors,
-    this.axis = Axis.vertical,
-    List<double>? stops,
-  })  : colors = dynamicToColors(colors, true),
-        stops = stops ?? calculateColorStops(dynamicToColors(colors, true)!);
-}
-
 class Box extends StatelessWidget {
   final bool clip;
   final dynamic borderRadius;
@@ -80,7 +68,6 @@ class Box extends StatelessWidget {
     this.showInkWell = true,
   })  : assert(color == null ||
             color is Color ||
-            color is SimpleGradient ||
             color is Gradient),
         super(key: key);
 
@@ -157,16 +144,7 @@ class Box extends StatelessWidget {
             : null);
 
     LinearGradient? gradient;
-    if (color is SimpleGradient) {
-      final gr = color as SimpleGradient;
-      final vertical = gr.axis == Axis.vertical;
-      gradient = LinearGradient(
-        colors: gr.colors!,
-        begin: vertical ? Alignment.topCenter : Alignment.centerLeft,
-        end: vertical ? Alignment.bottomCenter : Alignment.centerRight,
-        stops: gr.stops,
-      );
-    } else if (color is LinearGradient) {
+     if (color is LinearGradient) {
       gradient = color;
     }
 

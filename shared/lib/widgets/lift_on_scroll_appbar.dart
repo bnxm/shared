@@ -117,7 +117,7 @@ class _LiftOnScrollAppBarState extends State<LiftOnScrollAppBar> {
           widget.minElevation,
           widget.maxElevation,
           isTransparent ? interval(0.5, 1.0, value) : value,
-        );
+        )!;
 
         final brightness = () {
           if (widget.brightness != null) {

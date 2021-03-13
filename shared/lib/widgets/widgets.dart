@@ -1,6 +1,6 @@
 export 'basic.dart';
 export 'blur.dart';
-export 'charts/charts.dart';
+export 'chart/charts.dart';
 export 'custom_dialog.dart';
 export 'custom_popup_menu.dart';
 export 'double_text.dart';

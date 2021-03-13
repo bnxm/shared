@@ -1,7 +1,9 @@
+import 'dart:math';
 import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Gradient;
 import 'package:shared/drawing/drawing.dart';
+import 'package:shared/widgets/chart/base/color.dart';
 
 extension PathExtensions on Path {
   ui.Tangent? fractionalTangent(double x) {
@@ -11,36 +13,26 @@ extension PathExtensions on Path {
 
   Offset fractionalOffset(double x) => fractionalTangent(x)?.position ?? Offset.zero;
 
-  Offset offsetForFractionalDx(double dx, [double margin = 1]) {
+  Offset offsetForDx(double dx, [double margin = 1]) {
     final metrics = computeMetrics().first;
-    assert(!metrics.isClosed);
+    var f = 0.5;
 
-    Offset fractionalOffset(double x) {
-      return metrics.getTangentForOffset(x * metrics.length)!.position;
+    var offset = Offset.zero;
+
+    int i = -2;
+    while ((offset.dx - dx).abs() > margin) {
+      offset = absoluteOffset(metrics.length * f);
+      final s = offset.dx < dx ? 1 : -1;
+
+      f += pow(2.0, i).toDouble() * s;
+      i--;
     }
 
-    final bounds = getBounds();
-    final width = bounds.width;
-    final aim = bounds.left + (width * dx);
+    return offset;
+  }
 
-    double nextFraction = 0.0;
-    double approachedOffset = 0.0;
-
-    int i = 0;
-
-    while ((approachedOffset - aim).abs() > margin) {
-      i++;
-      final offset = fractionalOffset(nextFraction).dx;
-      final diff = (aim - offset) / width;
-      nextFraction += diff;
-
-      if (i > 1 && offset == approachedOffset) break;
-
-      approachedOffset = offset;
-      if (i > 100) break;
-    }
-
-    return this.fractionalOffset(nextFraction);
+  Offset offsetForFractionalDx(double dx, [double margin = 1]) {
+    return offsetForDx(getBounds().width * dx, margin);
   }
 
   Offset absoluteOffset(double x) {
@@ -114,7 +106,8 @@ extension PaintExtension on Paint {
         ..maskFilter =
             radius == null || radius == 0 ? null : MaskFilter.blur(style, radius);
 
-  Paint setShader(dynamic rect, List<Color>? colors, {List<double>? stops, bool? vertical}) {
+  Paint setShader(dynamic rect, List<Color>? colors,
+      {List<double>? stops, bool? vertical}) {
     assert(rect is RRect || rect is Rect);
     late Offset start;
     late Offset end;
@@ -145,7 +138,7 @@ extension PaintExtension on Paint {
     List<double>? stops,
     ui.TileMode tileMode = ui.TileMode.clamp,
   }) {
-    final finalColors = dynamicToColors(colors, true)!;
+    final finalColors = Gradient.from(colors);
     final finalStops = stops ?? calculateColorStops(finalColors);
 
     return ui.Gradient.linear(
@@ -184,7 +177,11 @@ extension RRectExtensions on RRect {
   }
 
   RRect copyWith(
-      {Rect? r, double? bottomRight, double? bottomLeft, double? topLeft, double? topRight}) {
+      {Rect? r,
+      double? bottomRight,
+      double? bottomLeft,
+      double? topLeft,
+      double? topRight}) {
     return RRect.fromRectAndCorners(
       r ?? rect,
       bottomLeft: bottomLeft != null ? Radius.circular(bottomLeft) : blRadius,

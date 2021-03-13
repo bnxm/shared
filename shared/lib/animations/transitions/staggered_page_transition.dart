@@ -57,7 +57,7 @@ class _Clipper extends CustomClipper<Path> {
   }
 
   Rect getRectForIndex(Size size, int index) {
-    final animationFraction = lerpDouble(1.0, 1.0 / count.toDouble(), delayFraction);
+    final animationFraction = lerpDouble(1.0, 1.0 / count.toDouble(), delayFraction)!;
     final delay = (delayFraction / count) * index;
     final translation =
         (1.0 - interval(delay, delay + animationFraction, t)) * size.width;
