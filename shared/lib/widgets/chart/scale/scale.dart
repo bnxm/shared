@@ -94,8 +94,8 @@ class Scale extends StatelessWidget {
       final f = entry.f;
 
       final hasSpacing = data.spacing > 0.0;
-      final isFirst = index == 0;
-      final isLast = index == (entries.length - 1);
+      final isFirst = entry == entries.find((item) => item.f == 1.0);
+      final isLast = entry == entries.reversed.find((item) => item.f == 1.0);
 
       final bar = Container(
         height: data.thickness,
@@ -117,20 +117,24 @@ class Scale extends StatelessWidget {
         String? label, {
         double offset = 0.0,
       }) {
-        return Align(
-          alignment: alignment,
-          child: FractionalTranslation(
-            translation: Offset(offset, 0.0),
-            child: Text(
-              label ?? '',
-              style: entry.labelStyle,
+        return Expanded(
+          flex: label != null ? 1 : 0,
+          child: Align(
+            alignment: alignment,
+            child: FractionalTranslation(
+              translation: Offset(offset, 0.0),
+              child: Text(
+                label ?? '',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: entry.labelStyle,
+              ),
             ),
           ),
         );
       }
 
-      final labels = Stack(
-        clipBehavior: Clip.none,
+      final labels = Row(
         children: [
           buildLabel(
             AlignmentDirectional.centerStart,
@@ -160,7 +164,7 @@ class Scale extends StatelessWidget {
       final spacing = hasSpacing ? (data.spacing / 2.0) * f : 0.0;
 
       return Opacity(
-        opacity: entry.f,
+        opacity: 1.0,
         child: Container(
           width: width * widthFactor,
           padding: EdgeInsetsDirectional.only(

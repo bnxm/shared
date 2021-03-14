@@ -4,7 +4,6 @@ import 'package:core/core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'package:shared/animations/animations.dart';
 import 'package:shared/widgets/chart/base/series.dart';
 
 class ChartAnimationBuilder<D, S extends Series> extends StatefulWidget {
@@ -50,7 +49,7 @@ class _ChartAnimationBuilderState<D, S extends Series>
 
   late List<S> previousSeries = widget.series;
   late List<S> currentSeries = widget.series;
-  late List<S> changedSeries = widget.series;
+  late List<S> changedSeries = [];
 
   late D oldData = widget.data;
 

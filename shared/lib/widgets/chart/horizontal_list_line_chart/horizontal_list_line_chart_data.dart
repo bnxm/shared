@@ -106,7 +106,7 @@ class ListLineSeries<T> extends Series {
       verticalFill: t < 0.5 ? verticalFill : b.verticalFill,
     )
       ..values = lerpDoubles(values, b.values, t)
-      ..labels = t < 0.5 ? labels : b.labels;
+      ..labels = b.labels;
   }
 
   ListLineSeries<T> apply({

@@ -1,48 +1,49 @@
-import 'dart:math';
 import 'dart:ui' as ui;
 
+import 'package:shared/shared.dart';
 import 'package:flutter/material.dart' hide Gradient;
 import 'package:shared/drawing/drawing.dart';
 import 'package:shared/widgets/chart/base/color.dart';
 
 extension PathExtensions on Path {
-  ui.Tangent? fractionalTangent(double x) {
+  ui.Tangent? relativeTangentAt(double x) {
     final metrics = computeMetrics().first;
     return metrics.getTangentForOffset(x.clamp(0.0, 1.0) * metrics.length);
   }
 
-  Offset fractionalOffset(double x) => fractionalTangent(x)?.position ?? Offset.zero;
+  Offset relativeOffsetAt(double x) => relativeTangentAt(x)?.position ?? Offset.zero;
 
   Offset offsetForDx(double dx, [double margin = 1]) {
     final metrics = computeMetrics().first;
-    var f = 0.5;
+    final left = getBounds().left;
 
+    var lower = 0.0, upper = 1.0, aim = 0.0;
     var offset = Offset.zero;
 
-    int i = -2;
-    while ((offset.dx - dx).abs() > margin) {
-      offset = absoluteOffset(metrics.length * f);
-      final s = offset.dx < dx ? 1 : -1;
+    dx += left;
+    int i = 0;
+    while ((aim - dx).abs() > margin) {
+      final f = lerpDouble(lower, upper, 0.5)!;
+      offset = metrics.getTangentForOffset(f * metrics.length)!.position;
+      aim = offset.dx + (left.isNegative ? left : 0);
 
-      f += pow(2.0, i).toDouble() * s;
-      i--;
+      if (dx < aim) {
+        upper = f;
+      } else if (dx > aim) {
+        lower = f;
+      } else {
+        break;
+      }
+
+      if (i > 100) break;
+      i++;
     }
 
     return offset;
   }
 
-  Offset offsetForFractionalDx(double dx, [double margin = 1]) {
+  Offset offsetForRelativeDx(double dx, [double margin = 1]) {
     return offsetForDx(getBounds().width * dx, margin);
-  }
-
-  Offset absoluteOffset(double x) {
-    final metrics = computeMetrics().first;
-    final b = getBounds();
-    return metrics
-            .getTangentForOffset(
-                ((x - b.left) / b.width).clamp(0.0, 1.0) * metrics.length)
-            ?.position ??
-        Offset.zero;
   }
 
   Path trim(double from, double? to, {bool isFractional = true}) {
@@ -106,8 +107,12 @@ extension PaintExtension on Paint {
         ..maskFilter =
             radius == null || radius == 0 ? null : MaskFilter.blur(style, radius);
 
-  Paint setShader(dynamic rect, List<Color>? colors,
-      {List<double>? stops, bool? vertical}) {
+  Paint setShader(
+    dynamic rect,
+    List<Color>? colors, {
+    List<double>? stops,
+    bool? vertical,
+  }) {
     assert(rect is RRect || rect is Rect);
     late Offset start;
     late Offset end;
@@ -138,14 +143,14 @@ extension PaintExtension on Paint {
     List<double>? stops,
     ui.TileMode tileMode = ui.TileMode.clamp,
   }) {
-    final finalColors = Gradient.from(colors);
-    final finalStops = stops ?? calculateColorStops(finalColors);
+    colors = Gradient.from(colors);
+    stops ??= (colors as List).imap((i, item) => i * (1 / (colors.length - 1)));
 
     return ui.Gradient.linear(
       from,
       to,
-      finalColors,
-      finalStops,
+      colors,
+      stops,
       tileMode,
     );
   }
