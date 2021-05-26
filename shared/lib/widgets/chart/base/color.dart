@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:collection/collection.dart';
+import 'package:collection/collection.dart' hide IterableExtension;
 import 'package:shared/shared.dart';
 import 'package:flutter/material.dart';
 
@@ -41,7 +41,7 @@ class Gradient extends DelegatingList<Color> {
   Gradient scaleTo(Gradient b, double t) {
     final colors = [
       for (var i = 0; i < max(length, b.length); i++)
-        Color.lerp(getOrElse(i, last), b.getOrElse(i, b.last), t)!,
+        Color.lerp(getOrElse(i, last), b.getOrElse(i, b.lastOrNull ?? last), t)!,
     ];
 
     return Gradient(colors);

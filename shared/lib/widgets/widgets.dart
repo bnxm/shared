@@ -15,3 +15,4 @@ export 'preference.dart';
 export 'pumping_icon.dart';
 export 'scroll_behaviour.dart';
 export 'system_overlay_style_scope.dart';
+export 'ticker_builder.dart';

@@ -46,7 +46,7 @@ class Schema extends ColorScheme {
           brightness: brightness,
         );
 
-  static Schema? of(BuildContext context) {
-    return ThemeBuilder.theme(context)?.schema;
+  static Schema of(BuildContext context) {
+    return ThemeBuilder.theme(context)!.schema;
   }
 }

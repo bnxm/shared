@@ -24,7 +24,7 @@ extension ListWidgetExtensions on Iterable<Widget> {
 extension StateExtensions<T extends StatefulWidget> on State<T> {
   ThemeData get theme => Theme.of(context);
   TextTheme get textTheme => theme.textTheme;
-  Schema? get schema => Schema.of(context);
+  Schema get schema => Schema.of(context);
 }
 
 extension GlobalKeyExtension on GlobalKey {

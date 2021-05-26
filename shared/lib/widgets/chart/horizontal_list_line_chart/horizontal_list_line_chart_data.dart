@@ -81,7 +81,7 @@ class ListLineSeries<T> extends Series {
   bool get hasStroke => stroke?.isOpaque == true;
   bool get hasFill => fill?.isOpaque == true;
   bool get hasDivider => divider?.isOpaque == true;
-  bool get hasShadow => shadow?.isOpaque == true;
+  bool get hasShadow => shadow?.isOpaque == true && (elevation ?? 0.0) > 0.0;
 
   List<double> values;
 

@@ -68,9 +68,9 @@ class CustomDialog extends StatelessWidget {
                   0.0,
                 ),
                 child: Vertical(
-                  children: <Widget?>[
+                  children: <Widget>[
                     if (title != null) _getTitle(context),
-                    child,
+                    if (child != null) child!,
                     if (!floatingButtons) _getButtons(context),
                   ],
                 ),

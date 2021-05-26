@@ -413,7 +413,7 @@ class SimpleLineDecorator extends EditTextDecorator {
   @override
   Widget build(BuildContext context, TextField editText) {
     final isInputValid = error == null || error!.isEmpty;
-    final schema = Schema.of(context)!;
+    final schema = Schema.of(context);
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
 

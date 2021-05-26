@@ -331,7 +331,7 @@ class _MaterialColorPickerState extends State<MaterialColorPicker> {
                     duration: const Millis(250),
                     child: Icon(
                       Icons.error_outline,
-                      color: schema!.error,
+                      color: schema.error,
                     ),
                   ),
                 ],

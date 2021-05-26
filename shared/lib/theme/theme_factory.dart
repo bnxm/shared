@@ -154,10 +154,7 @@ class ThemeFactory {
 
       // TextFields
       hintColor: schema.onSurfaceLight,
-      cursorColor: schema.primary,
       indicatorColor: schema.primary,
-      textSelectionHandleColor: schema.primary,
-      textSelectionColor: schema.primary.withOpacity(schema.primary.opacity * 0.25),
       inputDecorationTheme: InputDecorationTheme(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         hintStyle: TextStyle(

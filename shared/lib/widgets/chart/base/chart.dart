@@ -59,6 +59,16 @@ class _ChartAnimationBuilderState<D, S extends Series>
   void didUpdateWidget(ChartAnimationBuilder<D, S> oldWidget) {
     super.didUpdateWidget(oldWidget);
 
+    dAnimation = CurvedAnimation(
+      curve: widget.curve,
+      parent: dController,
+    );
+
+    sAnimation = CurvedAnimation(
+      curve: widget.curve,
+      parent: sController,
+    );
+
     if (!listEquals(widget.series, oldWidget.series)) {
       final series = widget.series;
       final oldSeries = oldWidget.series;
@@ -82,16 +92,6 @@ class _ChartAnimationBuilderState<D, S extends Series>
         ..reset()
         ..forward();
     }
-
-    dAnimation = CurvedAnimation(
-      curve: widget.curve,
-      parent: dController,
-    );
-
-    sAnimation = CurvedAnimation(
-      curve: widget.curve,
-      parent: sController,
-    );
   }
 
   @override

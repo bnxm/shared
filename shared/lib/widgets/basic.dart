@@ -10,7 +10,7 @@ class Vertical extends Column {
     TextDirection? textDirection,
     VerticalDirection verticalDirection = VerticalDirection.down,
     TextBaseline? textBaseline,
-    required List<Widget?> children,
+    required List<Widget> children,
   }) : super(
           key: key,
           mainAxisAlignment: mainAxisAlignment,
@@ -19,7 +19,7 @@ class Vertical extends Column {
           textDirection: textDirection,
           verticalDirection: verticalDirection,
           textBaseline: textBaseline,
-          children: children as List<Widget>,
+          children: children,
         );
 }
 
@@ -51,8 +51,7 @@ class SizeBuilder extends StatelessWidget {
   const SizeBuilder({
     Key? key,
     required this.builder,
-  })  : assert(builder != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

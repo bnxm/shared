@@ -14,5 +14,5 @@ export 'implicity_animation_builder.dart';
 export 'open_container.dart';
 export 'page_transition_switcher.dart';
 export 'size_animation.dart';
-export 'ticker_builder.dart';
+export '../../widgets/ticker_builder.dart';
 

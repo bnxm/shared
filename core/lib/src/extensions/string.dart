@@ -62,4 +62,6 @@ extension StringExtensions on String {
 
   /// Converts all backslashes to forward slashes.
   String get normalizedPath => replaceAll('\\', '/');
+
+  List<String> get chars => runes.map((e) => String.fromCharCode(e)).toList();
 }

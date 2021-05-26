@@ -118,10 +118,10 @@ extension MyIterableExtension<T> on Iterable<T> {
     final Map<E, List<T>> result = {};
 
     for (final item in this) {
-      final gkey = key(item);
+      final groupKey = key(item);
 
-      result[gkey] ??= [];
-      result[gkey]!.add(item);
+      result[groupKey] ??= [];
+      result[groupKey]!.add(item);
     }
 
     return result.values.toList();
@@ -212,6 +212,10 @@ extension MyListExtension<T> on List<T> {
   double avgOf(num Function(T item) value) {
     if (length == 0) return 0.0;
     return sumBy(value) / length;
+  }
+
+  void pop() {
+    if (isNotEmpty) removeLast();
   }
 }
 

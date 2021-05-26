@@ -1,30 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:shared/shared.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  unlockRefreshRate();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final series = ListLineSeries<double>(
-      data: [0.25, 0.5, 0.75, 1.0],
-      y: (value, index) => value,
-      labelBuilder: (value, index) => value.toString(),
-      labelStyle: TextStyle(color: Colors.black)
-    );
-
     return MaterialApp(
       title: 'Material App',
       home: Scaffold(
         appBar: AppBar(
           title: Text('Material App Bar'),
         ),
-        body: Center(
-          child: HorizontalListLineChart(
-            itemExtent: 50,
-            series: [series],
+        body: Test(),
+      ),
+    );
+  }
+}
+
+class Chart extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final series = ListLineSeries<int>(
+      data: List.generate(24, (i) => i)..shuffle(),
+      y: (value, index) => value.toDouble(),
+      elevation: 4.0,
+      labelBuilder: (value, index) => value.toString(),
+      labelStyle: const TextStyle(
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.w600,
+        fontFamily: 'Rubik',
+        shadows: [
+          Shadow(
+            blurRadius: 4,
+            color: Colors.black38,
           ),
-        ),
+        ],
+      ),
+      stroke: Colors.black,
+      fill: [Colors.grey, Colors.grey.withAlpha(0)],
+      divider: [Colors.grey, Colors.grey.withAlpha(0)],
+    );
+
+    return HorizontalListLineChart(
+      itemExtent: 72,
+      series: [series],
+    );
+  }
+}
+
+class Test extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          for (var i = 0; i < 5; i++)
+            Container(
+              margin: EdgeInsets.symmetric(vertical: 250),
+              height: 200,
+              child: Chart(),
+            ),
+        ],
       ),
     );
   }

@@ -235,7 +235,7 @@ class _TranslationFormFieldState extends State<_TranslationFormField> {
           borderSide: BorderSide(color: theme.accentColor),
         ),
         errorBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: schema?.error ?? Colors.red),
+          borderSide: BorderSide(color: schema.error),
         ),
       ),
       onFieldSubmitted: (value) {

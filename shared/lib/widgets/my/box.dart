@@ -66,9 +66,7 @@ class Box extends StatelessWidget {
     this.curve = Curves.linear,
     this.constraints,
     this.showInkWell = true,
-  })  : assert(color == null ||
-            color is Color ||
-            color is Gradient),
+  })  : assert(color == null || color is Color || color is Gradient),
         super(key: key);
 
   static const WRAP = -1;
@@ -144,7 +142,7 @@ class Box extends StatelessWidget {
             : null);
 
     LinearGradient? gradient;
-     if (color is LinearGradient) {
+    if (color is LinearGradient) {
       gradient = color;
     }
 
@@ -225,6 +223,7 @@ class ListBox extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final bool reserveIconSpace;
   final VoidCallback? onTap;
+  final VoidCallback? onLongPress;
   final Color? color;
   final bool? isEnabled;
   final double? maxWidth;
@@ -240,6 +239,7 @@ class ListBox extends StatelessWidget {
     this.padding,
     this.reserveIconSpace = false,
     this.onTap,
+    this.onLongPress,
     this.color,
     this.isEnabled,
     this.maxWidth,
@@ -274,6 +274,7 @@ class ListBox extends StatelessWidget {
       duration: duration,
       color: color,
       onTap: onTap,
+      onLongPress: onLongPress,
       elevation: elevation,
       constraints: BoxConstraints(maxWidth: maxWidth ?? double.infinity),
       padding: padding ?? const EdgeInsets.all(16),
