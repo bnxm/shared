@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:core/core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-typedef PreferenceAdapter<T> = T Function(String json);
+typedef PreferenceAdapter<T> = T? Function(String json);
 
 abstract class RxPreferencesInterface {
   Stream<Pair<String?, dynamic>> get stream;
@@ -143,11 +143,11 @@ class RxSharedPreferences implements RxPreferencesInterface {
 
   @override
   Stream<String?> watchString(String key) =>
-      watchKey<String?>(key, const _StringAdapter());
+      watchKey<String>(key, const _StringAdapter());
 
   @override
   Stream<List<String>?> watchStringList(String key) =>
-      watchKey<List<String>?>(key, const _StringListAdapter());
+      watchKey<List<String>>(key, const _StringListAdapter());
 
   @override
   Stream<T?> watchObject<T>(String key, PreferenceAdapter<T> adapter) =>
@@ -172,14 +172,14 @@ class RxSharedPreferences implements RxPreferencesInterface {
 }
 
 class _RxPreferenceTransformer<T>
-    extends StreamTransformerBase<Pair<String, dynamic>, T> {
+    extends StreamTransformerBase<Pair<String?, dynamic>, T> {
   final String? key;
   final T Function() getValue;
   _RxPreferenceTransformer(this.key, this.getValue);
 
   @override
-  Stream<T> bind(Stream<Pair<String, dynamic>> stream) {
-    return StreamTransformer<Pair<String, dynamic>, T>((input, cancelOnError) {
+  Stream<T> bind(Stream<Pair<String?, dynamic>> stream) {
+    return StreamTransformer<Pair<String?, dynamic>, T>((input, cancelOnError) {
       late StreamController<T> controller;
       late StreamSubscription<T> subscription;
 
@@ -306,7 +306,7 @@ class _CustomAdapter<T> implements _PreferenceAdapter<T> {
       cache[key] = value;
     }
 
-    return preferences.setString(key!, _toJson(value)!);
+    return preferences.setString(key!, _toJson(value));
   }
 }
 
@@ -318,7 +318,9 @@ class _CustomListAdapter<T> implements _PreferenceAdapter<List<T>> {
 
   @override
   List<T>? getValue(SharedPreferences preferences, String? key) {
-    List<T>? parse() => preferences.getStringList(key!)?.map(adapter!).toList();
+    if (key == null) return null;
+
+    List<T?>? parse() => preferences.getStringList(key)?.map(adapter!).toList();
     return RxSharedPreferences.cacheObjects ? cache[key] ??= parse() : parse();
   }
 
@@ -328,7 +330,7 @@ class _CustomListAdapter<T> implements _PreferenceAdapter<List<T>> {
       cache[key] = values;
     }
 
-    return preferences.setStringList(key!, values!.map(_toJson).toList() as List<String>);
+    return preferences.setStringList(key!, values?.map(_toJson).toList() ?? []);
   }
 }
 
@@ -345,9 +347,7 @@ class _EnumAdapter<T> implements _PreferenceAdapter<T> {
       preferences.setInt(key!, (value as dynamic).index);
 }
 
-String? _toJson(dynamic value) {
-  if (value == null) return null;
-
+String _toJson(dynamic value) {
   try {
     return value.toJson();
   } on NoSuchMethodError {

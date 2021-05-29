@@ -150,7 +150,7 @@ extension MyIterableExtension<T> on Iterable<T> {
 }
 
 extension MyNullableListExtensions<T> on List<T?> {
-  List<T> removeNull() => where((element) => element != null).toList() as List<T>;
+  List<T> removeNull() => List<T>.from(where((element) => element != null));
 }
 
 extension My2DimensionIterableExtenions<T> on Iterable<Iterable<T>> {

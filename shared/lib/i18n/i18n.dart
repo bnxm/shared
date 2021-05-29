@@ -82,8 +82,6 @@ class I18n {
   /// and then maps it over to the corresponding translation in the language
   /// of the app.
   static String of(String input) {
-    if (input == null) return 'null';
-
     String? translationKey;
 
     // First check if there is a key (key or translation string)
@@ -430,7 +428,7 @@ class PluralPlaceholder extends Placeholder {
   String format(dynamic value) {
     final onlyDigits = value.toString().replaceAll(RegExp(r'[^0-9, ^\., ^\,]'), '');
 
-    final number = num.tryParse(onlyDigits)!;
+    final number = num.tryParse(onlyDigits);
     assert(number != null, 'Plural placeholder was not given a valid number!');
 
     if (number == null) {
