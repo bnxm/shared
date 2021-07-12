@@ -14,5 +14,11 @@ class I18nSharedPreferencesStore implements I18nStore {
   Future<String?> getLanguageCode() async => (await _preferences).getString(key);
 
   @override
-  Future<void> setLanguageCode(String? code) async => (await _preferences).setString(key, code!);
+  Future<void> setLanguageCode(String? code) async {
+    if (code != null) {
+      (await _preferences).setString(key, code);
+    } else {
+      (await _preferences).remove(key);
+    }
+  }
 }

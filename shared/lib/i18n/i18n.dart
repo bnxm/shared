@@ -213,8 +213,6 @@ class I18n {
   /// The app will use this language until a new language is set
   /// being set.
   static Future<Language?> setLanguage(dynamic language) async {
-    assert(language is String || language is Language);
-
     final String? code =
         language != null && language is Language ? language.code : language;
     final Language? lang = _resolveLanguageForCode(code);
